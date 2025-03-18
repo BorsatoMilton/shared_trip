@@ -2,6 +2,8 @@
 <%@ page import="java.util.LinkedList"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
+
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -35,6 +37,12 @@ body {
 </style>
 </head>
 <body>
+	
+	<% 
+	
+	if (request.getAttribute("existenViajes") == null) { %>
+        <jsp:forward page="ViajesListado"/>
+    <% }  %>
 	<div class="container-fluid p-0">
 
 		<div class="row">

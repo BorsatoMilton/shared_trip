@@ -19,6 +19,7 @@ public class ViajesListado extends HttpServlet {
 	private static final long serialVersionUID = 1L;
     private ViajeController viajeController ;
     
+    
 	
 	
 	@Override
@@ -34,7 +35,9 @@ public class ViajesListado extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
         LinkedList<Viaje> viajes = viajeController.getAll();
-        request.setAttribute("viajes", viajes); 
+        request.setAttribute("viajes", viajes);
+        request.setAttribute("existenViajes", true);
+        
         request.getRequestDispatcher("index.jsp").forward(request, response); 
 	}
 
