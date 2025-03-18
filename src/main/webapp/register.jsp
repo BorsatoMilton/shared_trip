@@ -9,50 +9,140 @@
 </head>
 <body>
 
-<jsp:include page="header.jsp"></jsp:include>
+<jsp:include page="header.jsp"/>
 
-<div class="container-fluid">
-	<div class="row align-items-center d-flex justify-content-center" >
-		<div class="col-md-3 d-none d-md-block"></div>
-		<div class="col-12 col-md-6">
-		
-            <form action="Register" method="POST">
-                <h1 class="text-secondary border-bottom border-success border-5">Registrarse</h1>
-			     <div class="form-group col-12">
-			    <div class="form-group col-12">
-			      <label for="nombre">Nombre</label>
-			      <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Nombre" required>
-			    </div>
-			    <div class="form-group col-12">
-			      <label for="apellido">Apellido</label>
-			      <input type="text" class="form-control" id="apellido" name="apellido" placeholder="Apellido" required>
-			    </div>
-			    <div class="form-group col-12">
-			      <label for="correo">Correo Electrónico</label>
-			      <input type="email" class="form-control" id="correo" name="correo" placeholder="Correo Electrónico" required>
-			    </div>
-			      <label for="usuario">Usuario</label>
-			      <input type="text" class="form-control" id="usuario" name="usuario" placeholder="Usuario" required>
-			    </div>
-			    <div class="form-group col-12">
-			      <label for="clave">Clave</label>
-			      <input type="password" class="form-control" id="clave" name="clave" placeholder="Clave" required>
-			    </div>
-			    <div class="form-group col-12">
-			      <label for="telefono">Teléfono</label>
-			      <input type="text" class="form-control" id="telefono" name="telefono" placeholder="Teléfono" required>
-			    </div>
-                <div class="d-grid gap-2 col-6 mx-auto">
-                    <button class="btn btn-success mb-4 mt-2" type="submit">Registrarse</button>
+<div class="container-fluid  d-flex flex-column">
+    <div class="row justify-content-center align-items-center flex-grow-1">
+        <div class="col-12 col-lg-8 col-xl-6">
+               <% String mensaje = (String) session.getAttribute("mensaje");
+                  if (mensaje != null) { %>
+                   <div class="alert alert-info alert-dismissible fade show" role="alert">
+                       <%= mensaje %>
+                       <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                   </div>
+               <% session.removeAttribute("mensaje"); } %>
+            <div class="card shadow-lg border-0 my-5">
+                <div class="card-body p-4 p-md-5">
+                    <h1 class="text-center mb-4 text-primary fw-bold">
+                        <i class="bi bi-person-plus me-2"></i>Registrarse
+                    </h1>
+                    <hr>
+                    
+                    <form action="Register" method="POST">
+                        <div class="row g-4">
+                            
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" 
+                                           class="form-control form-control-lg" 
+                                           id="nombre" 
+                                           name="nombre" 
+                                           placeholder="Nombre"
+                                           required
+                                           >
+                                    <label for="nombre" class="form-label">
+                                        Nombre
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" 
+                                           class="form-control form-control-lg" 
+                                           id="apellido" 
+                                           name="apellido" 
+                                           placeholder="Apellido"
+                                           required>
+                                    <label for="apellido" class="form-label">
+                                        Apellido
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="form-floating">
+                                    <input type="email" 
+                                           class="form-control form-control-lg" 
+                                           id="correo" 
+                                           name="correo" 
+                                           placeholder="Correo Electrónico"
+                                           required>
+                                    <label for="correo" class="form-label">
+                                        Correo Electrónico
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" 
+                                           class="form-control form-control-lg" 
+                                           id="usuario" 
+                                           name="usuario" 
+                                           placeholder="Usuario"
+                                           required
+                                           minlength="6"
+                                           maxlength="20">
+                                    <label for="usuario" class="form-label">
+                                        Usuario
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-floating position-relative">
+                                    <input type="password" 
+                                           class="form-control form-control-lg" 
+                                           id="clave" 
+                                           name="clave" 
+                                           placeholder="Clave"
+                                           required
+                                           minlength="6">
+                                    <label for="clave" class="form-label">
+                                        Contraseña
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Teléfono -->
+                            <div class="col-12">
+                                <div class="form-floating">
+                                    <input type="tel" 
+                                           class="form-control form-control-lg" 
+                                           id="telefono" 
+                                           name="telefono" 
+                                           placeholder="Teléfono"
+                                           required
+                                           pattern="[0-9]{9,15}">
+                                    <label for="telefono" class="form-label">
+                                        Teléfono
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <button class="btn btn-primary btn-lg w-100 py-3" type="submit">
+                                    Registrarse
+                                </button>
+                                <div class="text-center mt-4">
+                                    <p class="text-muted">
+                                        ¿Ya tienes cuenta? 
+                                        <a href="login.jsp" class="text-decoration-none fw-bold">
+                                            Inicia Sesión
+                                        </a>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
                 </div>
-            </form>
+            </div>
         </div>
-		<div class="col-md-3 d-none d-md-block"></div>
-	</div>
-	
-	<jsp:include page="footer.jsp"></jsp:include>
-	
+    </div>
 </div>
+
+<jsp:include page="footer.jsp"/>
 
 
 

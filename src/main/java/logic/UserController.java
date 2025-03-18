@@ -12,11 +12,14 @@ public class UserController {
 		this.usuarioDAO = new UserDAO();
 	}
 	
-	public Usuario validate(Usuario u) {
-
-		return usuarioDAO.getByUser(u);
+	public Usuario login(Usuario u) {
+		return usuarioDAO.login(u);
 	}
 
+	public Usuario getOneByUserOrEmail(String user, String correo) {
+		return usuarioDAO.getOneByUserOrEmail(user, correo);
+	}
+	
 	public LinkedList<Usuario> getAll(){
 		return usuarioDAO.getAll();
 	}
@@ -24,6 +27,7 @@ public class UserController {
 	public void addUser(Usuario u) {
 		usuarioDAO.add(u);
 	}
+	
 	
 	public boolean deleteUser(int idUsuario) {
 		return this.usuarioDAO.eliminarUsuario(idUsuario);

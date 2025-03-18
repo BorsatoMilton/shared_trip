@@ -16,7 +16,7 @@ public class ViajeDAO {
 
 		try {
 			stmt = ConnectionDB.getInstancia().getConn().createStatement();
-			rs = stmt.executeQuery("select * from viajes");
+			rs = stmt.executeQuery("select * from viajes where fecha>= current_date");
 
 			if (rs != null) {
 				while (rs.next()) {

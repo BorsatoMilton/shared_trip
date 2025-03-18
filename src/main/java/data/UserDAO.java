@@ -54,7 +54,7 @@ public class UserDAO {
 		return users;
 	}
 	
-	public Usuario getByUser(Usuario user) {
+	public Usuario login(Usuario user) {
 
 		Usuario u=null;
 		PreparedStatement stmt=null;
@@ -139,7 +139,47 @@ public class UserDAO {
 	}
 	
 	
+	public Usuario getOneByUserOrEmail(String user, String correo) {
 
+		Usuario u=null;
+		PreparedStatement stmt=null;
+		ResultSet rs=null;
+		
+		try {
+			stmt=ConnectionDB.getInstancia().getConn().prepareStatement(
+					"select id_usuario,usuario,nombre,apellido,correo,telefono, id_rol from usuarios where usuario=? or correo=?"
+					);
+			stmt.setString(1, user);
+			stmt.setString(2, correo);
+			rs=stmt.executeQuery();
+			
+			u=new Usuario();
+			
+			if(rs!=null && rs.next()) {
+
+				u.setIdUsuario(rs.getInt("id_usuario"));
+				u.setUsuario(rs.getString("usuario"));
+				u.setNombre(rs.getString("nombre"));
+				u.setApellido(rs.getString("apellido"));
+				u.setCorreo(rs.getString("correo"));
+				u.setTelefono(rs.getString("telefono"));
+				u.setRol(rs.getInt("id_rol"));
+
+			}
+		} catch (SQLException e) {
+			e.printStackTrace(); 
+		}finally {
+			try {
+				if(rs!=null) {rs.close();}
+				if(stmt!=null) {stmt.close();}
+				ConnectionDB.getInstancia().releaseConn();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return u;
+	}
 	
 	public void add(Usuario u) {
 		PreparedStatement stmt= null;

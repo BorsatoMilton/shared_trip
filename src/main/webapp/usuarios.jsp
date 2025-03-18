@@ -1,173 +1,162 @@
 <%@ page import="java.util.LinkedList"%>
-<%@ page import="entidades.Usuario" %>
-<%@ page import="entidades.Rol" %>
-<%@ page import="logic.RolController" %>
+<%@ page import="entidades.Usuario"%>
+<%@ page import="entidades.Rol"%>
+<%@ page import="logic.RolController"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="ISO-8859-1">
-<title>Usuarios</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-
+<title>Gestión de Usuarios</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+<style>
+    .card-header {
+        background: linear-gradient(45deg, #3f51b5, #2196f3);
+        color: white;
+    }
+    .table-hover tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+    .action-buttons .btn {
+        padding: 0.375rem 0.75rem;
+    }
+    .scrollable-table {
+        overflow-x: auto;
+    }
+</style>
 </head>
-<body>
+<body class="bg-light">
+
 <div class="container-fluid p-0">
-	<div class="row align-items-start" style="height: 10vh">
-         <div class="col">
-             <jsp:include page="header.jsp"></jsp:include>
-         </div>
+    <jsp:include page="header.jsp"></jsp:include>
+    
+    <main class="container mt-4">
+        <div class="card shadow-lg">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h3 class="mb-0"><i class="bi bi-people-fill me-2"></i>Administración de Usuarios</h3>
+                <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#nuevoUsuario">
+                    <i class="bi bi-plus-circle me-2"></i>Nuevo Usuario
+                </button>
+            </div>
+            
+            <div class="card-body">
+                <% String mensaje = (String) session.getAttribute("mensaje");
+                   if (mensaje != null) { %>
+                    <div class="alert alert-info alert-dismissible fade show" role="alert">
+                        <%= mensaje %>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                <% session.removeAttribute("mensaje"); } %>
+                
+                <div class="scrollable-table">
+                    <table class="table table-hover table-borderless">
+                        <thead class="table-light">
+                            <tr>
+                                <th scope="col">Usuario</th>
+                                <th scope="col">Nombre</th>
+                                <th scope="col">Correo</th>
+                                <th scope="col">Teléfono</th>
+                                <th scope="col">Rol</th>
+                                <th scope="col" class="text-end">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% LinkedList<Usuario> usuarios = (LinkedList<Usuario>) request.getSession().getAttribute("usuarios");
+                               if (usuarios != null && !usuarios.isEmpty()) {
+                                   for (Usuario usuario : usuarios) { 
+                                       RolController rolCtrl = new RolController();
+                                       Rol rol = rolCtrl.getOne(usuario.getRol()); %>
+                                    <tr class="align-middle">
+                                        <td><%= usuario.getUsuario() %></td>
+                                        <td><%= usuario.getNombre() %></td>
+                                        <td><%= usuario.getCorreo() %></td>
+                                        <td><%= usuario.getTelefono() %></td>
+                                        <td><span class="badge rounded-pill bg-info"><%= rol.getNombre() %></span></td>
+                                        <td class="text-end action-buttons">
+                                            <form action="BajaUsuarioAdmin" method="post" class="d-inline">
+                                                <input type="hidden" name="id_usuario" value="<%= usuario.getIdUsuario() %>">
+                                                <button type="submit" class="btn btn-sm btn-danger">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                            <%   }
+                               } else { %>
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted py-4">No hay usuarios registrados</td>
+                                </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <jsp:include page="footer.jsp"></jsp:include>
+</div>
+
+<!-- Modal Nuevo Usuario -->
+<div class="modal fade" id="nuevoUsuario" tabindex="-1" aria-labelledby="nuevoUsuarioLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="nuevoUsuarioLabel"><i class="bi bi-person-plus me-2"></i>Nuevo Usuario</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" action="usuarios" id="registrarUsuarioAdmin">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Nombre completo</label>
+                        <div class="row g-2">
+                            <div class="col">
+                                <input type="text" class="form-control" placeholder="Nombre" name="nombre" required>
+                            </div>
+                            <div class="col">
+                                <input type="text" class="form-control" placeholder="Apellido" name="apellido" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Credenciales</label>
+                        <input type="email" class="form-control mb-2" placeholder="Correo electrónico" name="correo" required>
+                        <div class="row g-2">
+                            <div class="col">
+                                <input type="text" class="form-control" placeholder="Usuario" name="usuario" required>
+                            </div>
+                            <div class="col">
+                                <input type="password" class="form-control" placeholder="Contraseña" name="clave" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Información de contacto</label>
+                        <input type="tel" class="form-control" placeholder="Teléfono" name="telefono" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Rol del usuario</label>
+                        <select class="form-select" name="rol" required>
+                            <% for (Rol rol : (LinkedList<Rol>)request.getSession().getAttribute("roles")) { %>
+                                <option value="<%= rol.getIdRol() %>"><%= rol.getNombre() %></option>
+                            <% } %>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar Usuario</button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
-<h2 class="my-4">Listado de Usuarios</h2>
-            <% 
-       
-	        	String mensaje = (String) session.getAttribute("mensaje");
-	        	if (mensaje != null) {
-    		%>
-	        	<div class="alert alert-info">
-	            	<%= mensaje %>
-	        	</div>
-    		<%
-	            session.removeAttribute("mensaje");
-	        	}
-   			 %>
-        <table class="table table-striped table-bordered">
-        <thead class="table-dark">
-            <tr>
-                <th scope="col">Usuario</th>
-                <th scope="col">Nombre</th>
-                <th scope="col">Correo</th>
-                <th scope="col">Teléfono</th>
-                <th scope="col">Rol</th>
-                <th scope="col">Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            <%
-                LinkedList<Usuario> usuarios= (LinkedList<Usuario>) request.getSession().getAttribute("usuarios");
-                if (usuarios != null && !usuarios.isEmpty()) {
-                    for (Usuario usuario : usuarios) {
-            %>
-            <tr>
-                <td><%= usuario.getUsuario() %></td>
-                <td><%= usuario.getNombre() %></td>
-                <td><%= usuario.getCorreo() %></td>
-                <td><%= usuario.getTelefono() %></td>
-                <%
-                {
-                	RolController rolCtrl = new RolController();
-                	Rol rol = rolCtrl.getOne(usuario.getRol());
-                	%>
-                	<td><%= rol.getNombre() %></td>
-                <% 
-                }
-                %>
-                <td>
-                <form 
-            			action="BajaUsuarioAdmin" method="post">
-            			<input type="hidden" name="id_usuario" value="<%= usuario.getIdUsuario() %>">
-           			    <button type="submit" class="btn btn-danger">Eliminar Usuario</button>
-                 </form> 
-                </td> 
-                
-            </tr>
-            <%
-                    }
-                } else {
-            %>
-            <tr>
-                <td colspan="8" class="text-center">No existen usuarios registrados</td>
-            </tr>
-            <%
-                }
-            %>
-        </tbody>
-    </table>
-    
-    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#nuevoUsuario">
-  	Nuevo Usuario
-	</button>
-	
-	
-    
-    <div class="row align-items-end" style="height: 10vh">
-            <div class="col">
-                <jsp:include page="footer.jsp"></jsp:include>
-            </div>
-        </div>
-        
-        
-  <!--  MODALES  -------------------------------------------------------->
-  
- <div class="modal fade" id="nuevoUsuario" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="nuevoUsuario">Nuevo Usuario</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <form method="post" action="RegistrarUsuarioAdmin" id="registrarUsuarioAdmin">
-				
-			      <label for="nombre">Nombre</label>
-			      <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Nombre" required>
-			    
-			   
-			      <label for="apellido">Apellido</label>
-			      <input type="text" class="form-control" id="apellido" name="apellido" placeholder="Apellido" required>
-			    
-			    
-			      <label for="correo">Correo Electrónico</label>
-			      <input type="email" class="form-control" id="correo" name="correo" placeholder="Correo Electrónico" required>
-			    
-			      <label for="usuario">Usuario</label>
-			      <input type="text" class="form-control" id="usuario" name="usuario" placeholder="Usuario" required>
-			  
-			    
-			      <label for="clave">Clave</label>
-			      <input type="password" class="form-control" id="clave" name="clave" placeholder="Clave" required>
-			  
-			    
-			      <label for="telefono">Teléfono</label>
-			      <input type="text" class="form-control" id="telefono" name="telefono" placeholder="Teléfono" required>
-			   
-			   	  <label for="rol">Rol</label>
-			   	    <select id="rol" name="rol" class="form-control" required>
-				        <% 
-				            LinkedList<Rol> roles = (LinkedList<Rol>)request.getSession().getAttribute("roles");  
-				           for (Rol rol : roles) {
-				        %>
-				            <option value="<%= rol.getIdRol() %>"><%= rol.getNombre() %></option>
-				        <% 
-				        		}
-				         %>
-				    </select>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-        <button type="submit" class="btn btn-primary" onclick = "envioFormulario()">Guardar</button>
-      </div>
-    </div>
-  </div>
-</div>	
- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
- 
- <script type="text/javascript">
-function envioFormulario() {
-    
-    var form = document.getElementById("registrarUsuarioAdmin");
-
-    form.submit();
-    
-    var modal = bootstrap.Modal.getInstance(document.getElementById("nuevoUsuario"));
-    modal.hide();
-}
-</script>
- 
-  
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
