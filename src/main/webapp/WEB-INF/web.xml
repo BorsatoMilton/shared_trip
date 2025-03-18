@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee 
+         http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
+         version="4.0">
+
+    <!-- Configuración básica -->
+    <display-name>MiProyectoWeb</display-name>
+    <description>Proyecto en Tomcat 9</description>
+
+    <!-- Páginas de inicio -->
+    <welcome-file-list>
+        <welcome-file>index.html</welcome-file>
+        <welcome-file>index.jsp</welcome-file>
+    </welcome-file-list>
+
+    <!-- Tiempo de sesión -->
+    <session-config>
+        <session-timeout>30</session-timeout> <!-- En minutos -->
+    </session-config>
+
+</web-app>
