@@ -76,7 +76,7 @@ body {
 			</div>
 
 			<div class="col-12">
-				<h2 class="section-header">Listado de Viajes</h2>
+				<h2 class="section-header">Listado de viajes</h2>
 			</div>
 
 			<div class="col-12">
