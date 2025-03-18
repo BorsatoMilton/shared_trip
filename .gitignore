@@ -1,0 +1,37 @@
+
+.classpath
+.project
+.settings/
+.metadata/
+Servers/
+
+
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+
+
+*.war
+*.ear
+*.jar
+bin/
+build/
+dist/
+
+# Tomcat
+*.log
+logs/
+
+# Dependencias
+WebContent/WEB-INF/lib/
+src/main/webapp/WEB-INF/lib/
+
+
+.env
+*.properties
+*.keystore
+*.jks
+
+
+.DS_Store (Mac)
+Thumbs.db (Windows)
