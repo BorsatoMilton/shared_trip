@@ -40,7 +40,7 @@ body {
 	
 	<% 
 	
-	if (request.getAttribute("existenViajes") == null) { %>
+	if (session.getAttribute("existenViajes") == null) { %>
         <jsp:forward page="ViajesListado"/>
     <% }  %>
 	<div class="container-fluid p-0">

@@ -73,7 +73,7 @@ public class ViajeDAO {
 			stmt.setDate(3, java.sql.Date.valueOf(fecha));
 
 			rs = stmt.executeQuery();
-			if (rs != null && rs.next()) {
+			while (rs != null && rs.next()) {
 				Viaje v = new Viaje();
 
 				v.setIdViaje(rs.getInt("id_viaje"));
