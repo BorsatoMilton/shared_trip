@@ -35,7 +35,13 @@ public class ViajesListado extends HttpServlet {
     @Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     	HttpSession session = request.getSession(true);
-        LinkedList<Viaje> viajes = viajeController.getAll();
+    	
+    	// Si se recibe el parámetro reset, eliminamos la variable de sesión
+        if ("true".equals(request.getParameter("reset"))) {
+            session.removeAttribute("existenViajes");
+        }
+    	
+    	LinkedList<Viaje> viajes = viajeController.getAll();
         request.setAttribute("viajes", viajes);
         session.setAttribute("existenViajes", true);
         
