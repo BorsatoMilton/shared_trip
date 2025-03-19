@@ -9,68 +9,84 @@ public class Usuario {
 	public String correo;
 	public String telefono;
 	public int rol;
-	
+	public String nombreRol;
+
+	public String getNombreRol() {
+		return nombreRol;
+	}
+
+	public void setNombreRol(String nombreRol) {
+		this.nombreRol = nombreRol;
+	}
+
 	public int getRol() {
 		return rol;
 	}
+
 	public void setRol(int rol) {
 		this.rol = rol;
 	}
+
 	public int getIdUsuario() {
 		return idUsuario;
 	}
+
 	public void setIdUsuario(int idUsuario) {
 		this.idUsuario = idUsuario;
 	}
-	
+
 	public String getUsuario() {
 		return usuario;
 	}
+
 	public void setUsuario(String usuario) {
 		this.usuario = usuario;
 	}
-	
+
 	public String getClave() {
 		return clave;
 	}
+
 	public void setClave(String clave) {
 		this.clave = clave;
 	}
-	
+
 	public String getNombre() {
 		return nombre;
 	}
+
 	public void setNombre(String nombre) {
 		this.nombre = nombre;
 	}
-	
+
 	public String getApellido() {
 		return apellido;
 	}
+
 	public void setApellido(String apellido) {
 		this.apellido = apellido;
 	}
-	
+
 	public String getCorreo() {
 		return correo;
 	}
+
 	public void setCorreo(String correo) {
 		this.correo = correo;
 	}
-	
+
 	public String getTelefono() {
 		return telefono;
 	}
+
 	public void setTelefono(String telefono) {
 		this.telefono = telefono;
 	}
-	
-	
+
 	public Usuario() {
-		
+
 	}
 
-	
 	public Usuario(int idUsuario, String usuario, String clave, String nombre, String apellido, String correo,
 			String telefono, int rol) {
 		super();

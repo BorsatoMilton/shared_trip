@@ -16,7 +16,8 @@ public class ViajeDAO {
 
 		try {
 			stmt = ConnectionDB.getInstancia().getConn().createStatement();
-			rs = stmt.executeQuery("select * from viajes where fecha>= current_date");
+			rs = stmt.executeQuery(
+					"select * from viajes inner join usuarios on usuarios.id_usuario = viajes.id_conductor where fecha>= current_date and usuarios.fecha_baja is null");
 
 			if (rs != null) {
 				while (rs.next()) {
@@ -61,7 +62,9 @@ public class ViajeDAO {
 		return viajes;
 	}
 
-	public LinkedList<Viaje> getAllBySearch(String origen, String destino, String fecha) { //HAY QUE VER SI EXISTE ALGUNA API PARA PROXIMIDAD
+	public LinkedList<Viaje> getAllBySearch(String origen, String destino, String fecha) { // HAY QUE VER SI EXISTE
+																							// ALGUNA API PARA
+																							// PROXIMIDAD
 		LinkedList<Viaje> viajes = new LinkedList<>();
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
