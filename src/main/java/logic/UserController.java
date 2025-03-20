@@ -7,28 +7,41 @@ import entidades.*;
 
 public class UserController {
 	private UserDAO usuarioDAO;
-	
+
 	public UserController() {
 		this.usuarioDAO = new UserDAO();
 	}
-	
-	public Usuario validate(Usuario u) {
 
-		return usuarioDAO.getByUser(u);
+	public Usuario login(Usuario u) {
+		return usuarioDAO.login(u);
 	}
 
-	public LinkedList<Usuario> getAll(){
+	public Usuario getOneByUserOrEmail(String user, String correo) {
+		return usuarioDAO.getOneByUserOrEmail(user, correo);
+	}
+
+	public Usuario getOneById(int id) {
+		return usuarioDAO.getById(id);
+	}
+
+	public LinkedList<Usuario> getAll() {
 		return usuarioDAO.getAll();
 	}
+
+	public void updateUser(Usuario u, int id) {
+		usuarioDAO.update(u, id);
+	}
 	
+	public void updatePassword(int id, String clave) {
+		usuarioDAO.updatePassword(id, clave);
+	}
+
 	public void addUser(Usuario u) {
 		usuarioDAO.add(u);
 	}
-	
+
 	public boolean deleteUser(int idUsuario) {
 		return this.usuarioDAO.eliminarUsuario(idUsuario);
 	}
-	
-	
 
 }

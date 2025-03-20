@@ -6,6 +6,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import entidades.Usuario;
 import logic.UserController;
@@ -37,22 +38,30 @@ public class Register extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		Usuario u = new Usuario();
+		HttpSession session = request.getSession(true);
 		UserController ctrl = new UserController();
-		u.setNombre(request.getParameter("nombre"));
-		u.setApellido(request.getParameter("apellido"));
-		u.setCorreo(request.getParameter("correo"));
-		u.setUsuario(request.getParameter("usuario"));
-		u.setClave(request.getParameter("clave"));
-		u.setTelefono(request.getParameter("telefono"));
-		u.setRol(2); // Se deberia buscar el rol de usuario y hacerlo prolijo
+		Usuario usuario = ctrl.getOneByUserOrEmail(request.getParameter("usuario"), request.getParameter("correo"));
 		
-		
-		
-		
-		ctrl.addUser(u);
-		response.sendRedirect("index.jsp");
+		if(usuario.getUsuario() != null) {
+			session.setAttribute("mensaje", "Ya existe un usuario registrado con ese usuario o correo");
+		}else {
+			Usuario u = new Usuario();
 
+			u.setNombre(request.getParameter("nombre"));
+			u.setApellido(request.getParameter("apellido"));
+			u.setCorreo(request.getParameter("correo"));
+			u.setUsuario(request.getParameter("usuario"));
+			u.setClave(request.getParameter("clave"));
+			u.setTelefono(request.getParameter("telefono"));
+			u.setRol(2); //BUSCAR EL ROL Y ACOMODARLO
+			
+			ctrl.addUser(u);
+			
+			session.setAttribute("mensaje", "Usuario creado con éxito");
+
+		}
+
+		response.sendRedirect(request.getContextPath() + "/register.jsp");
 
 	}
 
