@@ -1,5 +1,5 @@
 <div class="container-fluid p-0">
-	<footer class="bg-primary fixed-bottom shadow-sm">
+	<footer class="bg-primary shadow-sm">
 	    <div class="footer-container">
 	        <p>&copy; 2024 SharedTrip. Todos los derechos reservados.</p>
 	        <p><a href="#">Política de Privacidad</a> | <a href="#">Términos de Servicio</a></p>
@@ -9,7 +9,7 @@
 
 <style>
 footer {
-    margin: 35px 0 0 0;
+    margin: 0 0 0 0;
     padding: 10px 0;
     text-align: center;
     font-size: 14px;

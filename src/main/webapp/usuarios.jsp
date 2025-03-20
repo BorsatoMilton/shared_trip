@@ -31,12 +31,24 @@
 .scrollable-table {
 	overflow-x: auto;
 }
+.main-content {
+    flex: 1 0 auto;
+    width: 100%;
+    padding-bottom: 60px; 
+}
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
 </style>
 </head>
 <body class="bg-light">
-
-	<div class="container-fluid p-0">
 		<jsp:include page="header.jsp"></jsp:include>
+		
+	<div class="main-content">	
+	<div class="container-fluid p-0">
+
 
 		<main class="container mt-4">
 			<div class="card shadow-lg">
@@ -145,9 +157,9 @@
 			</div>
 		</main>
 
-		<jsp:include page="footer.jsp"></jsp:include>
 	</div>
-
+	</div>
+		<jsp:include page="footer.jsp"></jsp:include>
 	<!-- Modal Nuevo Usuario -->
 	<div class="modal fade" id="nuevoUsuario" tabindex="-1"
 		aria-labelledby="nuevoUsuarioLabel" aria-hidden="true">

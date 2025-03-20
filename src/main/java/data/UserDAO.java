@@ -259,6 +259,35 @@ public class UserDAO {
 			}
 		}
 	}
+	
+	
+	public void updatePassword(int id, String clave) {
+		PreparedStatement stmt = null;
+
+		try {
+			stmt = ConnectionDB.getInstancia().getConn().prepareStatement(
+					"UPDATE usuarios SET clave = ? where id_usuario = ? ");
+
+			stmt.setString(1, clave);
+			stmt.setInt(2, id);
+
+
+			stmt.executeUpdate();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+
+		} finally {
+			try {
+				if (stmt != null) {
+					stmt.close();
+				}
+				ConnectionDB.getInstancia().releaseConn();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 
 	public boolean eliminarUsuario(int idUsuario) {
 

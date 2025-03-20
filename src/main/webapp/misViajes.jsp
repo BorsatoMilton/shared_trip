@@ -2,6 +2,10 @@
 <%@ page import="entidades.Viaje"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
+<%@ page import="java.time.LocalDateTime"%>
+<%@ page import="java.time.ZoneId"%>
+<%@ page import="java.sql.Date"%>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -72,8 +76,14 @@
 							<form action="cancelarViaje" method="post">
 								<input type="hidden" name="viajeId"
 									value="<%= viaje.getIdViaje() %>">
+								<%
+						    Date fechaViaje = viaje.getFecha();
+						    LocalDateTime fechaViajeLocalDateTime = fechaViaje.toLocalDate().atStartOfDay();
+						%>
+
 								<button type="submit" class="btn btn-danger"
-									<% if (viaje.isCancelado()) {%> disabled <%} %>>Cancelar</button>
+									<% if (viaje.isCancelado() || fechaViajeLocalDateTime.isBefore(LocalDateTime.now())) { %>
+									disabled <% } %>>Cancelar</button>
 							</form>
 						</td>
 					</tr>

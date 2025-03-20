@@ -55,7 +55,6 @@ public class CRUDusuarioAdmin extends HttpServlet {
 			throws ServletException, IOException {
 		HttpSession session = request.getSession();
 		String action = request.getParameter("action");
-		System.out.println("Action recibido: " + action);
 
 		try {
 			if ("update".equals(action)) {

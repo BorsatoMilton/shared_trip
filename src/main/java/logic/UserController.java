@@ -31,6 +31,10 @@ public class UserController {
 	public void updateUser(Usuario u, int id) {
 		usuarioDAO.update(u, id);
 	}
+	
+	public void updatePassword(int id, String clave) {
+		usuarioDAO.updatePassword(id, clave);
+	}
 
 	public void addUser(Usuario u) {
 		usuarioDAO.add(u);
