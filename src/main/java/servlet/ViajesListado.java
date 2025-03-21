@@ -34,9 +34,10 @@ public class ViajesListado extends HttpServlet {
 
     @Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    	
+    	request.removeAttribute("viajes");
     	HttpSession session = request.getSession(true);
     	
-    	// Si se recibe el parámetro reset, eliminamos la variable de sesión
         if ("true".equals(request.getParameter("reset"))) {
             session.removeAttribute("existenViajes");
         }
