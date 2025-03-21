@@ -1,6 +1,8 @@
 package data;
 
 import java.sql.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.LinkedList;
 
 import entidades.Reserva;
@@ -73,7 +75,21 @@ public class ViajeDAO {
 					"select id_viaje,fecha, lugares_disponibles, origen, destino,precio_unitario, cancelado, id_conductor, lugar_salida from viajes where origen=? and destino=? and fecha =?");
 			stmt.setString(1, origen);
 			stmt.setString(2, destino);
-			stmt.setDate(3, java.sql.Date.valueOf(fecha));
+			
+			if (fecha != null && !fecha.isEmpty()) {
+			    try {
+			        stmt.setDate(3, java.sql.Date.valueOf(fecha));
+			    } catch (IllegalArgumentException e) {
+			        // Manejo de error si el formato no es válido
+			        e.printStackTrace(); // Mejorar el manejo de excepciones
+			        // Puedes lanzar una excepción personalizada o usar una fecha predeterminada
+			    }
+			} else {
+			    stmt.setDate(3, java.sql.Date.valueOf(LocalDate.now().toString())); // Usa la fecha actual si es nula
+			}
+
+			
+			
 
 			rs = stmt.executeQuery();
 			while (rs != null && rs.next()) {
@@ -307,7 +323,7 @@ public class ViajeDAO {
 
 		try {
 			stmt = ConnectionDB.getInstancia().getConn().prepareStatement(
-					"UPDATE viajes SET (fecha = ? , lugares_disponibles =?, origen =?, destino =?, precio_unitario =?, cancelado =?, id_conductor =?, lugar_salida =?) where id_viaje = ? ");
+					"UPDATE viajes SET fecha = ? , lugares_disponibles =?, origen =?, destino =?, precio_unitario =?, cancelado =?, id_conductor =?, lugar_salida =? where id_viaje = ? ");
 
 			stmt.setInt(1, id_viaje);
 			stmt.setDate(2, v.getFecha());
@@ -340,7 +356,7 @@ public class ViajeDAO {
 
 		PreparedStatement stmt = null;
 		try {
-			stmt = ConnectionDB.getInstancia().getConn().prepareStatement("delete * from viajes where id_viaje=?");
+			stmt = ConnectionDB.getInstancia().getConn().prepareStatement("delete from viajes where id_viaje=?");
 			stmt.setInt(1, v.getIdViaje());
 			int rowsAffected = stmt.executeUpdate();
 

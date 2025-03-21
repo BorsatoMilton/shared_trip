@@ -36,13 +36,10 @@ body {
 }
 </style>
 </head>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" ></script>
+
 <body>
 	
-	<% 
-	
-	if (session.getAttribute("existenViajes") == null) { %>
-        <jsp:forward page="ViajesListado"/>
-    <% }  %>
 	<div class="container-fluid p-0">
 
 		<div class="row">
@@ -65,8 +62,8 @@ body {
 				String reservado = request.getParameter("reservado");
 				if ("true".equals(reservado)) {
 				%>
-				<div class="alert alert-success" role="alert">¡Reserva
-					realizada con éxito!</div>
+				<div class="alert alert-success" role="alert">ï¿½Reserva
+					realizada con ï¿½xito!</div>
 				<%
 				}
 				%>
@@ -154,9 +151,17 @@ body {
 		
 	</div>
 
-	<script
-		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-		integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-		crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+	
+		
+	<script>
+	
+	
+    if (!sessionStorage.getItem("viajesCargados")) {
+        sessionStorage.setItem("viajesCargados", "true");
+        window.location.href = "ViajesListado";
+    }
+</script>
+	
 </body>
 </html>

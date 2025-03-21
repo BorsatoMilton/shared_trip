@@ -34,7 +34,7 @@ public class BuscadorViajes extends HttpServlet {
 		String origen = request.getParameter("origen");
 		String destino = request.getParameter("destino");
 		String fecha = request.getParameter("fecha");
-
+		System.out.println(fecha);
 		ViajeController viajeController = new ViajeController();
 
 		LinkedList<Viaje> viajesResultado = viajeController.getAllBySearch(origen, destino, fecha);
