@@ -12,6 +12,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Mis Reservas</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+<style >
+.text-black {
+    color: black !important;
+}
+</style>
 </head>
 
 <body>
@@ -44,9 +49,9 @@
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Destino: <%= reserva.getViaje().getDestino() %></h5>
-                        <p class="card-text">Fecha de Reserva: <%= reserva.getFecha_reserva() %></p>
-                        <p class="card-text">Fecha de Viaje: <%= reserva.getViaje().getFecha() %></p>
-                        <p class="card-text">Total: $<%= reserva.getViaje().getPrecio_unitario() %></p>
+                        <p class="card-text text-black">Fecha de Reserva: <%= reserva.getFecha_reserva() %></p>
+                        <p class="card-text text-black">Fecha de Viaje: <%= reserva.getViaje().getFecha() %></p>
+                        <p class="card-text text-black">Total: $<%= reserva.getViaje().getPrecio_unitario() %></p>
                         <form action="cancelarReserva" method="post">
                             <input type="hidden" name="viajeId" value="<%= reserva.getViaje().getIdViaje() %>">
                             <input type="hidden" name="reservaId" value="<%= reserva.getIdReserva() %>">

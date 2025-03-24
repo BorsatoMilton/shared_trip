@@ -14,8 +14,8 @@ async function iniciador() {
 
 	} catch (error) {
 		console.error("Error cargando municipios:", error);
-	};
-};
+	}
+}
 
 const inputOrigen = document.getElementById("origen");
 const inputDestino = document.getElementById("destino");

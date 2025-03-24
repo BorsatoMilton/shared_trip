@@ -6,32 +6,32 @@ const initCRUDOperations = () => {
 
     document.querySelectorAll('.btn-eliminar').forEach(btn => {
         btn.addEventListener('click', function() {
-            abrirModal('borrarUsuario', {
-                nombreUsuario: this.dataset.nombre,
-                idUsuario: this.dataset.id
+            abrirModal('borrarViaje', {
+                idViajeEliminar: this.dataset.id
             });
         });
     });
-	
+
 
     document.querySelectorAll('.btn-editar').forEach(btn => {
         btn.addEventListener('click', function() {
-            abrirModal('editar', {
-                editNombre: this.dataset.nombre,
-                editApellido: this.dataset.apellido,
-                editUsuario: this.dataset.usuario,
-                editCorreo: this.dataset.correo,
-                editTelefono: this.dataset.telefono,
-                editRol: this.dataset.rol,
-                editId: this.dataset.id
+            abrirModal('editarViaje', {
+				editId: this.dataset.id,
+				editFecha: this.dataset.fecha,
+				editLugaresDisponibles: this.dataset.lugares_disponibles,
+                editOrigen: this.dataset.origen,
+                editDestino: this.dataset.destino,
+                editPrecioUnitario: this.dataset.precio_unitario,
+                editConductor: this.dataset.id_conductor,
+                editCancelado: this.dataset.cancelado,
+				editLugarSalida: this.dataset.lugar_salida
             });
-			 });
+        });
     });
 };
 
 
 const abrirModal = (modalId, data) => {
-	console.log(editId)
     const modalElement = document.getElementById(modalId);
     if (!modalElement) return;
 

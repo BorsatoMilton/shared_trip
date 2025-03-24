@@ -34,6 +34,13 @@ public class ViajeController {
 		this.viajeDAO.updateCantidad(idViaje, nueva_cant);
 	}
 	
+	public void updateViaje(Viaje v, int id) {
+		viajeDAO.update(v, id);
+	}
+	
+	public void deleteViaje(Viaje v) {
+		viajeDAO.delete(v);
+	}
 	
 	public LinkedList<Viaje> getViajesUsuario(Usuario u){
 		return this.viajeDAO.getByUser(u);
@@ -42,6 +49,11 @@ public class ViajeController {
 	
 	public boolean cancelar(int idViaje, int idUsuario) {
 		return this.viajeDAO.cancelarViaje(idViaje, idUsuario);
+		
+	}
+	
+	public void altaViaje(Viaje viaje) {
+		viajeDAO.altaViaje(viaje);
 		
 	}
 	

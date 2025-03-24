@@ -2,10 +2,8 @@ package data;
 
 import java.sql.*;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.LinkedList;
 
-import entidades.Reserva;
+import java.util.LinkedList;
 import entidades.Usuario;
 import entidades.Viaje;
 
@@ -325,15 +323,18 @@ public class ViajeDAO {
 			stmt = ConnectionDB.getInstancia().getConn().prepareStatement(
 					"UPDATE viajes SET fecha = ? , lugares_disponibles =?, origen =?, destino =?, precio_unitario =?, cancelado =?, id_conductor =?, lugar_salida =? where id_viaje = ? ");
 
-			stmt.setInt(1, id_viaje);
-			stmt.setDate(2, v.getFecha());
-			stmt.setInt(3, v.getLugares_disponibles());
-			stmt.setString(4, v.getOrigen());
-			stmt.setString(5, v.getDestino());
-			stmt.setDouble(6, v.getPrecio_unitario());
-			stmt.setBoolean(7, v.isCancelado());
-			stmt.setInt(8, v.getConductor().getIdUsuario());
-			stmt.setString(9, v.getLugar_salida());
+			stmt.setDate(1, v.getFecha());
+	        stmt.setInt(2, v.getLugares_disponibles());
+	        stmt.setString(3, v.getOrigen());
+	        stmt.setString(4, v.getDestino());
+	        stmt.setDouble(5, v.getPrecio_unitario());
+	        stmt.setBoolean(6, v.isCancelado());
+	        stmt.setInt(7, v.getConductor().getIdUsuario());
+	        stmt.setString(8, v.getLugar_salida());
+	        stmt.setInt(9, id_viaje);
+
+			
+			
 
 			stmt.executeUpdate();
 
@@ -351,7 +352,45 @@ public class ViajeDAO {
 			}
 		}
 	}
+	
+	public void altaViaje(Viaje v) {
+		PreparedStatement stmt = null;
+		ResultSet keyResultSet = null;
+		try {
+			stmt = ConnectionDB.getInstancia().getConn().prepareStatement(
+					"insert into viajes(fecha, lugares_disponibles, origen, destino, precio_unitario, cancelado, id_conductor, lugar_salida) values(?,?,?,?,?,?,?,?)",
+					PreparedStatement.RETURN_GENERATED_KEYS);
+			stmt.setDate(1, v.getFecha());
+			stmt.setInt(2, v.getLugares_disponibles());
+			stmt.setString(3, v.getOrigen());
+			stmt.setString(4, v.getDestino());
+			stmt.setDouble(5, v.getPrecio_unitario());
+			stmt.setBoolean(6, false);
+			stmt.setInt(7, v.getConductor().getIdUsuario());
+			stmt.setString(8, v.getLugar_salida());
 
+			stmt.executeUpdate();
+
+			keyResultSet = stmt.getGeneratedKeys();
+			if (keyResultSet != null && keyResultSet.next()) {
+				v.setIdViaje(keyResultSet.getInt(1));
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (keyResultSet != null)
+					keyResultSet.close();
+				if (stmt != null)
+					stmt.close();
+				ConnectionDB.getInstancia().releaseConn();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
 	public void delete(Viaje v) {
 
 		PreparedStatement stmt = null;

@@ -29,11 +29,16 @@ body {
 	transform: scale(1.03);
 }
 
+.text-black {
+    color: black !important;
+}
+
 .section-header {
 	margin-top: 2rem;
 	margin-bottom: 2rem;
 	text-align: center;
 }
+
 </style>
 </head>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" ></script>
@@ -62,8 +67,7 @@ body {
 				String reservado = request.getParameter("reservado");
 				if ("true".equals(reservado)) {
 				%>
-				<div class="alert alert-success" role="alert">ï¿½Reserva
-					realizada con ï¿½xito!</div>
+				<div class="alert alert-success" role="alert">¡Reserva realizada con éxito!</div>
 				<%
 				}
 				%>
@@ -92,16 +96,16 @@ body {
 						for (Viaje viaje : viajes) {
 					%>
 					<div class="col">
-						<div class="card h-100 shadow-sm">
+						<div class="card h-100 shadow-sm ">
 							<div class="card-body d-flex flex-column">
 								<h5 class="card-title text-primary"><%=viaje.getDestino()%></h5>
-								<p class="card-text mb-1">
+								<p class="card-text mb-1 text-black">
 									<strong>Origen:</strong>
 									<%=viaje.getOrigen()%></p>
-								<p class="card-text mb-1">
+								<p class="card-text mb-1 text-black">
 									<strong>Fecha:</strong>
 									<%=viaje.getFecha()%></p>
-								<p class="card-text mb-3">
+								<p class="card-text mb-3 text-black">
 									<strong>Lugares Disponibles:</strong>
 									<%=viaje.getLugares_disponibles()%></p>
 								<div class="mt-auto">
