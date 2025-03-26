@@ -28,6 +28,10 @@ private VehiculoDAO vehiculoDAO;
 		return this.vehiculoDAO.getByPatente(patente);
 	}
 	
+	public void actualizarVehiculo(Vehiculo v, int id) {
+		vehiculoDAO.update(v, id);
+	}
+	
 	public LinkedList<Vehiculo> getVehiculosUsuario(Usuario u){
 		return this.vehiculoDAO.getByUser(u);
 		
