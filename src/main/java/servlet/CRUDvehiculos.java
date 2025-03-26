@@ -91,7 +91,7 @@ public class CRUDvehiculos extends HttpServlet {
 			
 		}
 
-		response.sendRedirect(request.getContextPath() + "/misVehiculos");
+		response.sendRedirect(request.getContextPath() + "/vehiculos");
 	}
 
 	private void crearVehiculo(HttpServletRequest request) throws Exception {
@@ -127,23 +127,18 @@ public class CRUDvehiculos extends HttpServlet {
 	}
 
 	private void cargarDatosVehiculo(HttpServletRequest request, Vehiculo v) {
+		HttpSession session = request.getSession();
+		Usuario usuario = (Usuario) session.getAttribute("usuario");
+		
 		
 		v.setId_vehiculo(Integer.parseInt(request.getParameter("idVehiculo")));
 		v.setPatente(request.getParameter("patente"));
 		v.setModelo(request.getParameter("modelo"));
 		int anio = Integer.parseInt(request.getParameter("anio"));
         v.setAnio(anio);
+        v.setUsuario_duenio_id(usuario.getIdUsuario());
         
-        
-        System.out.println("Datos del Vehículo cargados:");
-        System.out.println("ID Vehículo: " + v.getId_vehiculo());
-        System.out.println("Patente: " + v.getPatente());
-        System.out.println("Modelo: " + v.getModelo());
-        System.out.println("Año: " + v.getAnio());
-        
-
-
-   
+    
 	}
 		
 	}

@@ -174,13 +174,12 @@ public class VehiculoDAO {
 
 		try {
 			stmt = ConnectionDB.getInstancia().getConn().prepareStatement(
-					"update vehiculos set (patente = ?, modelo = ?, anio = ? , usuario_duenio_id =?) where id_vehiculo = ? ");
+					"update vehiculos set patente = ?, modelo = ?, anio = ?  where id_vehiculo = ? ");
 
 			stmt.setString(1, v.getPatente());
 			stmt.setString(2, v.getModelo());
 			stmt.setInt(3, v.getAnio());
-			stmt.setInt(4, v.getUsuario_duenio_id());
-			stmt.setInt(5, id_vehiculo);
+			stmt.setInt(4, id_vehiculo);
 
 			stmt.executeUpdate();
 

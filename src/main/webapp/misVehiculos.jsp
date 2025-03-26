@@ -288,7 +288,8 @@ body {
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form method = "post" action="altaVehiculo" id="altaVehiculo">
+        <form method = "post" action="vehiculos" id="altaVehiculo">
+        <input type="hidden" name="action" value="add"> 
         	<label for="patente">
         		Patente
         	</label> <br>
@@ -303,31 +304,20 @@ body {
         		Año
         	</label> <br>
         	<input type= "number" min="1960" max="2024" name="anio" placeholder = "Ingrese el año" id="anio"> <br>
-        	
+        	<div class="modal-footer">
+		        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+		        <button type="submit" class="btn btn-primary">Guardar</button>
+		   </div>
         </form>
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-        <button type="submit" class="btn btn-primary" onclick = "envioFormulario()">Guardar</button>
-      </div>
+      
     </div>
   </div>
 </div>
 
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-<script type="text/javascript">
-function envioFormulario() {
-    // Obtener el formulario por su ID
-    var form = document.getElementById("altaVehiculo");
 
-    // Enviar el formulario
-    form.submit();
-    
-    var modal = bootstrap.Modal.getInstance(document.getElementById("nuevoVehiculo"));
-    modal.hide();
-}
-</script>
 
 <script src="js/scriptVehiculos.js"></script>
 
