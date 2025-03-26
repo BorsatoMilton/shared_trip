@@ -56,18 +56,28 @@ public class CRUDusuarioAdmin extends HttpServlet {
 		HttpSession session = request.getSession();
 		String action = request.getParameter("action");
 		
-		System.out.println("ID Usuario 1 : " + request.getParameter("idUsuario"));
 
 		try {
 			if ("update".equals(action)) {
-				actualizarUsuario(request);
-				session.setAttribute("mensaje", "Usuario actualizado con éxito");
+				if(actualizarUsuario(request)) {
+					session.setAttribute("mensaje", "Usuario actualizado con éxito");
+				}else {
+					session.setAttribute("mensaje", "Ocurrio un error al actualizar el usuario");
+				}
+				
+				
 			} else if ("delete".equals(action)) {
-				eliminarUsuario(request);
-				session.setAttribute("mensaje", "Usuario eliminado con éxito");
+				if(eliminarUsuario(request)) {
+					session.setAttribute("mensaje", "Usuario eliminado con éxito");
+				}else {
+					session.setAttribute("mensaje", "Ocurrio un error al eliminar el usuario");
+				}
 			} else if ("add".equals(action)) {
-				crearUsuario(request);
-				session.setAttribute("mensaje", "Usuario creado con éxito");
+				if(crearUsuario(request)) {
+					session.setAttribute("mensaje", "Usuario creado con éxito");
+				}else {
+					session.setAttribute("mensaje", "Ocurrio un error al crear el usuario");
+				}
 			}
 
 		} catch (Exception e) {
@@ -78,7 +88,7 @@ public class CRUDusuarioAdmin extends HttpServlet {
 		response.sendRedirect(request.getContextPath() + "/usuarios");
 	}
 
-	private void crearUsuario(HttpServletRequest request) throws Exception {
+	private boolean crearUsuario(HttpServletRequest request) throws Exception {
 		Usuario u = new Usuario();
 		cargarDatosUsuario(request, u);
 
@@ -86,10 +96,10 @@ public class CRUDusuarioAdmin extends HttpServlet {
 			throw new Exception("Usuario o correo ya registrado");
 		}
 
-		usuarioCtrl.addUser(u);
+		return usuarioCtrl.addUser(u);
 	}
 
-	private void actualizarUsuario(HttpServletRequest request) throws Exception {
+	private boolean actualizarUsuario(HttpServletRequest request) throws Exception {
 		int id = Integer.parseInt(request.getParameter("idUsuario"));
 		Usuario u = usuarioCtrl.getOneById(id);
 
@@ -98,10 +108,10 @@ public class CRUDusuarioAdmin extends HttpServlet {
 		}
 
 		cargarDatosUsuario(request, u);
-		usuarioCtrl.updateUser(u, id);
+		return usuarioCtrl.updateUser(u, id);
 	}
 
-	private void eliminarUsuario(HttpServletRequest request) throws Exception {
+	private boolean eliminarUsuario(HttpServletRequest request) throws Exception {
 		int id = Integer.parseInt(request.getParameter("idUsuario"));
 		Usuario u = usuarioCtrl.getOneById(id);
 
@@ -109,7 +119,7 @@ public class CRUDusuarioAdmin extends HttpServlet {
 			throw new Exception("Usuario no encontrado");
 		}
 
-		usuarioCtrl.deleteUser(id);
+		return usuarioCtrl.deleteUser(id);
 	}
 
 	private void cargarDatosUsuario(HttpServletRequest request, Usuario u) {

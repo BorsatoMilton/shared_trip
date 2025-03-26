@@ -46,11 +46,19 @@ public class Perfil extends HttpServlet {
 		String action = request.getParameter("action");
 		try {
 			if ("profile".equals(action)) {
-				actualizarUsuario(request);
-				session.setAttribute("mensaje", "Usuario actualizado con éxito");
+				if(actualizarUsuario(request)) {
+					session.setAttribute("mensaje", "Usuario actualizado con éxito");
+				}else {
+					session.setAttribute("mensaje", "Ocurrio un error al actualizar el usuario");
+				}
+				
 			} else if ("password".equals(action)) {
-				actualizarClave(request);
-				session.setAttribute("mensaje", "Clave actualizada con éxito");
+				if(actualizarClave(request)) {
+					session.setAttribute("mensaje", "Clave actualizada con éxito");
+				}else {
+					session.setAttribute("mensaje", "Ocurrio un error al actualizar la clave");
+				}
+				
 			} else {
 				throw new Exception("No se especifico la acción");
 			}
@@ -64,7 +72,7 @@ public class Perfil extends HttpServlet {
 	}
 	
 	
-	private void actualizarUsuario(HttpServletRequest request) throws Exception {
+	private boolean actualizarUsuario(HttpServletRequest request) throws Exception {
 		int id = Integer.parseInt(request.getParameter("idUsuario"));
 		Usuario u = usuarioCtrl.getOneById(id);
 
@@ -73,18 +81,18 @@ public class Perfil extends HttpServlet {
 		}
 
 		cargarDatosUsuario(request, u);
-		usuarioCtrl.updateUser(u, id);
+		return usuarioCtrl.updateUser(u, id);
 	}
 	
 	
-	private void actualizarClave(HttpServletRequest request) throws Exception {
+	private boolean actualizarClave(HttpServletRequest request) throws Exception {
 		int id = Integer.parseInt(request.getParameter("idUsuario"));
 		Usuario u = usuarioCtrl.getOneById(id);
 		if (u == null) {
 			throw new Exception("Usuario no encontrado");
 		}
 
-	   usuarioCtrl.updatePassword(id, request.getParameter("clave"));
+	   return usuarioCtrl.updatePassword(id, request.getParameter("clave"));
 	}
 	
 	

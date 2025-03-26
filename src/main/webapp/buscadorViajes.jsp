@@ -56,7 +56,7 @@
     
 </script>
 
-<script src = "scripts/buscadorMunicipios.js">
+<script src = "js/buscadorMunicipios.js">
 	
 </script>
 

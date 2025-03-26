@@ -252,7 +252,7 @@ body {
 						data-bs-dismiss="modal">Cancelar</button>
 					<form id="formEliminar" method="POST" action="usuarios">
 						<input type="hidden" name="action" value="delete"> <input
-							type="hidden" name="idUsuario" id="idUsuarioEliminar">
+							type="hidden" name="idUsuario" id="idUsuario">
 						<button type="submit" class="btn btn-danger">Eliminar</button>
 					</form>
 				</div>
