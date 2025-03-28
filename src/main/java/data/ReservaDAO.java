@@ -16,22 +16,20 @@ public class ReservaDAO {
 
     public LinkedList<Reserva> getAll() {
         LinkedList<Reserva> reservas = new LinkedList<>();
-        String query = "SELECT idReserva, fecha_reserva, cantidad_pasajeros_reservada, "
-                + "reserva_cancelada, id_viaje, id_pasajero_reserva FROM reservas";
+        String query = "SELECT r.*, v.*, u.* FROM reservas r "
+                     + "INNER JOIN viajes v ON r.id_viaje = v.id_viaje "
+                     + "INNER JOIN usuarios u ON v.id_conductor = u.id_usuario";
         try (Connection conn = ConnectionDB.getInstancia().getConn();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(query)) {
             
             while (rs.next()) {
-                reservas.add(mapReserva(rs));
+                reservas.add(mapFullReserva(rs));
             }
             logger.debug("Obtenidas {} reservas", reservas.size());
-            
         } catch (SQLException e) {
-            handleSQLException("Error al obtener todas las reservas", e);
-        }finally {
-	        ConnectionDB.getInstancia().releaseConn();
-	    }
+            handleSQLException("Error al obtener reservas", e);
+        }
         return reservas;
     }
 

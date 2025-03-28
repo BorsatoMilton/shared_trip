@@ -6,7 +6,14 @@ public class Feedback {
 	public String observacion;
 	public Date fecha_hora;
 	public int id_usuario_calificado;
+	public int id_viaje;
 	
+	public int getId_viaje() {
+		return id_viaje;
+	}
+	public void setId_viaje(int id_viaje) {
+		this.id_viaje = id_viaje;
+	}
 	public int getPuntuacion() {
 		return puntuacion;
 	}
@@ -32,12 +39,14 @@ public class Feedback {
 		this.id_usuario_calificado = id_usuario_calificado;
 	}
 	
-	public Feedback(int puntuacion, String observacion, Date fecha_hora, int id_usuario_calificado) {
+	
+	public Feedback(int puntuacion, String observacion, Date fecha_hora, int id_usuario_calificado, int id_viaje) {
 		super();
 		this.puntuacion = puntuacion;
 		this.observacion = observacion;
 		this.fecha_hora = fecha_hora;
 		this.id_usuario_calificado = id_usuario_calificado;
+		this.id_viaje = id_viaje;
 	}
 	public Feedback() {
 		// TODO Auto-generated constructor stub

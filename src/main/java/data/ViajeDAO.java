@@ -2,421 +2,283 @@ package data;
 
 import java.sql.*;
 import java.time.LocalDate;
-
 import java.util.LinkedList;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import entidades.Usuario;
 import entidades.Viaje;
 
 public class ViajeDAO {
 
-	public LinkedList<Viaje> getAll() {
-		Statement stmt = null;
-		ResultSet rs = null;
-		LinkedList<Viaje> viajes = new LinkedList<>();
+    private static final Logger logger = LoggerFactory.getLogger(ViajeDAO.class);
 
-		try {
-			stmt = ConnectionDB.getInstancia().getConn().createStatement();
-			rs = stmt.executeQuery(
-					"select * from viajes inner join usuarios on usuarios.id_usuario = viajes.id_conductor where fecha>= current_date and usuarios.fecha_baja is null");
+    public LinkedList<Viaje> getAll() {
+        LinkedList<Viaje> viajes = new LinkedList<>();
+        String query = "SELECT v.*, u.* FROM viajes v "
+                     + "INNER JOIN usuarios u ON u.id_usuario = v.id_conductor "
+                     + "WHERE v.fecha >= CURRENT_DATE AND u.fecha_baja IS NULL";
+        Connection conn = null;
 
-			if (rs != null) {
-				while (rs.next()) {
-					Viaje v = new Viaje();
+        try {
+            conn = ConnectionDB.getInstancia().getConn();
+            try (Statement stmt = conn.createStatement();
+                 ResultSet rs = stmt.executeQuery(query)) {
 
-					v.setIdViaje(rs.getInt("id_viaje"));
-					v.setFecha(rs.getDate("fecha"));
-					v.setLugares_disponibles(rs.getInt("lugares_disponibles"));
-					v.setOrigen(rs.getString("origen"));
-					v.setDestino(rs.getString("destino"));
-					v.setPrecio_unitario(rs.getDouble("precio_unitario"));
-					v.setCancelado(rs.getBoolean("cancelado"));
-					v.setLugar_salida(rs.getString("lugar_salida"));
-					UserDAO usuarioDAO = new UserDAO();
-					Usuario conductor = usuarioDAO.getById(rs.getInt("id_conductor"));
-					v.setConductor(conductor);
+                while (rs.next()) {
+                    viajes.add(mapViaje(rs));
+                }
+            }
+        } catch (SQLException e) {
+            logger.error("Error al obtener todos los viajes", e);
+        } finally {
+            ConnectionDB.getInstancia().releaseConn();
+        }
+        return viajes;
+    }
 
-					viajes.add(v);
-				}
-			}
+    public LinkedList<Viaje> getAllBySearch(String origen, String destino, String fecha) {
+        LinkedList<Viaje> viajes = new LinkedList<>();
+        String query = "SELECT * FROM viajes WHERE origen = ? AND destino = ? AND fecha = ?";
+        Connection conn = null;
 
-		} catch (SQLException e) {
-			e.printStackTrace();
+        try {
+            conn = ConnectionDB.getInstancia().getConn();
+            try (PreparedStatement stmt = conn.prepareStatement(query)) {
+                stmt.setString(1, origen);
+                stmt.setString(2, destino);
 
-		} finally {
+                java.sql.Date fechaSql;
+                if (fecha != null && !fecha.isEmpty()) {
+                    try {
+                        fechaSql = java.sql.Date.valueOf(fecha);
+                    } catch (IllegalArgumentException e) {
+                        logger.error("Formato de fecha inválido: {}. Usando fecha actual.", fecha, e);
+                        fechaSql = java.sql.Date.valueOf(LocalDate.now());
+                    }
+                } else {
+                    fechaSql = java.sql.Date.valueOf(LocalDate.now());
+                }
+                stmt.setDate(3, fechaSql);
 
-			try {
+                try (ResultSet rs = stmt.executeQuery()) {
+                    while (rs.next()) {
+                        viajes.add(mapViaje(rs));
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            logger.error("Error al buscar viajes por origen: {}, destino: {}, fecha: {}", origen, destino, fecha, e);
+        } finally {
+            ConnectionDB.getInstancia().releaseConn();
+        }
+        return viajes;
+    }
 
-				if (rs != null) {
-					rs.close();
-				}
-				if (stmt != null) {
-					stmt.close();
-				}
-				ConnectionDB.getInstancia().releaseConn();
+    public Viaje getByViaje(int id_viaje) {
+        Viaje viaje = null;
+        String query = "SELECT * FROM viajes WHERE id_viaje = ?";
+        Connection conn = null;
 
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
+        try {
+            conn = ConnectionDB.getInstancia().getConn();
+            try (PreparedStatement stmt = conn.prepareStatement(query)) {
+                stmt.setInt(1, id_viaje);
 
-		return viajes;
-	}
+                try (ResultSet rs = stmt.executeQuery()) {
+                    if (rs.next()) {
+                        viaje = mapViaje(rs);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            logger.error("Error al obtener viaje con ID: {}", id_viaje, e);
+        } finally {
+            ConnectionDB.getInstancia().releaseConn();
+        }
+        return viaje;
+    }
 
-	public LinkedList<Viaje> getAllBySearch(String origen, String destino, String fecha) { // HAY QUE VER SI EXISTE
-																							// ALGUNA API PARA
-																							// PROXIMIDAD
-		LinkedList<Viaje> viajes = new LinkedList<>();
-		PreparedStatement stmt = null;
-		ResultSet rs = null;
-		try {
-			stmt = ConnectionDB.getInstancia().getConn().prepareStatement(
-					"select id_viaje,fecha, lugares_disponibles, origen, destino,precio_unitario, cancelado, id_conductor, lugar_salida from viajes where origen=? and destino=? and fecha =?");
-			stmt.setString(1, origen);
-			stmt.setString(2, destino);
-			
-			if (fecha != null && !fecha.isEmpty()) {
-			    try {
-			        stmt.setDate(3, java.sql.Date.valueOf(fecha));
-			    } catch (IllegalArgumentException e) {
-			        // Manejo de error si el formato no es válido
-			        e.printStackTrace(); // Mejorar el manejo de excepciones
-			        // Puedes lanzar una excepción personalizada o usar una fecha predeterminada
-			    }
-			} else {
-			    stmt.setDate(3, java.sql.Date.valueOf(LocalDate.now().toString())); // Usa la fecha actual si es nula
-			}
+    public LinkedList<Viaje> getByUser(Usuario u) {
+        LinkedList<Viaje> viajes = new LinkedList<>();
+        String query = "SELECT * FROM viajes WHERE id_conductor = ?";
+        Connection conn = null;
 
-			
-			
+        try {
+            conn = ConnectionDB.getInstancia().getConn();
+            try (PreparedStatement stmt = conn.prepareStatement(query)) {
+                stmt.setInt(1, u.getIdUsuario());
 
-			rs = stmt.executeQuery();
-			while (rs != null && rs.next()) {
-				Viaje v = new Viaje();
+                try (ResultSet rs = stmt.executeQuery()) {
+                    while (rs.next()) {
+                        viajes.add(mapViaje(rs));
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            logger.error("Error al obtener viajes del usuario con ID: {}", u.getIdUsuario(), e);
+        } finally {
+            ConnectionDB.getInstancia().releaseConn();
+        }
+        return viajes;
+    }
 
-				v.setIdViaje(rs.getInt("id_viaje"));
-				v.setFecha(rs.getDate("fecha"));
-				v.setLugares_disponibles(rs.getInt("lugares_disponibles"));
-				v.setOrigen(rs.getString("origen"));
-				v.setDestino(rs.getString("destino"));
-				v.setPrecio_unitario(rs.getDouble("precio_unitario"));
-				v.setCancelado(rs.getBoolean("cancelado"));
-				v.setLugar_salida(rs.getString("lugar_salida"));
+    public void updateCantidad(int idViaje, int cantPasajeros) {
+        String query = "UPDATE viajes SET lugares_disponibles = ? WHERE id_viaje = ?";
+        Connection conn = null;
 
-				UserDAO usuarioDAO = new UserDAO();
-				Usuario conductor = usuarioDAO.getById(rs.getInt("id_conductor"));
-				v.setConductor(conductor);
-				viajes.add(v);
-			}
-			return viajes;
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
+        try {
+            conn = ConnectionDB.getInstancia().getConn();
+            try (PreparedStatement stmt = conn.prepareStatement(query)) {
+                stmt.setInt(1, cantPasajeros);
+                stmt.setInt(2, idViaje);
 
-			try {
+                int rowsAffected = stmt.executeUpdate();
+                if (rowsAffected > 0) {
+                    logger.info("Lugares actualizados para viaje ID: {}", idViaje);
+                } else {
+                    logger.warn("No se encontró viaje con ID: {}", idViaje);
+                }
+            }
+        } catch (SQLException e) {
+            logger.error("Error al actualizar lugares del viaje ID: {}", idViaje, e);
+        } finally {
+            ConnectionDB.getInstancia().releaseConn();
+        }
+    }
 
-				if (rs != null) {
-					rs.close();
-				}
-				if (stmt != null) {
-					stmt.close();
-				}
-				ConnectionDB.getInstancia().releaseConn();
+    public boolean cancelarViaje(int id_viaje, int id_usuario) {
+        String query = "UPDATE viajes SET cancelado = true WHERE id_viaje = ? AND id_conductor = ?";
+        Connection conn = null;
+        boolean cancelada = false;
 
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
+        try {
+            conn = ConnectionDB.getInstancia().getConn();
+            try (PreparedStatement stmt = conn.prepareStatement(query)) {
+                stmt.setInt(1, id_viaje);
+                stmt.setInt(2, id_usuario);
 
-		return viajes;
-	}
+                int rowsAffected = stmt.executeUpdate();
+                cancelada = rowsAffected > 0;
+                if (cancelada) {
+                    logger.info("Viaje ID: {} cancelado por usuario ID: {}", id_viaje, id_usuario);
+                } else {
+                    logger.warn("No se pudo cancelar el viaje ID: {}", id_viaje);
+                }
+            }
+        } catch (SQLException e) {
+            logger.error("Error al cancelar viaje ID: {}", id_viaje, e);
+        } finally {
+            ConnectionDB.getInstancia().releaseConn();
+        }
+        return cancelada;
+    }
 
-	public Viaje getByViaje(int id_viaje) {
+    public void update(Viaje v, int id_viaje) {
+        String query = "UPDATE viajes SET fecha=?, lugares_disponibles=?, origen=?, destino=?, "
+                     + "precio_unitario=?, cancelado=?, id_conductor=?, lugar_salida=? WHERE id_viaje=?";
+        Connection conn = null;
 
-		Viaje v = null;
-		PreparedStatement stmt = null;
-		ResultSet rs = null;
-		try {
-			stmt = ConnectionDB.getInstancia().getConn().prepareStatement(
-					"select id_viaje,fecha, lugares_disponibles, origen, destino,precio_unitario, cancelado, id_conductor, lugar_salida from viajes where id_viaje=?");
-			stmt.setInt(1, id_viaje);
+        try {
+            conn = ConnectionDB.getInstancia().getConn();
+            try (PreparedStatement stmt = conn.prepareStatement(query)) {
+                stmt.setDate(1, v.getFecha());
+                stmt.setInt(2, v.getLugares_disponibles());
+                stmt.setString(3, v.getOrigen());
+                stmt.setString(4, v.getDestino());
+                stmt.setDouble(5, v.getPrecio_unitario());
+                stmt.setBoolean(6, v.isCancelado());
+                stmt.setInt(7, v.getConductor().getIdUsuario());
+                stmt.setString(8, v.getLugar_salida());
+                stmt.setInt(9, id_viaje);
 
-			rs = stmt.executeQuery();
-			if (rs != null && rs.next()) {
-				v = new Viaje();
+                int rowsAffected = stmt.executeUpdate();
+                if (rowsAffected > 0) {
+                    logger.info("Viaje ID: {} actualizado exitosamente", id_viaje);
+                } else {
+                    logger.warn("No se encontró viaje con ID: {}", id_viaje);
+                }
+            }
+        } catch (SQLException e) {
+            logger.error("Error al actualizar viaje ID: {}", id_viaje, e);
+        } finally {
+            ConnectionDB.getInstancia().releaseConn();
+        }
+    }
 
-				v.setIdViaje(rs.getInt("id_viaje"));
-				v.setFecha(rs.getDate("fecha"));
-				v.setLugares_disponibles(rs.getInt("lugares_disponibles"));
-				v.setOrigen(rs.getString("origen"));
-				v.setDestino(rs.getString("destino"));
-				v.setPrecio_unitario(rs.getDouble("precio_unitario"));
-				v.setCancelado(rs.getBoolean("cancelado"));
-				v.setLugar_salida(rs.getString("lugar_salida"));
+    public void add(Viaje v) {
+        String query = "INSERT INTO viajes(fecha, lugares_disponibles, origen, destino, precio_unitario, "
+                     + "cancelado, id_conductor, lugar_salida) VALUES (?,?,?,?,?,?,?,?)";
+        Connection conn = null;
 
-				UserDAO usuarioDAO = new UserDAO();
-				Usuario conductor = usuarioDAO.getById(rs.getInt("id_conductor"));
-				v.setConductor(conductor);
+        try {
+            conn = ConnectionDB.getInstancia().getConn();
+            try (PreparedStatement stmt = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS)) {
+                stmt.setDate(1, v.getFecha());
+                stmt.setInt(2, v.getLugares_disponibles());
+                stmt.setString(3, v.getOrigen());
+                stmt.setString(4, v.getDestino());
+                stmt.setDouble(5, v.getPrecio_unitario());
+                stmt.setBoolean(6, false); 
+                stmt.setInt(7, v.getConductor().getIdUsuario());
+                stmt.setString(8, v.getLugar_salida());
 
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (rs != null) {
-					rs.close();
-				}
-				if (stmt != null) {
-					stmt.close();
-				}
-				ConnectionDB.getInstancia().releaseConn();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
+                int affectedRows = stmt.executeUpdate();
+                if (affectedRows > 0) {
+                    try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                        if (generatedKeys.next()) {
+                            v.setIdViaje(generatedKeys.getInt(1));
+                            logger.info("Viaje creado con ID: {}", v.getIdViaje());
+                        }
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            logger.error("Error al crear nuevo viaje", e);
+        } finally {
+            ConnectionDB.getInstancia().releaseConn();
+        }
+    }
 
-		return v;
-	}
+    public void delete(Viaje v) {
+        String query = "DELETE FROM viajes WHERE id_viaje = ?";
+        Connection conn = null;
 
-	public LinkedList<Viaje> getByUser(Usuario u) {
+        try {
+            conn = ConnectionDB.getInstancia().getConn();
+            try (PreparedStatement stmt = conn.prepareStatement(query)) {
+                stmt.setInt(1, v.getIdViaje());
+                int rowsAffected = stmt.executeUpdate();
 
-		LinkedList<Viaje> viajes = new LinkedList<>();
+                if (rowsAffected > 0) {
+                    logger.info("Viaje ID: {} eliminado correctamente", v.getIdViaje());
+                } else {
+                    logger.warn("No se encontró viaje con ID: {}", v.getIdViaje());
+                }
+            }
+        } catch (SQLException e) {
+            logger.error("Error al eliminar viaje ID: {}", v.getIdViaje(), e);
+        } finally {
+            ConnectionDB.getInstancia().releaseConn();
+        }
+    }
 
-		PreparedStatement stmt = null;
-		ResultSet rs = null;
-		try {
-			stmt = ConnectionDB.getInstancia().getConn().prepareStatement(
-					"SELECT id_viaje, fecha, lugares_disponibles, origen, destino, precio_unitario, cancelado, id_conductor, lugar_salida "
-							+ "FROM viajes " + "WHERE id_conductor = ? ");
-			stmt.setInt(1, u.getIdUsuario());
+    private Viaje mapViaje(ResultSet rs) throws SQLException {
+        Viaje v = new Viaje();
+        v.setIdViaje(rs.getInt("id_viaje"));
+        v.setFecha(rs.getDate("fecha"));
+        v.setLugares_disponibles(rs.getInt("lugares_disponibles"));
+        v.setOrigen(rs.getString("origen"));
+        v.setDestino(rs.getString("destino"));
+        v.setPrecio_unitario(rs.getDouble("precio_unitario"));
+        v.setCancelado(rs.getBoolean("cancelado"));
+        v.setLugar_salida(rs.getString("lugar_salida"));
 
-			rs = stmt.executeQuery();
-			while (rs != null && rs.next()) {
+        UserDAO usuarioDAO = new UserDAO();
+        Usuario conductor = usuarioDAO.getById(rs.getInt("id_conductor"));
+        v.setConductor(conductor);
 
-				Viaje viaje = new Viaje();
-				viaje.setIdViaje(rs.getInt("id_viaje"));
-				viaje.setOrigen(rs.getString("origen"));
-				viaje.setDestino(rs.getString("destino"));
-				viaje.setFecha(rs.getDate("fecha"));
-				viaje.setLugares_disponibles(rs.getInt("lugares_disponibles"));
-				viaje.setPrecio_unitario(rs.getDouble("precio_unitario"));
-				viaje.setCancelado(rs.getBoolean("cancelado"));
-				viaje.setLugar_salida(rs.getString("lugar_salida"));
-
-				viajes.add(viaje);
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (rs != null) {
-					rs.close();
-				}
-				if (stmt != null) {
-					stmt.close();
-				}
-				ConnectionDB.getInstancia().releaseConn();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
-
-		return viajes;
-	}
-
-	public void add(Viaje v) {
-		PreparedStatement stmt = null;
-		ResultSet keyResultSet = null;
-		try {
-			stmt = ConnectionDB.getInstancia().getConn().prepareStatement(
-					"insert into viajes(id_viaje,fecha, lugares_disponibles, origen, destino,precio_unitario, cancelado, id_conductor, lugar_salida) values(?,?,?,?,?,?,?,?,?)",
-					PreparedStatement.RETURN_GENERATED_KEYS);
-			stmt.setInt(1, v.getIdViaje());
-			stmt.setDate(2, v.getFecha());
-			stmt.setInt(3, v.getLugares_disponibles());
-			stmt.setString(4, v.getOrigen());
-			stmt.setString(5, v.getDestino());
-			stmt.setDouble(6, v.getPrecio_unitario());
-			stmt.setBoolean(7, v.isCancelado());
-
-			stmt.setInt(8, v.getConductor().getIdUsuario());
-			stmt.setString(9, v.getLugar_salida());
-
-			stmt.executeUpdate();
-
-			keyResultSet = stmt.getGeneratedKeys();
-
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (keyResultSet != null)
-					keyResultSet.close();
-				if (stmt != null)
-					stmt.close();
-				ConnectionDB.getInstancia().releaseConn();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-
-	public void updateCantidad(int idViaje, int cantPasajeros) {
-		PreparedStatement stmt = null;
-
-		try {
-			stmt = ConnectionDB.getInstancia().getConn()
-					.prepareStatement("UPDATE viajes SET lugares_disponibles = ? where id_viaje = ? ");
-
-			stmt.setInt(1, cantPasajeros);
-			stmt.setInt(2, idViaje);
-
-			stmt.executeUpdate();
-
-		} catch (SQLException e) {
-			e.printStackTrace();
-
-		} finally {
-			try {
-				if (stmt != null) {
-					stmt.close();
-				}
-				ConnectionDB.getInstancia().releaseConn();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
-
-	}
-
-	public boolean cancelarViaje(int id_viaje, int id_usuario) {
-		PreparedStatement stmt = null;
-		boolean cancelada = false;
-
-		try {
-			stmt = ConnectionDB.getInstancia().getConn()
-					.prepareStatement("UPDATE viajes SET cancelado = true WHERE id_viaje = ? AND id_conductor = ?");
-			stmt.setInt(1, id_viaje);
-			stmt.setInt(2, id_usuario);
-
-			int rowsAffected = stmt.executeUpdate();
-			cancelada = (rowsAffected > 0);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (stmt != null) {
-					stmt.close();
-				}
-				ConnectionDB.getInstancia().releaseConn();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
-
-		return cancelada;
-	}
-
-	public void update(Viaje v, int id_viaje) {
-		PreparedStatement stmt = null;
-
-		try {
-			stmt = ConnectionDB.getInstancia().getConn().prepareStatement(
-					"UPDATE viajes SET fecha = ? , lugares_disponibles =?, origen =?, destino =?, precio_unitario =?, cancelado =?, id_conductor =?, lugar_salida =? where id_viaje = ? ");
-
-			stmt.setDate(1, v.getFecha());
-	        stmt.setInt(2, v.getLugares_disponibles());
-	        stmt.setString(3, v.getOrigen());
-	        stmt.setString(4, v.getDestino());
-	        stmt.setDouble(5, v.getPrecio_unitario());
-	        stmt.setBoolean(6, v.isCancelado());
-	        stmt.setInt(7, v.getConductor().getIdUsuario());
-	        stmt.setString(8, v.getLugar_salida());
-	        stmt.setInt(9, id_viaje);
-
-			
-			
-
-			stmt.executeUpdate();
-
-		} catch (SQLException e) {
-			e.printStackTrace();
-
-		} finally {
-			try {
-				if (stmt != null) {
-					stmt.close();
-				}
-				ConnectionDB.getInstancia().releaseConn();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-	
-	public void altaViaje(Viaje v) {
-		PreparedStatement stmt = null;
-		ResultSet keyResultSet = null;
-		try {
-			stmt = ConnectionDB.getInstancia().getConn().prepareStatement(
-					"insert into viajes(fecha, lugares_disponibles, origen, destino, precio_unitario, cancelado, id_conductor, lugar_salida) values(?,?,?,?,?,?,?,?)",
-					PreparedStatement.RETURN_GENERATED_KEYS);
-			stmt.setDate(1, v.getFecha());
-			stmt.setInt(2, v.getLugares_disponibles());
-			stmt.setString(3, v.getOrigen());
-			stmt.setString(4, v.getDestino());
-			stmt.setDouble(5, v.getPrecio_unitario());
-			stmt.setBoolean(6, false);
-			stmt.setInt(7, v.getConductor().getIdUsuario());
-			stmt.setString(8, v.getLugar_salida());
-
-			stmt.executeUpdate();
-
-			keyResultSet = stmt.getGeneratedKeys();
-			if (keyResultSet != null && keyResultSet.next()) {
-				v.setIdViaje(keyResultSet.getInt(1));
-			}
-
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (keyResultSet != null)
-					keyResultSet.close();
-				if (stmt != null)
-					stmt.close();
-				ConnectionDB.getInstancia().releaseConn();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-	
-	public void delete(Viaje v) {
-
-		PreparedStatement stmt = null;
-		try {
-			stmt = ConnectionDB.getInstancia().getConn().prepareStatement("delete from viajes where id_viaje=?");
-			stmt.setInt(1, v.getIdViaje());
-			int rowsAffected = stmt.executeUpdate();
-
-			if (rowsAffected > 1) {
-				System.out.println("Se ha borrado el viaje con el id: " + v.getIdViaje());
-			} else {
-				System.out.println("No se ha encontrado ningún viaje con ese id");
-			}
-
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (stmt != null) {
-					stmt.close();
-				}
-				ConnectionDB.getInstancia().releaseConn();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-
+        return v;
+    }
 }
