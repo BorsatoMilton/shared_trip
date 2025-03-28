@@ -1,119 +1,79 @@
 package data;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.LinkedList;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import entidades.Rol;
 
 
 public class RolDAO {
+    private static final Logger logger = LoggerFactory.getLogger(RolDAO.class);
 	
-	
-	public LinkedList<Rol> getAll() {
-		Statement stmt=null;
-		ResultSet rs=null;
-		LinkedList<Rol> roles = new LinkedList<>();
-		
-		try {
-			stmt= ConnectionDB.getInstancia().getConn().createStatement();
-			rs= stmt.executeQuery("select id, nombre from roles");
-			
-			if(rs!=null) {
-				while(rs.next()) {
-					Rol r=new Rol();
-					
-					r.setIdRol(rs.getInt("id"));
-					r.setNombre(rs.getString("nombre"));
-					roles.add(r);
-				}
-			}
-			
-		} catch (SQLException e) {
-			e.printStackTrace();
-			
-		} finally {
-			
-			try {
-				
-				if(rs!=null) {rs.close();}
-				if(stmt!=null) {stmt.close();}
-				ConnectionDB.getInstancia().releaseConn();
-				
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
-		
-		return roles;
-		}
-
-	public Rol getById(int id_rol) {
-	    PreparedStatement stmt = null;
-	    ResultSet rs = null;
-	    Rol rol = null;
-	    
-	    try {
-			stmt=ConnectionDB.getInstancia().getConn().prepareStatement(
-					"select id, nombre from roles where id=?"
-					); 
-			stmt.setInt(1, id_rol);
-			rs= stmt.executeQuery();
-		
-	        if (rs != null && rs.next()) {
-	            rol = new Rol();
-	            rol.setIdRol(rs.getInt("id"));
-	            rol.setNombre(rs.getString("nombre"));
-	        }
+	 public LinkedList<Rol> getAll() {
+		 
+		 	String query = "SELECT id, nombre FROM roles";
+	        LinkedList<Rol> roles = new LinkedList<>();
 	        
-	    } catch (SQLException e) {
-	        e.printStackTrace();
-	        
-	    } finally {
-	        try {
-	            if (rs != null) { rs.close(); }
-	            if (stmt != null) { stmt.close(); }
-	            ConnectionDB.getInstancia().releaseConn();
+	        try (Connection conn = ConnectionDB.getInstancia().getConn();
+	             Statement stmt = conn.createStatement();
+	             ResultSet rs = stmt.executeQuery(query)) {
+	            
+	            while (rs.next()) {
+	                roles.add(mapearRol(rs));
+	            }
+	            
+	            logger.debug("Obtenidos {} roles", roles.size());
+	            
 	        } catch (SQLException e) {
-	            e.printStackTrace();
+	            String errorMsg = "Error al obtener roles";
+	            logger.error(errorMsg, e);
+	            throw new DAOException(errorMsg, e);
 	        }
+	        return roles;
 	    }
-	    
-	    return rol;}
-	
-	public void add(Rol r) {
-	    PreparedStatement stmt = null;
-	    ResultSet keyResultSet = null;
-	    
-	    try {
-	        stmt = ConnectionDB.getInstancia().getConn().
-	                prepareStatement(
-	                        "INSERT INTO roles(nombre) VALUES(?)",
-	                        PreparedStatement.RETURN_GENERATED_KEYS
-	                );
-	        stmt.setString(1, r.getNombre());
 
-	        stmt.executeUpdate();
-	        
-	        keyResultSet = stmt.getGeneratedKeys();
-	        if (keyResultSet != null && keyResultSet.next()) {
-	        	r.setIdRol(keyResultSet.getInt(1)); 
-	        }
-	        
-	    } catch (SQLException e) {
-	        e.printStackTrace();
-	        
-	    } finally {
-	        try {
-	            if (keyResultSet != null) { keyResultSet.close(); }
-	            if (stmt != null) { stmt.close(); }
-	            ConnectionDB.getInstancia().releaseConn();
-	        } catch (SQLException e) {
-	            e.printStackTrace();
+	 public Rol getById(int idRol) {
+		    String query = "SELECT id, nombre FROM roles WHERE id = ?";
+		    
+		    try (Connection conn = ConnectionDB.getInstancia().getConn();
+		         PreparedStatement stmt = conn.prepareStatement(query)) {
+		        
+		        stmt.setInt(1, idRol);
+		        
+		        try (ResultSet rs = stmt.executeQuery()) {
+		            if (rs.next()) {
+		                return mapearRol(rs);
+		            }
+		            logger.info("No se encontró rol con ID: {}", idRol);
+		            return null;
+		        }
+		        
+		    } catch (SQLException e) {
+		        final String errorMsg = String.format("Error al obtener rol ID: %d - %s", 
+		                                           idRol, e.getMessage());
+		        logger.error(errorMsg);
+		        throw new DAOException(errorMsg, e);
+		    }
+		}
+
+	    private Rol mapearRol(ResultSet rs) throws SQLException {
+	        Rol rol = new Rol();
+	        rol.setIdRol(rs.getInt("id"));
+	        rol.setNombre(rs.getString("nombre"));
+	        return rol;
+	    }
+
+
+	    public static class DAOException extends RuntimeException {
+	        public DAOException(String message, Throwable cause) {
+	            super(message, cause);
 	        }
 	    }
 	}
-
-}
