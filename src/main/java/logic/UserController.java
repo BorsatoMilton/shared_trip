@@ -28,16 +28,16 @@ public class UserController {
 		return usuarioDAO.getAll();
 	}
 
-	public void updateUser(Usuario u, int id) {
-		usuarioDAO.update(u, id);
+	public boolean updateUser(Usuario u, int id) {
+		return usuarioDAO.update(u, id);
 	}
 	
-	public void updatePassword(int id, String clave) {
-		usuarioDAO.updatePassword(id, clave);
+	public boolean updatePassword(int id, String clave) {
+		return usuarioDAO.updatePassword(id, clave);
 	}
 
-	public void addUser(Usuario u) {
-		usuarioDAO.add(u);
+	public boolean addUser(Usuario u) {
+		return usuarioDAO.add(u);
 	}
 
 	public boolean deleteUser(int idUsuario) {

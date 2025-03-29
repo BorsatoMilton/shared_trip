@@ -1,4 +1,58 @@
 <%@ page import="entidades.Usuario, entidades.Rol" %>
+<head>
+<link rel="stylesheet"
+	href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+	
+<style>
+.navbar {
+    padding: 0.5rem 0;
+    transition: all 0.3s ease;
+
+}
+
+.navbar-brand {
+    letter-spacing: 1px;
+    transition: transform 0.3s ease;
+}
+
+.navbar-brand:hover {
+    transform: scale(1.05);
+}
+
+.nav-link {
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border-radius: 0.5rem;
+    padding: 0.5rem 1rem !important;
+}
+
+.nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+}
+
+.dropdown-menu {
+    border: none;
+    min-width: 220px;
+}
+
+.dropdown-item {
+    transition: all 0.2s ease;
+}
+
+.dropdown-item:hover {
+    background-color: #f8f9fa;
+    padding-left: 1.5rem;
+}
+
+.btn-outline-light:hover {
+    background-color: rgba(255, 255, 255, 0.9);
+    color: #0d6efd !important;
+}
+</style>
+</head>
+
+<body>
 <div class="container-fluid p-0">
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm sticky-top">
         <div class="container bg-primary">
@@ -16,9 +70,23 @@
                 <ul class="navbar-nav me-auto">
                     <% if(request.getSession().getAttribute("usuario") != null) { 
                         Usuario usuario = (Usuario) session.getAttribute("usuario");
+                        if("admin".equals(usuario.getNombreRol())){ 
                     %>
+                    	 <li class="nav-item">
+                            <a class="nav-link" href="<%= request.getContextPath() %>/usuarios">
+                                <i class="bi bi-people-fill me-1"></i>Usuarios
+                            </a>
+                        </li>
+                                            
                         <li class="nav-item">
-                            <a class="nav-link" href="<%= request.getContextPath() %>/misViajes">
+                            <a class="nav-link" href="<%= request.getContextPath() %>/viajesAdmin">
+                                <i class="bi bi-geo-alt me-1"></i>Viajes
+                            </a>
+                        </li>
+                  <% } else { %>  
+                    
+                        <li class="nav-item">
+                            <a class="nav-link" href="<%= request.getContextPath() %>/viajes">
                                 <i class="bi bi-geo-alt me-1"></i>Mis Viajes
                             </a>
                         </li>
@@ -32,14 +100,8 @@
                                 <i class="bi bi-truck me-1"></i>Mis Vehículos
                             </a>
                         </li>
-                        <% if((Integer) usuario.getRol() == 1) { //CHANCHADA %>
-                        <li class="nav-item">
-                            <a class="nav-link" href="<%= request.getContextPath() %>/usuarios">
-                                <i class="bi bi-people-fill me-1"></i>Usuarios
-                            </a>
-                        </li>
-                        <% } %>
-                    <% } %>
+
+                    <% } } %>
                 </ul>
 
                 <ul class="navbar-nav ms-auto">
@@ -89,51 +151,6 @@
         </div>
     </nav>
 </div>
+</body>
 
-<style>
-.navbar {
-    padding: 0.5rem 0;
-    transition: all 0.3s ease;
 
-}
-
-.navbar-brand {
-    letter-spacing: 1px;
-    transition: transform 0.3s ease;
-}
-
-.navbar-brand:hover {
-    transform: scale(1.05);
-}
-
-.nav-link {
-    font-weight: 500;
-    transition: all 0.2s ease;
-    border-radius: 0.5rem;
-    padding: 0.5rem 1rem !important;
-}
-
-.nav-link:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-    transform: translateY(-2px);
-}
-
-.dropdown-menu {
-    border: none;
-    min-width: 220px;
-}
-
-.dropdown-item {
-    transition: all 0.2s ease;
-}
-
-.dropdown-item:hover {
-    background-color: #f8f9fa;
-    padding-left: 1.5rem;
-}
-
-.btn-outline-light:hover {
-    background-color: rgba(255, 255, 255, 0.9);
-    color: #0d6efd !important;
-}
-</style>

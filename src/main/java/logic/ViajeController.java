@@ -53,7 +53,7 @@ public class ViajeController {
 	}
 	
 	public void altaViaje(Viaje viaje) {
-		viajeDAO.altaViaje(viaje);
+		viajeDAO.add(viaje);
 		
 	}
 	
