@@ -89,6 +89,29 @@ public class UserDAO {
 			return null;
 		}
 
+		public Usuario getOneUserByEmail(String correo) {
+		    String query = "SELECT id_usuario, usuario, nombre, apellido, correo, telefono, id_rol "
+		                 + "FROM usuarios WHERE correo = ? AND fecha_baja IS NULL";
+
+		    try (Connection conn = ConnectionDB.getInstancia().getConn();
+		         PreparedStatement stmt = conn.prepareStatement(query)) {
+
+		        stmt.setString(1, correo);
+
+		        try (ResultSet rs = stmt.executeQuery()) {
+		            if (rs.next()) {
+		                return mapUsuario(rs);
+		            }
+		        }
+		    } catch (SQLException e) {
+		        logger.error("Error al obtener el usuario por nombre de usuario o correo", e);
+		    } finally {
+		        ConnectionDB.getInstancia().releaseConn();
+		    }
+
+		    return null;
+		}
+
 		
 		public Usuario getOneByUserOrEmail(String user, String correo) {
 		    String query = "SELECT id_usuario, usuario, nombre, apellido, correo, telefono, id_rol "
@@ -147,7 +170,7 @@ public class UserDAO {
 		    }
 		}
  
-		public boolean update(Usuario u, int id) {       
+		public boolean update(Usuario u) {       
 		    String query = "UPDATE usuarios SET usuario = ?, nombre = ?, apellido = ?, correo = ?, telefono = ?, id_rol = ? WHERE id_usuario = ?";
 
 		    try (Connection conn = ConnectionDB.getInstancia().getConn();
@@ -159,19 +182,19 @@ public class UserDAO {
 		        stmt.setString(4, u.getCorreo());
 		        stmt.setString(5, u.getTelefono());
 		        stmt.setInt(6, u.getRol());
-		        stmt.setInt(7, id);
+		        stmt.setInt(7, u.getIdUsuario());
 
 		        int rowsAffected = stmt.executeUpdate();
 		        if (rowsAffected > 0) {
-		            logger.info("Usuario con ID {} actualizado correctamente.", id);
+		            logger.info("Usuario con ID {} actualizado correctamente.", u.getIdUsuario());
 		            return true;
 		        } else {
-		            logger.warn("No se encontró un usuario con ID {} para actualizar.", id);
+		            logger.warn("No se encontró un usuario con ID {} para actualizar.", u.getIdUsuario());
 		            return false;
 		        }
 		        
 		    } catch (SQLException e) {
-		        logger.error("Error al actualizar el usuario con ID {}: {}", id, e.getMessage(), e);
+		        logger.error("Error al actualizar el usuario con ID {}: {}", u.getIdUsuario(), e.getMessage(), e);
 		        return false;
 		    } finally {
 		        ConnectionDB.getInstancia().releaseConn();

@@ -108,7 +108,7 @@ public class CRUDusuarioAdmin extends HttpServlet {
 		}
 
 		cargarDatosUsuario(request, u);
-		return usuarioCtrl.updateUser(u, id);
+		return usuarioCtrl.updateUser(u);
 	}
 
 	private boolean eliminarUsuario(HttpServletRequest request) throws Exception {

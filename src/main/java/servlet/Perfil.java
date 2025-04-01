@@ -81,7 +81,7 @@ public class Perfil extends HttpServlet {
 		}
 
 		cargarDatosUsuario(request, u);
-		return usuarioCtrl.updateUser(u, id);
+		return usuarioCtrl.updateUser(u);
 	}
 	
 	

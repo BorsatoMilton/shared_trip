@@ -15,6 +15,10 @@ public class UserController {
 	public Usuario login(Usuario u) {
 		return usuarioDAO.login(u);
 	}
+	
+	public Usuario getOneByEmail(String email) {
+		return usuarioDAO.getOneUserByEmail(email);
+	}
 
 	public Usuario getOneByUserOrEmail(String user, String correo) {
 		return usuarioDAO.getOneByUserOrEmail(user, correo);
@@ -28,8 +32,8 @@ public class UserController {
 		return usuarioDAO.getAll();
 	}
 
-	public boolean updateUser(Usuario u, int id) {
-		return usuarioDAO.update(u, id);
+	public boolean updateUser(Usuario u) {
+		return usuarioDAO.update(u);
 	}
 	
 	public boolean updatePassword(int id, String clave) {

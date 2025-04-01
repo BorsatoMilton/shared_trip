@@ -58,7 +58,7 @@
                             </button>
                             
                             <div class="d-flex justify-content-between">
-                                <a href="#" class="text-decoration-none">¿Olvidaste tu contraseña?</a>
+                                <a href="recuperarClave.jsp" class="text-decoration-none">¿Olvidaste tu contraseña?</a>
                                 <a href="register.jsp" class="text-decoration-none">Registrarse Aquí</a>
                             </div>
                         </form>
