@@ -304,7 +304,7 @@ body {
 								</div>
 								<div class="col">
 									<label class="form-label">Precio Unitario</label>
-									<input type="number" class="form-control" placeholder="precio_unitario"
+									<input type="number" step=any class="form-control" placeholder="precio_unitario"
 										name="precio_unitario" id="editPrecioUnitario" required>
 								</div>
 							</div>
@@ -383,7 +383,7 @@ body {
             <div class="col-md-6">
                 <div class="mb-3">
                     <label for="precio_unitario">Precio Unitario</label>
-                    <input type="number" class="form-control" name="precio_unitario" id="precio_unitario" placeholder="Ingrese el precio unitario" required>
+                    <input type="number" step=any class="form-control" name="precio_unitario" id="precio_unitario" placeholder="Ingrese el precio unitario" required>
                 </div>
 
                 <div class="mb-3">

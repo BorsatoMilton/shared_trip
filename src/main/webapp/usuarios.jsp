@@ -169,11 +169,12 @@ body {
 					<h5 class="modal-title" id="nuevoUsuarioLabel">
 						<i class="bi bi-person-plus me-2"></i>Nuevo Usuario
 					</h5>
-					<button type="button" class="btn-close" data-bs-dismiss="modal"
-						aria-label="Close"></button>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 				</div>
+				
 				<form method="POST" action="usuarios" id="registrarUsuarioAdmin">
 					<input type="hidden" name="action" value="add">
+					
 					<div class="modal-body">
 						<div class="mb-3">
 							<label class="form-label">Nombre completo</label>

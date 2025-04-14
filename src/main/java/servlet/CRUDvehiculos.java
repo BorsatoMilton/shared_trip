@@ -62,8 +62,7 @@ public class CRUDvehiculos extends HttpServlet {
 		String action = request.getParameter("action");
 		
 		System.out.println("ID Vehiculo: " + request.getParameter("idVehiculo"));
-		
-
+		System.out.println("ID Usuario: " + request.getParameter("usuario_duenio_id"));
 
 		try {
 			if ("update".equals(action)) {
@@ -130,8 +129,6 @@ public class CRUDvehiculos extends HttpServlet {
 		HttpSession session = request.getSession();
 		Usuario usuario = (Usuario) session.getAttribute("usuario");
 		
-		
-		v.setId_vehiculo(Integer.parseInt(request.getParameter("idVehiculo")));
 		v.setPatente(request.getParameter("patente"));
 		v.setModelo(request.getParameter("modelo"));
 		int anio = Integer.parseInt(request.getParameter("anio"));

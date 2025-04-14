@@ -45,7 +45,10 @@ public class CancelarReserva extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		HttpSession session = request.getSession();
 		int idReserva = Integer.parseInt(request.getParameter("reservaId"));
+		System.out.println("id reserva1 " + idReserva);
+		
 		int idViaje = Integer.parseInt(request.getParameter("viajeId"));
+		System.out.println("id viaje1 " + idViaje);
 		Usuario u = (Usuario) session.getAttribute("usuario");
 		ViajeController viajeController = new ViajeController();
 		ReservaController reservaCtrl = new ReservaController();
@@ -55,6 +58,7 @@ public class CancelarReserva extends HttpServlet {
           
             LinkedList<Reserva> misReservas = reservaCtrl.getReservasUsuario(u);
             session.setAttribute("misreservas", misReservas);
+            System.out.println("id reserva2" + idReserva);
             int cantidad = reservaCtrl.obtenerCantidad(idReserva);
             viajeController.actualizarCantidad(idViaje, cantidad * (-1));
             session.setAttribute("mensaje", "Reserva cancelada con éxito.");

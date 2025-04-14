@@ -19,26 +19,6 @@
 	href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 	
 <style>
-
-.opcion{
-	background-color: white;
-	height: 30px;
-	padding: 0 0 8px 8px;
-	cursor:pointer; 
-}
-
-.opcion:hover {
-	background-color: #3B71CA;
-}
-
-
-.dropdown-container {
-    position: relative;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-}
-
 .card-header {
 	background: linear-gradient(45deg, #3f51b5, #2196f3);
 	color: white;
@@ -46,6 +26,10 @@
 
 .table-hover tbody tr:hover {
 	background-color: #f8f9fa;
+}
+
+#anio{
+	width:189px;
 }
 
 .action-buttons .btn {
@@ -87,7 +71,7 @@ body {
 					<div
 					class="card-header d-flex justify-content-between align-items-center">
 					<h3 class="mb-0">
-						<i class="bi bi-people-fill me-2"></i>Administración de Vehiculos
+						<i class="bi bi-car-front-fill"></i> Administración de Vehiculos
 					</h3>
 					<button type="button" class="btn btn-light" data-bs-toggle="modal"
 						data-bs-target="#nuevoVehiculo">
@@ -280,40 +264,58 @@ body {
 
 
 <!-- #nuevoVehiculo -->
-<div class="modal fade" id="nuevoVehiculo" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="nuevoVehiculo">Nuevo Vehiculo</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+<!-- Modal Mejorado -->
+<div class="modal fade" id="nuevoVehiculo" tabindex="-1" aria-labelledby="nuevoVehiculoLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content shadow">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="nuevoVehiculoLabel">
+          <i class="bi bi-car-front-fill me-2"></i> Nuevo Vehículo
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form method = "post" action="vehiculos" id="altaVehiculo">
-        <input type="hidden" name="action" value="add"> 
-        	<label for="patente">
-        		Patente
-        	</label> <br>
-        	<input type= "text" name="patente" placeholder = "Ingrese su patente" id="patente"> <br>
-        	
-        	<label for="modelo">
-        		Modelo
-        	</label> <br>
-        	<input type= "text" name="modelo" placeholder = "Ingrese el modelo" id="modelo"> <br>
-        	
-        	<label for="anio">
-        		Año
-        	</label> <br>
-        	<input type= "number" min="1960" max="2024" name="anio" placeholder = "Ingrese el año" id="anio"> <br>
-        	<div class="modal-footer">
-		        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-		        <button type="submit" class="btn btn-primary">Guardar</button>
-		   </div>
+        <form method="POST" action="vehiculos" id="altaVehiculo">
+          <input type="hidden" name="action" value="add">
+          
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label fw-bold" for="patente">Patente</label>
+                <input type="text" class="form-control" name="patente" placeholder="Ingrese la patente" id="patente" required>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label fw-bold" for="modelo">Modelo</label>
+                <input type="text" class="form-control" name="modelo" placeholder="Ingrese el modelo" id="modelo" required>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label fw-bold" for="anio">Año</label>
+                <input type="number" class="form-control" min="1960" max="2024" name="anio" placeholder="Ingrese el año" id="anio" required>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            <button type="submit" class="btn btn-primary">
+              <i class="bi bi-save me-2"></i>Guardar
+            </button>
+          </div>
         </form>
       </div>
-      
     </div>
   </div>
 </div>
+
+
 
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
