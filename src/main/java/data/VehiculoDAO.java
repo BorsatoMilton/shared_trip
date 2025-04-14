@@ -19,7 +19,7 @@ public class VehiculoDAO {
 		try {
 			stmt = ConnectionDB.getInstancia().getConn().createStatement();
 			rs = stmt.executeQuery(
-					"select id_vehiculo,patente,modelo, anio, usuario_duenio_id from vehiculos inner join usuarios on usuarios.id_usuario = vehiculos.usuario_duenio_id where usuario.fecha_baja is null");
+					"select id_vehiculo,patente,modelo, anio, usuario_duenio_id from vehiculos inner join usuarios on usuarios.id_usuario = vehiculos.usuario_duenio_id where usuarios.fecha_baja is null");
 
 			if (rs != null) {
 				while (rs.next()) {
@@ -174,13 +174,12 @@ public class VehiculoDAO {
 
 		try {
 			stmt = ConnectionDB.getInstancia().getConn().prepareStatement(
-					"update vehiculos set (patente = ?, modelo = ?, anio = ? , usuario_duenio_id =?) where id_vehiculo = ? ");
+					"update vehiculos set patente = ?, modelo = ?, anio = ?  where id_vehiculo = ? ");
 
 			stmt.setString(1, v.getPatente());
 			stmt.setString(2, v.getModelo());
 			stmt.setInt(3, v.getAnio());
-			stmt.setInt(4, v.getUsuario_duenio_id());
-			stmt.setInt(5, id_vehiculo);
+			stmt.setInt(4, id_vehiculo);
 
 			stmt.executeUpdate();
 
@@ -207,7 +206,7 @@ public class VehiculoDAO {
 		ResultSet rs = null;
 		try {
 			stmt = ConnectionDB.getInstancia().getConn().prepareStatement(
-					"SELECT id_vehiculo, patente, modelo, anio " + "FROM vehiculos " + "WHERE usuario_duenio_id = ?");
+					"SELECT id_vehiculo, patente, modelo, anio, usuario_duenio_id " + "FROM vehiculos " + "WHERE usuario_duenio_id = ?");
 			stmt.setInt(1, u.getIdUsuario());
 
 			rs = stmt.executeQuery();
@@ -218,6 +217,7 @@ public class VehiculoDAO {
 				vehiculo.setPatente(rs.getString("patente"));
 				vehiculo.setModelo(rs.getString("modelo"));
 				vehiculo.setAnio(rs.getInt("anio"));
+				vehiculo.setUsuario_duenio_id(rs.getInt("usuario_duenio_id"));
 
 				vehiculos.add(vehiculo);
 			}

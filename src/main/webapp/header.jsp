@@ -96,7 +96,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="<%= request.getContextPath() %>/misVehiculos">
+                            <a class="nav-link" href="<%= request.getContextPath() %>/vehiculos">
                                 <i class="bi bi-truck me-1"></i>Mis Vehículos
                             </a>
                         </li>
