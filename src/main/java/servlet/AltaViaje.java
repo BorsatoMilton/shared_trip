@@ -66,6 +66,8 @@ public class AltaViaje extends HttpServlet {
         v.setPrecio_unitario(Double.parseDouble(request.getParameter("precio_unitario")));
         
         v.setConductor(usuario);
+        v.setCodigoValidacion((int)(Math.random() * 900) + 100);
+        System.out.println(v.getCodigoValidacion());
 	       
 		viajeCtrl.altaViaje(v);
 		response.sendRedirect("misViajes");

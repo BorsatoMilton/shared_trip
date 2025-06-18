@@ -209,7 +209,7 @@ public class ViajeDAO {
 
     public void add(Viaje v) {
         String query = "INSERT INTO viajes(fecha, lugares_disponibles, origen, destino, precio_unitario, "
-                     + "cancelado, id_conductor, lugar_salida) VALUES (?,?,?,?,?,?,?,?)";
+                     + "cancelado, id_conductor, lugar_salida, codigo_validacion) VALUES (?,?,?,?,?,?,?,?,?)";
         Connection conn = null;
 
         try {
@@ -223,6 +223,7 @@ public class ViajeDAO {
                 stmt.setBoolean(6, false); 
                 stmt.setInt(7, v.getConductor().getIdUsuario());
                 stmt.setString(8, v.getLugar_salida());
+                stmt.setInt(9, v.getCodigoValidacion());
 
                 int affectedRows = stmt.executeUpdate();
                 if (affectedRows > 0) {
@@ -274,6 +275,7 @@ public class ViajeDAO {
         v.setPrecio_unitario(rs.getDouble("precio_unitario"));
         v.setCancelado(rs.getBoolean("cancelado"));
         v.setLugar_salida(rs.getString("lugar_salida"));
+        v.setCodigoValidacion(rs.getInt("codigo_validacion"));
 
         UserDAO usuarioDAO = new UserDAO();
         Usuario conductor = usuarioDAO.getById(rs.getInt("id_conductor"));

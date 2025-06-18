@@ -58,8 +58,10 @@ public class reservar extends HttpServlet {
         
         Date fecha = new Date();
         boolean reservaCancelada = false;
+        String estado = "EN PROCESO";
+        int intentos_codigo = 3;
         
-        reservaController.nuevaReserva(viaje, cantPasajeros, idUsuario, fecha, reservaCancelada);
+        reservaController.nuevaReserva(viaje, cantPasajeros, idUsuario, fecha, reservaCancelada, estado, intentos_codigo);
         
         viajeCtrl.actualizarCantidad(viajeId, cantPasajeros);
 
