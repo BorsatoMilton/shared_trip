@@ -55,7 +55,7 @@ body {
 					<div
 					class="card-header d-flex justify-content-between align-items-center">
 					<h3 class="mb-0">
-						<i class="bi bi-people-fill me-2"></i>Administración de Reservas
+						<i class="bi bi-people-fill me-2"></i>AdministraciÃ³n de Reservas
 					</h3>
 				</div>
 					
@@ -97,7 +97,8 @@ body {
 								<th scope="col">Cantidad pasajeros</th>
 								<th scope="col">Total</th>
 								<th scope="col">Cancelado</th>
-								<th scope="col" class="text-end">Acciones</th>
+								<th scope="col">Codigo Validacion</th>
+								<th scope="col" >Acciones</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -113,7 +114,27 @@ body {
 								<td><%= reserva.getViaje().getFecha() %></td>
 								<td><%= reserva.getCantidad_pasajeros_reservada()%></td>
 								<td><%= reserva.getViaje().getPrecio_unitario()*reserva.getCantidad_pasajeros_reservada()%></td>
-								<td><%= reserva.isReserva_cancelada()? "Sí" : "No" %></td>
+								<td><%= reserva.isReserva_cancelada()? "SÃ­" : "No" %></td>
+								<td>
+									<% if (reserva.getEstado().equalsIgnoreCase("EN PROCESO")) { %>
+									<form method="post" action= "ActualizarEstadoReserva">
+										<input type="number" placeholder="3 intentos" name="codigo_validacion_usuario" min="100" max="999"
+								           class="codigo-input" data-reserva-id="<%= reserva.getIdReserva() %>">
+										<input type="hidden" value="<%= reserva.getIdReserva() %>" name="idReserva"> 
+									    <button type="submit"
+									            class="btn btn-primary btn-validar"
+									            data-reserva-id="<%= reserva.getIdReserva() %>"
+									            data-codigo-correcto="<%= reserva.getViaje().getCodigoValidacion() %>">
+									        <i class="bi bi-check"></i> 
+									    </button>
+									</form>
+								    
+								    
+								   <% } else { %>
+								    <%= reserva.getEstado() %>
+								<% } %>
+								</td>
+
 								<td class="text-end action-buttons">
 										
 										
@@ -154,6 +175,8 @@ body {
 
 <script
 		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+		
+
 <footer>
 	<div class="row align-items-end" style="height: 10vh">
 			<div class="col">

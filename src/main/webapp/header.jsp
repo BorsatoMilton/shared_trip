@@ -86,7 +86,7 @@
                   <% } else { %>  
                     
                         <li class="nav-item">
-                            <a class="nav-link" href="<%= request.getContextPath() %>/viajes">
+                            <a class="nav-link" href="<%= request.getContextPath() %>/misViajes">
                                 <i class="bi bi-geo-alt me-1"></i>Mis Viajes
                             </a>
                         </li>

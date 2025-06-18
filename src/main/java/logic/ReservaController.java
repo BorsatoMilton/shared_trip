@@ -16,11 +16,11 @@ public class ReservaController {
 		this.reservaDAO = new ReservaDAO();
 	}
 	
-	public void nuevaReserva(Viaje viaje, int cantPasajeros, int idUsuario, Date fecha, boolean cancelado) {
+	public void nuevaReserva(Viaje viaje, int cantPasajeros, int idUsuario, Date fecha, boolean cancelado, String estado, int intentos_codigo) {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		String fechaString = sdf.format(fecha);
 		
-		Reserva r = new Reserva(fechaString, cantPasajeros, cancelado, viaje, idUsuario);
+		Reserva r = new Reserva(fechaString, cantPasajeros, cancelado, viaje, idUsuario, estado, intentos_codigo);
 		
 		this.reservaDAO.add(r);
 	}
@@ -30,6 +30,19 @@ public class ReservaController {
 		return reservas;
 	}
 	
+	
+	public Reserva getOne(int id) {
+		return this.reservaDAO.getByReserva(id);
+	}
+	
+	public void actualizarEstado(int idReserva, String nuevoEstado){
+		this.reservaDAO.actualizarEstado(idReserva, nuevoEstado);
+		
+	}
+	
+	public void updateEntity(Reserva reserva, int idReserva) {
+		this.reservaDAO.update(reserva, idReserva);
+	}
 	
 	public boolean cancelar(int idReserva) {
 		return this.reservaDAO.cancelarReserva(idReserva);
