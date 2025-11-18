@@ -44,10 +44,9 @@ body {
 
 </style>
 </head>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" ></script>
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 <body>
-	
+
 	<div class="container-fluid p-0">
 
 		<div class="row">
@@ -152,24 +151,16 @@ body {
 		
 	</div>
 
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
 	
-		
-	<script>
-	
-	
-    if (!sessionStorage.getItem("viajesCargados")) {
-        sessionStorage.setItem("viajesCargados", "true");
-        window.location.href = "ViajesListado";
-    }
-</script>
-	
-</body>
-<footer>
+
 	<div class="row align-items-end" style="height: 10vh">
 			<div class="col">
 				<jsp:include page="footer.jsp"></jsp:include>
 			</div>
-		</div>
-</footer>
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</body>
 </html>
