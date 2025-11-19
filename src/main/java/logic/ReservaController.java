@@ -16,11 +16,12 @@ public class ReservaController {
 		this.reservaDAO = new ReservaDAO();
 	}
 	
-	public void nuevaReserva(Viaje viaje, int cantPasajeros, int idUsuario, Date fecha, boolean cancelado, String estado, int intentos_codigo) {
+	public void nuevaReserva(Viaje viaje, int cantPasajeros, int idUsuario) {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date fecha = new Date();
 		String fechaString = sdf.format(fecha);
 		
-		Reserva r = new Reserva(fechaString, cantPasajeros, cancelado, viaje, idUsuario, estado, intentos_codigo);
+		Reserva r = new Reserva(fechaString, cantPasajeros, false, viaje, idUsuario, "EN PROCESO", 3);
 		
 		this.reservaDAO.add(r);
 	}

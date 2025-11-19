@@ -96,7 +96,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="<%= request.getContextPath() %>/misReservas">
+                            <a class="nav-link" href="<%= request.getContextPath() %>/reservas">
                                 <i class="bi bi-journal-check me-1"></i>Mis Reservas
                             </a>
                         </li>

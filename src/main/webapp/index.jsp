@@ -66,14 +66,6 @@ body {
 
 			<div class="col-12">
 				<%
-				String reservado = request.getParameter("reservado");
-				if ("true".equals(reservado)) {
-				%>
-				<div class="alert alert-success" role="alert">¡Reserva realizada con éxito!</div>
-				<%
-				}
-				%>
-				<%
 				String mensaje = (String) session.getAttribute("mensaje");
 				if (mensaje != null) {
 				%>
@@ -114,8 +106,9 @@ body {
 									<%
 									if (viaje.getLugares_disponibles() > 0) {
 									%>
-									<form action="reservar" method="post"
+									<form action="reservas" method="post"
 										class="d-flex align-items-center">
+                                        <input type="hidden" name="action" value="reserve">
 										<input type="hidden" name="viajeId"
 											value="<%=viaje.getIdViaje()%>"> <input
 											type="number" name="cantPasajeros" min="1"
