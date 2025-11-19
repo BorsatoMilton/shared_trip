@@ -142,7 +142,8 @@
                                 </li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
-                                    <form action="<%= request.getContextPath() %>/CerrarSesion" method="post">
+                                    <form action="auth" method="POST">
+                                        <input type="hidden" name="action" value="logout">
                                         <button type="submit" class="dropdown-item text-danger">
                                             <i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesi�n
                                         </button>

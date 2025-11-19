@@ -47,7 +47,7 @@ body {
                     <div class="card-body p-2 p-md-5">
                         <h2 class="text-center mb-4">Iniciar Sesión</h2>
                         <hr>
-                        <form action="signin" method="POST">
+                        <form action="auth" method="POST">
                             <div class="mb-3">
                                 <label for="user" class="form-label">Usuario</label>
                                 <input type="text" 
@@ -69,7 +69,7 @@ body {
                                            placeholder="Ingrese su clave">
                                 </div>
                             </div>
-                            
+                            <input type="hidden" name="action" value="login">
                             <button type="submit" class="btn btn-primary btn-lg w-100 mb-3">
                                 Ingresar
                             </button>
