@@ -96,11 +96,10 @@ margin: auto ;
 				%>
 			<div class="profile-container mx-auto">
 				<h1>Actualizar Perfil</h1>
-				<form method="POST" action="perfil" id="actualizarDatosPerfil">
-					<input type="hidden" name="idUsuario" value="<%= usuario.getIdUsuario() %>">
-					<input type="hidden" name="rol" value="<%= usuario.getRol() %>">
-					<input type="hidden" name="action" value="profile">
-					<div class="mb-4">
+				<form method="POST" action="usuarios" id="actualizarDatosPerfil">
+					<input type="hidden" name="action" value="update">
+                    <input type="hidden" name="from" value="profile">
+ 					<div class="mb-4">
 						<label class="form-label">Nombre completo</label>
 						<div class="row g-2">
 							<div class="col">

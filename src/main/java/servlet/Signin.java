@@ -64,7 +64,6 @@ public class Signin extends HttpServlet {
         } else {
         	RolController rolCtrl = new RolController();
         	Rol rol = rolCtrl.getOne(u.getRol());
-        	
             session.setAttribute("usuario", u);
             session.setAttribute("rol", rol.getNombre());
            

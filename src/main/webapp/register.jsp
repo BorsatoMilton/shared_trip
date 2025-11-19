@@ -21,6 +21,13 @@
                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                    </div>
                <% session.removeAttribute("mensaje"); } %>
+                <% String error = (String) session.getAttribute("error");
+                    if (error != null) { %>
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <%= error %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                <% session.removeAttribute("error"); } %>
             <div class="card shadow-lg border-0 my-5">
                 <div class="card-body p-4 p-md-5">
                     <h1 class="text-center mb-4 text-primary fw-bold">
@@ -28,7 +35,8 @@
                     </h1>
                     <hr>
                     
-                    <form action="Register" method="POST">
+                    <form action="usuarios" method="POST">
+                        <input type="hidden" name="action" value="register">
                         <div class="row g-4">
                             
                             <div class="col-md-6">

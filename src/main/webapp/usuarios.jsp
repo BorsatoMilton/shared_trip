@@ -261,7 +261,7 @@ body {
 		</div>
 	</div>
 
-
+    <!-- MODAL EDITAR USUARIO -->
 	<div class="modal fade" id="editarUsuario">
 		<div class="modal-dialog modal-dialog-centered">
 			<div class="modal-content">
@@ -273,8 +273,8 @@ body {
 						aria-label="Close"></button>
 				</div>
 				<form method="POST" action="usuarios" id="formEditar">
-					<input type="hidden" name="action" value="update"> <input
-						type="hidden" name="idUsuario" id="editId">
+					<input type="hidden" name="action" value="update">
+                    <input type="hidden" name="idUsuario" id="editId">
 					<div class="modal-body">
 						<div class="mb-3">
 							<label class="form-label">Nombre completo</label>
@@ -300,9 +300,6 @@ body {
 									<input type="text" class="form-control" placeholder="Usuario"
 										name="usuario" id="editUsuario" required>
 								</div>
-								<!--  <div class="col">        DE MOMENTO NO ESTA HECHO
-                                <input type="password" class="form-control" placeholder="Contraseña" name="clave" required>
-                            </div> -->
 							</div>
 						</div>
 
@@ -337,7 +334,7 @@ body {
 	</div>
 
 
-	<script src="js/scriptClientes.js"></script>
+	<script src="js/scriptUsuarios.js"></script>
 
 	<script
 		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

@@ -47,6 +47,7 @@ public class UserDAO {
 		            stmt.setString(2, user.getClave());
 		            try (ResultSet rs = stmt.executeQuery()) {
 		                if (rs.next()) {
+                            System.out.println("Usuario logueado!");
 		                    return mapUsuarioWithRol(rs);
 		                }
 		            }
