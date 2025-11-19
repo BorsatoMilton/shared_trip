@@ -44,10 +44,9 @@ body {
 
 </style>
 </head>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" ></script>
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 <body>
-	
+
 	<div class="container-fluid p-0">
 
 		<div class="row">
@@ -66,14 +65,6 @@ body {
 		<div class="row px-3 mt-4">
 
 			<div class="col-12">
-				<%
-				String reservado = request.getParameter("reservado");
-				if ("true".equals(reservado)) {
-				%>
-				<div class="alert alert-success" role="alert">¡Reserva realizada con éxito!</div>
-				<%
-				}
-				%>
 				<%
 				String mensaje = (String) session.getAttribute("mensaje");
 				if (mensaje != null) {
@@ -115,8 +106,9 @@ body {
 									<%
 									if (viaje.getLugares_disponibles() > 0) {
 									%>
-									<form action="reservar" method="post"
+									<form action="reservas" method="post"
 										class="d-flex align-items-center">
+                                        <input type="hidden" name="action" value="reserve">
 										<input type="hidden" name="viajeId"
 											value="<%=viaje.getIdViaje()%>"> <input
 											type="number" name="cantPasajeros" min="1"
@@ -152,24 +144,16 @@ body {
 		
 	</div>
 
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
 	
-		
-	<script>
-	
-	
-    if (!sessionStorage.getItem("viajesCargados")) {
-        sessionStorage.setItem("viajesCargados", "true");
-        window.location.href = "ViajesListado";
-    }
-</script>
-	
-</body>
-<footer>
+
 	<div class="row align-items-end" style="height: 10vh">
 			<div class="col">
 				<jsp:include page="footer.jsp"></jsp:include>
 			</div>
-		</div>
-</footer>
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</body>
 </html>

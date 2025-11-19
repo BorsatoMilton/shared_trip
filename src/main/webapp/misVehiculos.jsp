@@ -9,7 +9,7 @@
 <head>
 <meta charset="ISO-8859-1">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Mis Vehiculos</title>
+<title>Mis Vehículos</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 
 <link
@@ -54,11 +54,11 @@ body {
 
 </head>
 <body>
-
-<div class="container-fluid p-0"></div>
+<jsp:include page="header.jsp"></jsp:include>
+<div class="container-fluid p-0">
 		<div class="row align-items-start" style="height: 10vh">
 			<div class="col">
-				<jsp:include page="header.jsp"></jsp:include>
+
 			</div>
 		</div>
 		
@@ -71,11 +71,11 @@ body {
 					<div
 					class="card-header d-flex justify-content-between align-items-center">
 					<h3 class="mb-0">
-						<i class="bi bi-car-front-fill"></i> Administración de Vehiculos
+						<i class="bi bi-car-front-fill"></i> Administración de Vehículos
 					</h3>
-					<button type="button" class="btn btn-light" data-bs-toggle="modal"
+					<button type="button" id="btnNuevoVehiculo" class="btn btn-light" data-bs-toggle="modal"
 						data-bs-target="#nuevoVehiculo">
-						<i class="bi bi-plus-circle me-2"></i>Nuevo Vehiculo
+						<i class="bi bi-plus-circle me-2"></i>Nuevo Vehículo
 					</button>
 				</div>
 					
@@ -160,7 +160,7 @@ body {
 		                } else {
 		            %>
 							<tr>
-								<td colspan="8" class="text-center">No existen vehiculos.</td>
+								<td colspan="8" class="text-center">No existen vehículos.</td>
 							</tr>
 							<%
 		                }
@@ -173,7 +173,7 @@ body {
 					</main>
 				</div>
 			</div>
-
+</div>
 
 <!-------------------------------------------------  Modal EDITAR VEHICULO ----------------------------------------------------------------------->
 
@@ -193,9 +193,7 @@ body {
 					
 					<div class="modal-body">
 						<div class="mb-3">
-						
-							
-							
+
 							<div class="row g-2">
 								<div class="col">
 								<label class="form-label">Patente</label>
@@ -260,11 +258,9 @@ body {
 	</div>    
     
     	
-    <!--  Modal  ---------------------------------------------------------------------------------------------------->
+    <!--  Modal  -------------------MODAL NUEVO VEHICULO------------------------------------------>
 
 
-<!-- #nuevoVehiculo -->
-<!-- Modal Mejorado -->
 <div class="modal fade" id="nuevoVehiculo" tabindex="-1" aria-labelledby="nuevoVehiculoLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content shadow">
@@ -301,6 +297,22 @@ body {
                 <input type="number" class="form-control" min="1960" max="2024" name="anio" placeholder="Ingrese el año" id="anio" required>
               </div>
             </div>
+             <%--
+              <% if(("admin").equals(((Usuario) session.getAttribute("usuario")).getNombreRol())){ %>
+              <div class="col-md-6">
+                  <div class="mb-3">
+                      <label class="form-label fw-bold" for="usuario">Usuario</label>
+                      <select class="form-control" name="usuario" placeholder="Ingrese el usuario" id="usuario" required>
+                          <%
+                              for (Usuario usuario : usuarios){
+                          %> <option value="<%=usuario.getId()%>"><%=usuario.getNombre() + " " + usuario.getApellido()%></option>
+                             <% }
+                          %>
+                      </select>
+                  </div>
+              </div>
+              <% } %>
+            --%>
           </div>
 
           <div class="modal-footer">
@@ -315,21 +327,12 @@ body {
   </div>
 </div>
 
-
-
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-
-
-<script src="js/scriptVehiculos.js"></script>
-
-<script
-		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-</body>
-<div class="row align-items-end" style="height: 10vh">
-    <div class="col">
-        <jsp:include page="footer.jsp"></jsp:include>
+    <div class="row align-items-end" style="height: 10vh">
+        <div class="col">
+            <jsp:include page="footer.jsp"/>
+        </div>
     </div>
-</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+<script src="js/scriptVehiculos.js"></script>
+</body>
 </html>

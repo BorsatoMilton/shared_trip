@@ -1,6 +1,7 @@
 package servlet;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.LinkedList;
 
 import javax.servlet.ServletException;
@@ -14,7 +15,8 @@ import entidades.Usuario;
 import entidades.Vehiculo;
 import logic.UserController;
 import logic.VehiculoController;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -23,7 +25,8 @@ import logic.VehiculoController;
 @WebServlet("/vehiculos")
 public class CRUDvehiculos extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private VehiculoController vehiculoCtrl = new VehiculoController();
+    private static final Logger log = LoggerFactory.getLogger(CRUDvehiculos.class);
+    private VehiculoController vehiculoCtrl = new VehiculoController();
 	
     /**
      * @see HttpServlet#HttpServlet()
@@ -41,15 +44,22 @@ public class CRUDvehiculos extends HttpServlet {
 		request.removeAttribute("vehiculos");
 		HttpSession session = request.getSession();
 		Usuario usuario = (Usuario) session.getAttribute("usuario");
-		
+        String tipo_usuario = (String) usuario.getNombreRol();
 
-		LinkedList<Vehiculo> vehiculos = vehiculoCtrl.getVehiculosUsuario(usuario);
-		
-
-		request.setAttribute("vehiculos", vehiculos);
-		
-		request.getRequestDispatcher("misVehiculos.jsp").forward(request, response);
-		;
+        try {
+            if (tipo_usuario.equals("admin")) {
+                LinkedList<Vehiculo> vehiculos = vehiculoCtrl.getAll();
+                request.setAttribute("vehiculos", vehiculos);
+            }else if  (tipo_usuario.equals("usuario")) {
+                LinkedList<Vehiculo> vehiculos = vehiculoCtrl.getVehiculosUsuario(usuario);
+                request.setAttribute("vehiculos", vehiculos);
+            }else {
+                request.setAttribute("vehiculos", new LinkedList<Vehiculo>()); // EN REALIDAD DEBERIA MOSTRAR MENSAJE
+            }
+            request.getRequestDispatcher("misVehiculos.jsp").forward(request, response);
+        } catch (Exception e) {
+            log.error("Error: ", e);
+        }
 	}
 
 	/**
@@ -76,16 +86,16 @@ public class CRUDvehiculos extends HttpServlet {
 				session.setAttribute("mensaje", "Vehiculo creado con éxito");
 			}
 
-		} catch (Exception e) {
+		} catch (Exception e) { //Desglosar bien el error, que no sea genérico, avisarle al usuario?
 			session.setAttribute("error", "Error: " + e.getMessage());
 			if ("update".equals(action)) {
-				System.out.println("Error en actualizarVehiculo: " + e.getMessage());
+				System.out.println("Error en actualizar Vehículo: " + e.getMessage());
 			}
 			else if ("delete".equals(action)) {
-				System.out.println("Error en eliminarVehiculo: " + e.getMessage());
+				System.out.println("Error en eliminar Vehículo: " + e.getMessage());
 			}
 			else {
-				System.out.println("Error en crearVehiculo: " + e.getMessage());
+				System.out.println("Error en crear Vehículo: " + e.getMessage());
 			}
 			
 		}
@@ -125,6 +135,8 @@ public class CRUDvehiculos extends HttpServlet {
 		vehiculoCtrl.eliminarVehiculo(v.getId_vehiculo());
 	}
 
+
+    // ----------------------------------- MÉTODOS AUXILIARES -------------------------------------------
 	private void cargarDatosVehiculo(HttpServletRequest request, Vehiculo v) {
 		HttpSession session = request.getSession();
 		Usuario usuario = (Usuario) session.getAttribute("usuario");
@@ -134,8 +146,8 @@ public class CRUDvehiculos extends HttpServlet {
 		int anio = Integer.parseInt(request.getParameter("anio"));
         v.setAnio(anio);
         v.setUsuario_duenio_id(usuario.getIdUsuario());
-        
-    
+
+
 	}
 		
 	}

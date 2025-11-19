@@ -14,7 +14,6 @@ public class ViajeController {
 	
 	public LinkedList<Viaje> getAll(){
 		LinkedList<Viaje>viajes = viajeDAO.getAll();
-		System.out.println(viajes.size());
 		return viajeDAO.getAll();
 		
 	}
@@ -47,8 +46,8 @@ public class ViajeController {
 		
 	}
 	
-	public boolean cancelar(int idViaje, int idUsuario) {
-		return this.viajeDAO.cancelarViaje(idViaje, idUsuario);
+	public boolean cancelar(int idViaje) {
+		return this.viajeDAO.cancelarViaje(idViaje);
 		
 	}
 	

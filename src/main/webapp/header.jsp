@@ -1,55 +1,54 @@
 <%@ page import="entidades.Usuario, entidades.Rol" %>
 <head>
-<link rel="stylesheet"
-	href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-	
-<style>
-.navbar {
-    padding: 0.5rem 0;
-    transition: all 0.3s ease;
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+	<title></title>
+    <style>
+    .navbar {
+        padding: 0.5rem 0;
+        transition: all 0.3s ease;
 
-}
+    }
 
-.navbar-brand {
-    letter-spacing: 1px;
-    transition: transform 0.3s ease;
-}
+    .navbar-brand {
+        letter-spacing: 1px;
+        transition: transform 0.3s ease;
+    }
 
-.navbar-brand:hover {
-    transform: scale(1.05);
-}
+    .navbar-brand:hover {
+        transform: scale(1.05);
+    }
 
-.nav-link {
-    font-weight: 500;
-    transition: all 0.2s ease;
-    border-radius: 0.5rem;
-    padding: 0.5rem 1rem !important;
-}
+    .nav-link {
+        font-weight: 500;
+        transition: all 0.2s ease;
+        border-radius: 0.5rem;
+        padding: 0.5rem 1rem !important;
+    }
 
-.nav-link:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-    transform: translateY(-2px);
-}
+    .nav-link:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+        transform: translateY(-2px);
+    }
 
-.dropdown-menu {
-    border: none;
-    min-width: 220px;
-}
+    .dropdown-menu {
+        border: none;
+        min-width: 220px;
+    }
 
-.dropdown-item {
-    transition: all 0.2s ease;
-}
+    .dropdown-item {
+        transition: all 0.2s ease;
+    }
 
-.dropdown-item:hover {
-    background-color: #f8f9fa;
-    padding-left: 1.5rem;
-}
+    .dropdown-item:hover {
+        background-color: #f8f9fa;
+        padding-left: 1.5rem;
+    }
 
-.btn-outline-light:hover {
-    background-color: rgba(255, 255, 255, 0.9);
-    color: #0d6efd !important;
-}
-</style>
+    .btn-outline-light:hover {
+        background-color: rgba(255, 255, 255, 0.9);
+        color: #0d6efd !important;
+    }
+    </style>
 </head>
 
 <body>
@@ -79,25 +78,31 @@
                         </li>
                                             
                         <li class="nav-item">
-                            <a class="nav-link" href="<%= request.getContextPath() %>/viajesAdmin">
+                            <a class="nav-link" href="<%= request.getContextPath() %>/viajes">
                                 <i class="bi bi-geo-alt me-1"></i>Viajes
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="<%= request.getContextPath() %>/vehiculos">
+                                <i class="bi bi-car-front-fill me-1"></i>Vehiculos
                             </a>
                         </li>
                   <% } else { %>  
                     
                         <li class="nav-item">
-                            <a class="nav-link" href="<%= request.getContextPath() %>/misViajes">
+                            <a class="nav-link" href="<%= request.getContextPath() %>/viajes">
                                 <i class="bi bi-geo-alt me-1"></i>Mis Viajes
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="<%= request.getContextPath() %>/misReservas">
+                            <a class="nav-link" href="<%= request.getContextPath() %>/reservas">
                                 <i class="bi bi-journal-check me-1"></i>Mis Reservas
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="<%= request.getContextPath() %>/vehiculos">
-                                <i class="bi bi-truck me-1"></i>Mis Vehículos
+                                <i class="bi bi-truck me-1"></i>Mis VehÃ­culos
                             </a>
                         </li>
 
@@ -137,9 +142,10 @@
                                 </li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
-                                    <form action="<%= request.getContextPath() %>/CerrarSesion" method="post">
+                                    <form action="auth" method="POST">
+                                        <input type="hidden" name="action" value="logout">
                                         <button type="submit" class="dropdown-item text-danger">
-                                            <i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesión
+                                            <i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesiï¿½n
                                         </button>
                                     </form>
                                 </li>

@@ -13,12 +13,12 @@ import logic.UserController;
 
 
 @WebServlet("/perfil")
-public class Perfil extends HttpServlet {
+public class UpdatePerfil extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private UserController usuarioCtrl = new UserController();
        
 
-    public Perfil() {
+    public UpdatePerfil() {
         super();
     }
 
@@ -73,7 +73,7 @@ public class Perfil extends HttpServlet {
 	
 	
 	private boolean actualizarUsuario(HttpServletRequest request) throws Exception {
-		int id = Integer.parseInt(request.getParameter("idUsuario"));
+		int id = ((Usuario) request.getSession().getAttribute("usuario")).getIdUsuario();
 		Usuario u = usuarioCtrl.getOneById(id);
 
 		if (u == null) {
@@ -86,8 +86,9 @@ public class Perfil extends HttpServlet {
 	
 	
 	private boolean actualizarClave(HttpServletRequest request) throws Exception {
-		int id = Integer.parseInt(request.getParameter("idUsuario"));
+        int id = ((Usuario) request.getSession().getAttribute("usuario")).getIdUsuario();
 		Usuario u = usuarioCtrl.getOneById(id);
+
 		if (u == null) {
 			throw new Exception("Usuario no encontrado");
 		}
@@ -102,9 +103,7 @@ public class Perfil extends HttpServlet {
 		u.setApellido(request.getParameter("apellido"));
 		u.setCorreo(request.getParameter("correo"));
 		u.setUsuario(request.getParameter("usuario"));
-		u.setClave(request.getParameter("clave"));
 		u.setTelefono(request.getParameter("telefono"));
-		u.setRol(Integer.parseInt(request.getParameter("rol")));
 
 	}
 

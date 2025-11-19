@@ -172,7 +172,7 @@ body {
 						</thead>
 						<tbody>
 							<%
-		                LinkedList<Viaje> viajes = (LinkedList<Viaje>) request.getSession().getAttribute("misviajes");
+		                LinkedList<Viaje> viajes = (LinkedList<Viaje>) request.getAttribute("viajes");
 		                if (viajes != null && !viajes.isEmpty()) {
 		                    for (Viaje viaje : viajes) {
 		                    	
@@ -210,22 +210,20 @@ body {
 											disabled <% } %>>
 											<i class="bi bi-trash"></i>
 										</button>
+                                        <form action="viajes" method="post">
+                                            <input type="hidden" name="viajeId"
+                                                   value="<%= viaje.getIdViaje() %>">
+                                            <%
+                                                Date fechaViaje = viaje.getFecha();
+                                                LocalDateTime fechaViajeLocalDateTime = fechaViaje.toLocalDate().atStartOfDay();
+                                            %>
+                                            <input type="hidden" name="action" value="cancelarViaje">
 
+                                            <button type="submit" class="btn btn-danger"
+                                                    <% if (viaje.isCancelado() || fechaViajeLocalDateTime.isBefore(LocalDateTime.now())) { %>
+                                                    disabled <% } %>>Cancelar</button>
+                                        </form>
 									</td>
-								<td>
-									<form action="cancelarViaje" method="post">
-										<input type="hidden" name="viajeId"
-											value="<%= viaje.getIdViaje() %>">
-										<%
-								    Date fechaViaje = viaje.getFecha();
-								    LocalDateTime fechaViajeLocalDateTime = fechaViaje.toLocalDate().atStartOfDay();
-								%>
-		
-										<button type="submit" class="btn btn-danger"
-											<% if (viaje.isCancelado() || fechaViajeLocalDateTime.isBefore(LocalDateTime.now())) { %>
-											disabled <% } %>>Cancelar</button>
-									</form>
-								</td>
 							</tr>
 							<%
 		                    }
@@ -245,7 +243,15 @@ body {
 					</main>
 				</div>
 			</div>
-		
+
+
+    <footer>
+        <div class="row align-items-end" style="height: 10vh">
+            <div class="col">
+                <jsp:include page="footer.jsp"></jsp:include>
+            </div>
+        </div>
+    </footer>
 <!-------------------------------------------------  Modal EDITAR VIAJE ----------------------------------------------------------------------------------------->
 
 <div class="modal fade" id="editarViaje">
@@ -259,14 +265,12 @@ body {
 						aria-label="Close"></button>
 				</div>
 				<form method="POST" action="viajes" id="formEditar">
-					<input type="hidden" name="action" value="update"> <input
-						type="hidden" name="idViaje" id="editId">
+					<input type="hidden" name="action" value="update">
+                    <input type="hidden" name="idViaje" id="editId">
 					
 					<div class="modal-body">
 						<div class="mb-3">
-						
-							
-							
+
 							<div class="row g-2">
 								<div class="col">
 								<label class="form-label">Fecha Viaje</label>
@@ -320,9 +324,7 @@ body {
 							Viaje</button>
 					</div>
 					</form>
-					
 					</div>
-		
 			</div>
 		</div>
 	
@@ -352,109 +354,73 @@ body {
 	</div>
 <!------------------------------------------------MODAL #nuevoVehiculo --------------------------------------------------------------------------------->
 <div class="modal fade" id="nuevoViaje" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="nuevoViaje">Nuevo Viaje</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-    <form method="post" action="altaViaje" id="altaViaje">
-        <div class="row">
-            <div class="col-md-6">
-                <div class="mb-3">
-                    <label for="fecha">Fecha</label>
-                    <input type="date" class="form-control" name="fecha" id="fecha" required>
-                </div>
+    <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h1 class="modal-title fs-5" id="nuevoViaje">Nuevo Viaje</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+            <div class="modal-body">
+                <form method="POST" action="viajes" id="altaViaje">
+                    <input type="hidden" name="action" value="add">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="fecha">Fecha</label>
+                                <input type="date" class="form-control" name="fecha" id="fecha" required>
+                            </div>
 
-                <div class="mb-3">
-                    <label for="lugares_disponibles">Lugares Disponibles</label>
-                    <input type="text" class="form-control" name="lugares_disponibles" id="lugares_disponibles" placeholder="Ingrese los lugares disponibles " required>
-                </div>
+                            <div class="mb-3">
+                                <label for="lugares_disponibles">Lugares Disponibles</label>
+                                <input type="text" class="form-control" name="lugares_disponibles" id="lugares_disponibles" placeholder="Ingrese los lugares disponibles " required>
+                            </div>
 
-                <div class="mb-3">
-                    <label for="origen" class="form-label">Origen:</label> 
-                    <div class="dropdown-container">
-                        <input type="text" class="form-control" id="origen" name="origen" placeholder="Ciudad de origen" required>
-                        <div id="resultadoCiudadesOrigen" class="resultadoCiudades"></div>
+                            <div class="mb-3">
+                                <label for="origen" class="form-label">Origen:</label>
+                                <div class="dropdown-container">
+                                    <input type="text" class="form-control" id="origen" name="origen" placeholder="Ciudad de origen" required>
+                                    <div id="resultadoCiudadesOrigen" class="resultadoCiudades"></div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="precio_unitario">Precio Unitario</label>
+                                <input type="number" step=any class="form-control" name="precio_unitario" id="precio_unitario" placeholder="Ingrese el precio unitario" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="lugar_salida">Lugar de Salida</label>
+                                <input type="text" class="form-control" name="lugar_salida" id="lugar_salida" placeholder="Ingrese el lugar de salida" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="destino" class="form-label" >Destino:</label>
+                                <div class="dropdown-container">
+                                    <input type="text" class="form-control" id="destino" name="destino" placeholder="Ciudad de destino" required>
+                                    <div id="resultadoCiudadesDestino" class="resultadoCiudades"></div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
-
-            </div>
-
-            <div class="col-md-6">
-                <div class="mb-3">
-                    <label for="precio_unitario">Precio Unitario</label>
-                    <input type="number" step=any class="form-control" name="precio_unitario" id="precio_unitario" placeholder="Ingrese el precio unitario" required>
-                </div>
-
-                <div class="mb-3">
-                    <label for="lugar_salida">Lugar de Salida</label>
-                    <input type="text" class="form-control" name="lugar_salida" id="lugar_salida" placeholder="Ingrese el lugar de salida" required>
-                </div>
-                
-                <div class="mb-3">
-                    <label for="destino" class="form-label" >Destino:</label> 
-                    <div class="dropdown-container">
-                        <input type="text" class="form-control" id="destino" name="destino" placeholder="Ciudad de destino" required>
-                        <div id="resultadoCiudadesDestino" class="resultadoCiudades"></div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="submit" class="btn btn-primary" onclick = "envioFormulario()">Guardar</button>
                     </div>
-                </div>
+                </form>
             </div>
         </div>
-        <div class="modal-footer">
-	        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-	        <button type="submit" class="btn btn-primary" onclick = "envioFormulario()">Guardar</button>
-      	</div>
-    </form>
-</div>
-
-      
     </div>
-  </div>
 </div>		
 
 
-	<script
-		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-		integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-		crossorigin="anonymous"></script>
-	<script type="text/javascript">
-	function envioFormulario() {
-	    var form = document.getElementById("altaViaje");
-
-	    // Verifica si el formulario es válido antes de enviarlo
-	    if (!form.checkValidity()) {
-	        form.reportValidity(); // Muestra los errores de validación en pantalla
-	        return; // Evita que el formulario se envíe si hay errores
-	    }
-
-	    // Si es válido, lo enviamos
-	    form.submit();
-
-	    // Cierra el modal después de enviar
-	    var modal = bootstrap.Modal.getInstance(document.getElementById("nuevoViaje"));
-	    modal.hide();
-	}
-
-</script>
-
-<script src = "scripts/buscadorMunicipios.js">
-	
-</script>
-<script src="js/scriptViajes.js"></script>
-<script
-		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-
+    <script src = "scripts/buscadorMunicipios.js"></script>
+    <script src="js/scriptViajes.js"></script>
+    <script
+            src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+            crossorigin="anonymous"></script>
 </body>
-<footer>
-	<div class="row align-items-end" style="height: 10vh">
-			<div class="col">
-				<jsp:include page="footer.jsp"></jsp:include>
-			</div>
-		</div>
-</footer>
-		
-	
 </html>

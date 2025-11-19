@@ -97,10 +97,8 @@ margin: auto ;
 			<div class="profile-container mx-auto">
 				<h1>Actualizar Perfil</h1>
 				<form method="POST" action="perfil" id="actualizarDatosPerfil">
-					<input type="hidden" name="idUsuario" value="<%= usuario.getIdUsuario() %>">
-					<input type="hidden" name="rol" value="<%= usuario.getRol() %>">
 					<input type="hidden" name="action" value="profile">
-					<div class="mb-4">
+ 					<div class="mb-4">
 						<label class="form-label">Nombre completo</label>
 						<div class="row g-2">
 							<div class="col">
@@ -152,7 +150,6 @@ margin: auto ;
            <form id="formEditarClave" method="POST" action="perfil">
 				<div class="modal-body">
 					<input type="hidden" name="action" value="password">
-					<input type="hidden" name="idUsuario" id="idUsuario">
 					<label class="form-label">Nueva Contraseña</label>
 					<input type="password" class="form-control" placeholder="Ej: irjner231kds" minlength="6" name="clave" id="updateClave" required>
 				</div>

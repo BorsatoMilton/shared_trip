@@ -55,7 +55,7 @@ body {
 					<div
 					class="card-header d-flex justify-content-between align-items-center">
 					<h3 class="mb-0">
-						<i class="bi bi-people-fill me-2"></i>AdministraciÃ³n de Reservas
+						<i class="bi bi-people-fill me-2"></i>Administración de Reservas
 					</h3>
 				</div>
 					
@@ -114,7 +114,7 @@ body {
 								<td><%= reserva.getViaje().getFecha() %></td>
 								<td><%= reserva.getCantidad_pasajeros_reservada()%></td>
 								<td><%= reserva.getViaje().getPrecio_unitario()*reserva.getCantidad_pasajeros_reservada()%></td>
-								<td><%= reserva.isReserva_cancelada()? "SÃ­" : "No" %></td>
+								<td><%= reserva.isReserva_cancelada()? "Sí" : "No" %></td>
 								<td>
 									<% if (reserva.getEstado().equalsIgnoreCase("EN PROCESO")) { %>
 									<form method="post" action= "ActualizarEstadoReserva">
@@ -136,9 +136,8 @@ body {
 								</td>
 
 								<td class="text-end action-buttons">
-										
-										
-										<form action="cancelarReserva" method="post">
+										<form action="reservas" method="POST">
+                                            <input type="hidden" name="action" value="cancelar">
 										<input type="hidden" name="reservaId"
 											value="<%= reserva.getIdReserva() %>">
 										

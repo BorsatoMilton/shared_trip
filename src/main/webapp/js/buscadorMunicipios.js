@@ -4,6 +4,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 let municipios = [];
 
+function limpiar() {
+    document.getElementById("formBusqueda").reset();
+}
+
 async function iniciador() {
 	try {
 		let response = await fetch("resources/municipios.json");

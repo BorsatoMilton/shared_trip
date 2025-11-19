@@ -26,6 +26,10 @@ logs/
 WebContent/WEB-INF/lib/
 src/main/webapp/WEB-INF/lib/
 
+# IntelliJ IDEA
+.idea/
+*.iml
+out/
 
 .env
 *.properties
