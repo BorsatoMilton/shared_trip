@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.LinkedList;
 
@@ -53,6 +54,7 @@ public class CRUDreservas extends HttpServlet {
             throws ServletException, IOException {
 
         HttpSession session = request.getSession();
+        Usuario usuario = (Usuario) session.getAttribute("usuario");
         String action = request.getParameter("action");
         if (session.getAttribute("usuario") == null) {
             response.sendRedirect("login.jsp");
@@ -61,10 +63,10 @@ public class CRUDreservas extends HttpServlet {
 
         try{
             if("reserve".equals(action)){
-                reservar(request);
+                reservar(request, usuario);
                 session.setAttribute("mensaje", "Reserva realizada con éxito");
             }else if("cancelar".equals(action)){
-                cancelarReserva(request);
+                cancelarReserva(request, usuario);
                 session.setAttribute("mensaje", "Reserva cancelada con éxito");
             }else if("updateStatus".equals(action)){
                 actualizarEstadoReserva(request);
@@ -86,50 +88,54 @@ public class CRUDreservas extends HttpServlet {
 
     }
 
-    private void reservar(HttpServletRequest request) throws Exception {
+    private void reservar(HttpServletRequest request, Usuario usuario) throws Exception {
 
-        int viajeId = Integer.parseInt(request.getParameter("viajeId"));
-        int cantPasajeros = Integer.parseInt(request.getParameter("cantPasajeros"));
+        String viajeIdStr = request.getParameter("viajeId");
+        String cantPasajerosStr = request.getParameter("cantPasajeros");
 
-        Usuario user = (Usuario) request.getSession().getAttribute("usuario");
-        int idUsuario = user.getIdUsuario();
+        if (viajeIdStr == null || viajeIdStr.trim().isEmpty()) {
+            throw new Exception("Debe seleccionar un viaje");
+        }
 
-        Viaje viaje = viajeController.getOne(viajeId);
+        if (cantPasajerosStr == null || cantPasajerosStr.trim().isEmpty()) {
+            throw new Exception("Debe indicar la cantidad de pasajeros");
+        }
 
-        if (viaje == null) {
-            throw new Exception("El viaje no existe.");
+        int viajeId;
+        int cantPasajeros;
+
+        try {
+            viajeId = Integer.parseInt(viajeIdStr);
+            cantPasajeros = Integer.parseInt(cantPasajerosStr);
+        } catch (NumberFormatException e) {
+            throw new Exception("Formato de número inválido");
         }
 
         if (cantPasajeros <= 0) {
-            throw new Exception("La cantidad de pasajeros debe ser mayor a cero.");
+            throw new Exception("La cantidad de pasajeros debe ser mayor a 0");
         }
 
-        if (viaje.getLugares_disponibles() < cantPasajeros) {
-            throw new Exception("No hay cupos suficientes para realizar la reserva.");
-        }
-
-        reservaController.nuevaReserva(viaje, cantPasajeros, idUsuario);
-        viajeController.actualizarCantidad(viajeId, cantPasajeros);
-
-
+        reservaController.nuevaReserva(viajeId, cantPasajeros, usuario.getIdUsuario());
     }
 
-    private void cancelarReserva(HttpServletRequest request) throws Exception {
+    private void cancelarReserva(HttpServletRequest request, Usuario usuario) throws Exception {
 
-        int idReserva = Integer.parseInt(request.getParameter("reservaId"));
-        int idViaje = Integer.parseInt(request.getParameter("viajeId"));
+        String reservaIdStr = request.getParameter("reservaId");
 
-        int cantidadPasajeros = reservaController.obtenerCantidad(idReserva);
-        boolean cancelada = reservaController.cancelar(idReserva);
-        System.out.println("cancelada: " + cancelada);
-        if (cancelada) {
-            viajeController.actualizarCantidad(idViaje, cantidadPasajeros * (-1));
-        }else{
-            throw new Exception("Error al cancelar Reserva");
+        if (reservaIdStr == null || reservaIdStr.trim().isEmpty()) {
+            throw new Exception("ID de reserva inválido");
         }
 
-    }
+        int idReserva;
+        try {
+            idReserva = Integer.parseInt(reservaIdStr);
+        } catch (NumberFormatException e) {
+            throw new Exception("Formato de número inválido");
+        }
 
+        // Delegar al controller
+        reservaController.cancelarReserva(idReserva, usuario.getIdUsuario());
+    }
     private void actualizarEstadoReserva(HttpServletRequest request){
         /*ReservaController reservaCtrl = new ReservaController();
 
