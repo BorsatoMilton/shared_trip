@@ -16,9 +16,9 @@ public class ViajeDAO {
 
     public LinkedList<Viaje> getAll() {
         LinkedList<Viaje> viajes = new LinkedList<>();
-        String query = "SELECT v.*, u.* FROM viajes v "
+        String query = "SELECT v.* FROM viajes v "
                      + "INNER JOIN usuarios u ON u.id_usuario = v.id_conductor "
-                     + "WHERE v.fecha >= CURRENT_DATE AND u.fecha_baja IS NULL";
+                     + "WHERE v.fecha >= CURRENT_DATE AND u.fecha_baja IS NULL AND v.cancelado = 0";
         Connection conn = null;
 
         try {

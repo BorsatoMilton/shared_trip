@@ -14,7 +14,6 @@ public class ViajeController {
 	
 	public LinkedList<Viaje> getAll(){
 		LinkedList<Viaje>viajes = viajeDAO.getAll();
-		System.out.println(viajes.size());
 		return viajeDAO.getAll();
 		
 	}

@@ -16,7 +16,7 @@ import logic.ViajeController;
  * Servlet implementation class ViajesListado
  */
 @WebServlet(urlPatterns = {"", "/ViajesListado"})
-public class ViajesListado extends HttpServlet {
+public class ViajesListadoInicio extends HttpServlet {
 	private static final long serialVersionUID = 1L;
     private ViajeController viajeController ;
     
@@ -27,24 +27,18 @@ public class ViajesListado extends HttpServlet {
     public void init() throws ServletException {
         viajeController = new ViajeController(); 
     }
-    public ViajesListado() {
+    public ViajesListadoInicio() {
         super();
         // TODO Auto-generated constructor stub
     }
 
     @Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    	
-    	request.removeAttribute("viajes");
-    	HttpSession session = request.getSession(true);
-    	
-        if ("true".equals(request.getParameter("reset"))) {
-            session.removeAttribute("existenViajes");
-        }
+
+    	HttpSession session = request.getSession();
     	
     	LinkedList<Viaje> viajes = viajeController.getAll();
         request.setAttribute("viajes", viajes);
-        session.setAttribute("existenViajes", true);
         
         request.getRequestDispatcher("index.jsp").forward(request, response); 
 	}
