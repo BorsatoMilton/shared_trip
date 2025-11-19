@@ -148,8 +148,8 @@ public class ViajeDAO {
         }
     }
 
-    public boolean cancelarViaje(int id_viaje, int id_usuario) {
-        String query = "UPDATE viajes SET cancelado = true WHERE id_viaje = ? AND id_conductor = ?";
+    public boolean cancelarViaje(int id_viaje) {
+        String query = "UPDATE viajes SET cancelado = true WHERE id_viaje = ?";
         Connection conn = null;
         boolean cancelada = false;
 
@@ -157,12 +157,11 @@ public class ViajeDAO {
             conn = ConnectionDB.getInstancia().getConn();
             try (PreparedStatement stmt = conn.prepareStatement(query)) {
                 stmt.setInt(1, id_viaje);
-                stmt.setInt(2, id_usuario);
 
                 int rowsAffected = stmt.executeUpdate();
                 cancelada = rowsAffected > 0;
                 if (cancelada) {
-                    logger.info("Viaje ID: {} cancelado por usuario ID: {}", id_viaje, id_usuario);
+                    logger.info("Viaje ID: {} cancelado", id_viaje);
                 } else {
                     logger.warn("No se pudo cancelar el viaje ID: {}", id_viaje);
                 }

@@ -47,8 +47,8 @@ public class ViajeController {
 		
 	}
 	
-	public boolean cancelar(int idViaje, int idUsuario) {
-		return this.viajeDAO.cancelarViaje(idViaje, idUsuario);
+	public boolean cancelar(int idViaje) {
+		return this.viajeDAO.cancelarViaje(idViaje);
 		
 	}
 	

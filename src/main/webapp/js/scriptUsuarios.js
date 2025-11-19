@@ -16,7 +16,7 @@ const initCRUDOperations = () => {
 
     document.querySelectorAll('.btn-editar').forEach(btn => {
         btn.addEventListener('click', function() {
-            abrirModal('editar', {
+            abrirModal('editarUsuario', {
                 editNombre: this.dataset.nombre,
                 editApellido: this.dataset.apellido,
                 editUsuario: this.dataset.usuario,

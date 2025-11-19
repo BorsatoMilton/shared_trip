@@ -31,43 +31,65 @@ public class CRUDviajes extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		
-		request.removeAttribute("viajes");
-		request.removeAttribute("usuarios");
 
-		LinkedList<Viaje> viajes = viajeCtrl.getAll();
-		LinkedList<Usuario> usuarios = usuarioCtrl.getAll();
-		for (Viaje v : viajes) {
-			Usuario usuario = usuarioCtrl.getOneById(v.getConductor().getIdUsuario());
-			v.setConductor(usuario);
-		}
+        HttpSession session = request.getSession();
+        Usuario usuario = (Usuario) session.getAttribute("usuario");
 
-		request.setAttribute("viajes", viajes);
-		request.setAttribute("usuarios", usuarios);
-		request.getRequestDispatcher("misViajes.jsp").forward(request, response);
-		;
+        if (usuario == null) {
+            response.sendRedirect("login.jsp");
+            return;
+        }
+
+        String tipo = usuario.getNombreRol();
+
+        LinkedList<Viaje> viajes = new LinkedList<>();
+        LinkedList<Usuario> usuarios = null;
+
+        if ("admin".equalsIgnoreCase(tipo)) {
+            viajes = viajeCtrl.getAll();
+            usuarios = usuarioCtrl.getAll();
+            System.out.println("Viajes: " + viajes);
+
+        } else if ("usuario".equalsIgnoreCase(tipo)) {
+            viajes = viajeCtrl.getViajesUsuario(usuario);
+        }
+
+        for (Viaje v : viajes) {
+            if (v.getConductor() != null && v.getConductor().getIdUsuario() > 0) {
+                Usuario u = usuarioCtrl.getOneById(v.getConductor().getIdUsuario());
+                v.setConductor(u);
+            }
+        }
+
+        request.setAttribute("viajes", viajes);
+        request.setAttribute("usuarios", usuarios);
+
+        request.getRequestDispatcher("misViajes.jsp").forward(request, response);
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		HttpSession session = request.getSession();
 		String action = request.getParameter("action");
-		
-		System.out.println("ID Viaje: " + request.getParameter("idViaje"));
-		
-
 
 		try {
 			if ("update".equals(action)) {
-				actualizarViaje(request);
+				actualizarViaje(request, session);
 				session.setAttribute("mensaje", "Viaje actualizado con éxito");
 			} else if ("delete".equals(action)) {
 				eliminarViaje(request);
 				session.setAttribute("mensaje", "Viaje eliminado con éxito");
 			} else if ("add".equals(action)) {
-				crearViaje(request);
+				crearViaje(request, session);
 				session.setAttribute("mensaje", "Viaje creado con éxito");
-			}
+			} else if ("cancelarViaje".equals(action)) {
+                boolean cancelar = cancelarViaje(request);
+                if (cancelar) {
+                    session.setAttribute("mensaje", "Viaje cancelado con éxito");
+                } else {
+                    session.setAttribute("mensaje", "Ocurrió un error al cancelar el viaje");
+                }
+            }
 
 		} catch (Exception e) {
 			session.setAttribute("error", "Error: " + e.getMessage());
@@ -83,17 +105,17 @@ public class CRUDviajes extends HttpServlet {
 			
 		}
 
-		response.sendRedirect(request.getContextPath() + "/misViajes");
+		response.sendRedirect(request.getContextPath() + "/viajes");
 	}
 
-	private void crearViaje(HttpServletRequest request) throws Exception {
+	private void crearViaje(HttpServletRequest request, HttpSession session) throws Exception {
 		Viaje v = new Viaje();
-		cargarDatosViaje(request, v);
+		cargarDatosViaje(request, v, session);
 
 		viajeCtrl.altaViaje(v);
 	}
 
-	private void actualizarViaje(HttpServletRequest request) throws Exception {
+	private void actualizarViaje(HttpServletRequest request, HttpSession session) throws Exception {
 		int id = Integer.parseInt(request.getParameter("idViaje"));
 		
 		Viaje v = viajeCtrl.getOne(id);
@@ -102,7 +124,7 @@ public class CRUDviajes extends HttpServlet {
 			throw new Exception("Viaje no encontrado");
 		}
 
-		cargarDatosViaje(request, v);
+		cargarDatosViaje(request, v, session);
 		viajeCtrl.updateViaje(v, id);
 	}
 
@@ -117,8 +139,16 @@ public class CRUDviajes extends HttpServlet {
 		viajeCtrl.deleteViaje(v);
 	}
 
-	private void cargarDatosViaje(HttpServletRequest request, Viaje v) {
-		v.setIdViaje(Integer.parseInt(request.getParameter("idViaje")));
+    private boolean cancelarViaje(HttpServletRequest request) throws Exception {
+        int idViaje = Integer.parseInt(request.getParameter("viajeId"));
+        boolean cancelada = viajeCtrl.cancelar(idViaje);
+        return cancelada;
+
+    }
+
+
+	private void cargarDatosViaje(HttpServletRequest request, Viaje v, HttpSession session) {
+		Usuario usuario = (Usuario) session.getAttribute("usuario");
 		String fechaStr = request.getParameter("fecha"); 
         SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -133,14 +163,10 @@ public class CRUDviajes extends HttpServlet {
         v.setOrigen(request.getParameter("origen"));
 		v.setDestino(request.getParameter("destino"));
         v.setPrecio_unitario(Double.parseDouble(request.getParameter("precio_unitario")));
-        
         v.setCancelado(false);
 		v.setLugar_salida(request.getParameter("lugar_salida"));
-
-
-        
-		
-
+        v.setConductor(usuario);
+        v.setCodigoValidacion((int)(Math.random() * 900) + 100);
 	}
 
 }
