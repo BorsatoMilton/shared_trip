@@ -38,7 +38,7 @@ public class CRUDusuarioAdmin extends HttpServlet {
         Usuario usuarioActualizado = usuarioCtrl.getOneById(usuario.getIdUsuario());
         request.getSession().setAttribute("usuario", usuarioActualizado);
 
-        if (usuarioActualizado.getRol() == 1) {
+        if(usuarioActualizado.getRol() == 1) {
             LinkedList<Usuario> usuarios = usuarioCtrl.getAll();
             LinkedList<Rol> roles = rolCtrl.getAll();
 
@@ -54,12 +54,11 @@ public class CRUDusuarioAdmin extends HttpServlet {
             request.setAttribute("roles", roles);
             request.getRequestDispatcher("usuarios.jsp").forward(request, response);
             return;
+        }else {
+            response.sendRedirect("/");
+            return;
         }
-
-        request.setAttribute("usuario", usuarioActualizado);
-        request.getRequestDispatcher("perfil.jsp").forward(request, response);
     }
-
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -75,12 +74,6 @@ public class CRUDusuarioAdmin extends HttpServlet {
                     session.setAttribute("mensaje", "Usuario actualizado con éxito");
                 }else {
                     session.setAttribute("mensaje", "Ocurrio un error al actualizar el usuario");
-                }
-            } else if ("password".equals(action)) {
-                if(actualizarClave(request)) {
-                    session.setAttribute("mensaje", "Clave actualizada con éxito");
-                }else {
-                    session.setAttribute("mensaje", "Ocurrio un error al actualizar la clave");
                 }
             } else if ("delete".equals(action)) {
                 if(eliminarUsuario(request)) {
@@ -122,11 +115,6 @@ public class CRUDusuarioAdmin extends HttpServlet {
             return;
         }
 
-        if ("usuario".equals(rol)) {
-            response.sendRedirect(request.getContextPath() + "/perfil.jsp");
-            return;
-        }
-
     }
 
     private boolean crearUsuario(HttpServletRequest request) throws Exception {
@@ -141,14 +129,7 @@ public class CRUDusuarioAdmin extends HttpServlet {
     }
 
     private boolean actualizarUsuario(HttpServletRequest request) throws Exception {
-        int id = 0;
-
-        if(request.getParameter("from") != null && "profile".equals(request.getParameter("from"))){
-            id = ((Usuario) request.getSession().getAttribute("usuario")).getIdUsuario();
-        }else {
-            id = Integer.parseInt(request.getParameter("idUsuario"));
-        }
-
+        int id = Integer.parseInt(request.getParameter("idUsuario"));
         Usuario u = usuarioCtrl.getOneById(id);
 
         if (u == null) {
@@ -159,14 +140,6 @@ public class CRUDusuarioAdmin extends HttpServlet {
         return usuarioCtrl.updateUser(u);
     }
 
-    private boolean actualizarClave(HttpServletRequest request) throws Exception {
-        Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
-        if (usuario == null) {
-            throw new Exception("Usuario no encontrado");
-        }
-        int id = usuario.getIdUsuario();
-        return usuarioCtrl.updatePassword(id, request.getParameter("clave"));
-    }
 
     private boolean eliminarUsuario(HttpServletRequest request) throws Exception {
         int id = Integer.parseInt(request.getParameter("idUsuario"));
@@ -195,13 +168,7 @@ public class CRUDusuarioAdmin extends HttpServlet {
         }else if (("register").equals(request.getParameter("action"))) {
             u.setRol(2); // CAMBIARLO
         }else if(("update").equals(request.getParameter("action"))){
-            if(request.getParameter("from") != null && "profile".equals(request.getParameter("from"))){
-                Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
-                int rol = usuario.getRol();
-                u.setRol(rol);
-            }else {
-                u.setRol(Integer.parseInt(request.getParameter("rol")));
-            }
+            u.setRol(Integer.parseInt(request.getParameter("rol")));
         }
     }
 }
