@@ -11,8 +11,10 @@ public class Viaje {
 	public boolean cancelado;
 	public String lugar_salida;
 	public String tiempo_cancelacion; //fijarse el tipo
+    public Vehiculo vehiculo;
 	private Usuario conductor;
-	private int codigo_validacion;
+	public int codigo_validacion;
+
 	
 	
 	public Usuario getConductor() {
@@ -21,6 +23,11 @@ public class Viaje {
 	public void setConductor(Usuario conductor) {
 		this.conductor = conductor;
 	}
+    public Vehiculo getVehiculo() {return vehiculo;}
+    public void setVehiculo(Vehiculo vehiculo) {
+        this.vehiculo = vehiculo;
+    }
+
 	public int getIdViaje() {
 		return idViaje;
 	}
@@ -84,7 +91,7 @@ public class Viaje {
 	}
 	
 	public Viaje(int idViaje, Date fecha, int lugares_disponibles, String origen, String destino,
-			double precio_unitario, boolean cancelado, String lugar_salida, String tiempo_cancelacion, Usuario conductor, int codigo_validacion) {
+			double precio_unitario, boolean cancelado, String lugar_salida, String tiempo_cancelacion, Usuario conductor, int codigo_validacion, Vehiculo vehiculo) {
 		super();
 		this.idViaje = idViaje;
 		this.fecha = fecha;
@@ -97,6 +104,7 @@ public class Viaje {
 		this.tiempo_cancelacion = tiempo_cancelacion;
 		this.conductor = conductor;
 		this.codigo_validacion = codigo_validacion;
+        this.vehiculo = vehiculo;
 	}
 	
 	public Viaje() {

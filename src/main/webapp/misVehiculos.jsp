@@ -294,7 +294,7 @@ body {
             <div class="col-md-6">
               <div class="mb-3">
                 <label class="form-label fw-bold" for="anio">Año</label>
-                <input type="number" class="form-control" min="1960" max="2024" name="anio" placeholder="Ingrese el año" id="anio" required>
+                <input type="number" class="form-control" name="anio" placeholder="Ingrese el año" id="anio" required>
               </div>
             </div>
              <%--

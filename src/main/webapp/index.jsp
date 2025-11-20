@@ -65,17 +65,33 @@ body {
 		<div class="row px-3 mt-4">
 
 			<div class="col-12">
-				<%
-				String mensaje = (String) session.getAttribute("mensaje");
-				if (mensaje != null) {
-				%>
-				<div class="alert alert-info">
-					<%=mensaje%>
-				</div>
-				<%
-				session.removeAttribute("mensaje");
-				}
-				%>
+                <%
+                    String mensaje = (String) session.getAttribute("mensaje");
+                    if (mensaje != null) {
+                %>
+                <div class="alert alert-info alert-dismissible fade show"
+                     role="alert">
+                    <%=mensaje%>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"
+                            aria-label="Close"></button>
+                </div>
+                <%
+                        session.removeAttribute("mensaje");
+                    }
+
+                    String error = (String) session.getAttribute("error");
+                    if (error != null) {
+                %>
+                <div class="alert alert-danger alert-dismissible fade show"
+                     role="alert">
+                    <%=error%>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"
+                            aria-label="Close"></button>
+                </div>
+                <%
+                        session.removeAttribute("mensaje");
+                    }
+                %>
 			</div>
 
 			<div class="col-12">
