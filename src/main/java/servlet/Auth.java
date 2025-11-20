@@ -31,7 +31,7 @@ public class Auth extends HttpServlet {
 
         if ("login".equals(action)) {
             login(request, response);
-        }else if ("logout".equals(action)) {
+        } else if ("logout".equals(action)) {
             logout(request, response);
         }
     }

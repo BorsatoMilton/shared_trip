@@ -4,8 +4,10 @@ import entidades.*;
 
 import java.sql.*;
 import java.util.LinkedList;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 public class UserDAO {
 
     private static final Logger logger = LoggerFactory.getLogger(UserDAO.class);
@@ -284,7 +286,7 @@ public class UserDAO {
         return 0;
     }
 
-    public boolean tieneViajesActivos(int idUsuario){
+    public boolean tieneViajesActivos(int idUsuario) {
         String sql = "SELECT COUNT(*) FROM viajes WHERE id_conductor = ?";
 
         try (PreparedStatement stmt = ConnectionDB.getInstancia().getConn().prepareStatement(sql)) {
@@ -306,7 +308,7 @@ public class UserDAO {
         return false;
     }
 
-    public boolean tieneReservasActivas(int idUsuario){
+    public boolean tieneReservasActivas(int idUsuario) {
         String sql = "SELECT COUNT(*) FROM reservar WHERE id_pasajero_reserva = ? AND reserva_cancelada = 0";
 
         try (PreparedStatement stmt = ConnectionDB.getInstancia().getConn().prepareStatement(sql)) {
@@ -340,7 +342,7 @@ public class UserDAO {
         u.setRol(rs.getInt("id_rol"));
         return u;
     }
-    
+
     private Usuario mapUsuarioWithRol(ResultSet rs) throws SQLException {
         Usuario u = mapUsuario(rs);
         u.setNombreRol(rs.getString("nombre_rol"));

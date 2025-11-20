@@ -1,101 +1,105 @@
-
 <link
-	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-	rel="stylesheet"
-	integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
-	crossorigin="anonymous">
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+        crossorigin="anonymous">
 
 
 <div class="container mt-4 py-3 px-5">
-	<form action="buscar" method="get" id="formBusqueda">
-		<div class="row">
+    <form action="buscar" method="get" id="formBusqueda">
+        <div class="row">
 
             <div class="mb-3 col-12 col-md-4">
                 <label for="origen" class="form-label">Origen:</label>
                 <div class="dropdown-container">
-                    <input type="text" class="form-control" id="origen" name="origen" placeholder="Ciudad de origen" required autocomplete="off" aria-autocomplete="list" aria-controls="resultadoCiudadesOrigen">
-                    <div id="resultadoCiudadesOrigen" class="resultadoCiudades" role="listbox" aria-label="Sugerencias de origen"></div>
+                    <input type="text" class="form-control" id="origen" name="origen" placeholder="Ciudad de origen"
+                           required autocomplete="off" aria-autocomplete="list" aria-controls="resultadoCiudadesOrigen">
+                    <div id="resultadoCiudadesOrigen" class="resultadoCiudades" role="listbox"
+                         aria-label="Sugerencias de origen"></div>
                 </div>
             </div>
 
-			<div class="mb-3 col-12 col-md-4">
-				<label for="destino" class="form-label">Destino:</label>
-				<div class="dropdown-container">
-					<input type="text" class="form-control" id="destino" name="destino" placeholder="Ciudad de destino" required autocomplete="off" aria-autocomplete="list" aria-controls="resultadoCiudadesDestino">
-					<div id="resultadoCiudadesDestino" class="resultadoCiudades" role="listbox" aria-label="Sugerencias de destino"></div>
-				</div>
-			</div>
+            <div class="mb-3 col-12 col-md-4">
+                <label for="destino" class="form-label">Destino:</label>
+                <div class="dropdown-container">
+                    <input type="text" class="form-control" id="destino" name="destino" placeholder="Ciudad de destino"
+                           required autocomplete="off" aria-autocomplete="list"
+                           aria-controls="resultadoCiudadesDestino">
+                    <div id="resultadoCiudadesDestino" class="resultadoCiudades" role="listbox"
+                         aria-label="Sugerencias de destino"></div>
+                </div>
+            </div>
 
-			<div class="mb-3 col-12 col-md-4">
-				<label for="fecha" class="form-label">Fecha de Viaje:</label> <input
-					type="date" class="form-control" id="fecha" name="fecha">
-			</div>
+            <div class="mb-3 col-12 col-md-4">
+                <label for="fecha" class="form-label">Fecha de Viaje:</label> <input
+                    type="date" class="form-control" id="fecha" name="fecha">
+            </div>
 
-		</div>
-		<div class="d-flex justify-content-between">
-			<button type="button" onclick="limpiar()" class="btn btn-secondary buscar-limpiar me-3">Limpiar</button>
-			  <button type="submit" class="btn btn-primary buscar-limpiar ms-3">Buscar</button>
-		</div>
-	</form>
+        </div>
+        <div class="d-flex justify-content-between">
+            <button type="button" onclick="limpiar()" class="btn btn-secondary buscar-limpiar me-3">Limpiar</button>
+            <button type="submit" class="btn btn-primary buscar-limpiar ms-3">Buscar</button>
+        </div>
+    </form>
 </div>
 <script
-	src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-	integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-	crossorigin="anonymous">
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous">
 </script>
 
 <script src="<%= request.getContextPath() %>/js/buscadorMunicipios.js"></script>
 
 
 <style>
-.container {
-	background-color: rgb(166, 164, 164);
-	border-radius: 25px;
+    .container {
+        background-color: rgb(166, 164, 164);
+        border-radius: 25px;
 
-}
+    }
 
-.opcion{
-    background-color: white;
-    padding: 6px 8px;
-    cursor:pointer;
-    line-height: 1.2;
-    border-bottom: 1px solid #eee;
-}
+    .opcion {
+        background-color: white;
+        padding: 6px 8px;
+        cursor: pointer;
+        line-height: 1.2;
+        border-bottom: 1px solid #eee;
+    }
 
-.opcion:hover {
-    background-color: #f0f7ff;
-}
+    .opcion:hover {
+        background-color: #f0f7ff;
+    }
 
-.opcion.active {
-    background-color: #3B71CA;
-    color: white;
-}
+    .opcion.active {
+        background-color: #3B71CA;
+        color: white;
+    }
 
-.resultadoCiudades .no-results {
-    padding: 8px;
-    color: #666;
-}
+    .resultadoCiudades .no-results {
+        padding: 8px;
+        color: #666;
+    }
 
-.resultadoCiudades {
-    position: absolute;
-    width: 100%;
-    border: 1px solid #ccc;
-    background-color: white;
-    max-height: 200px;
-    overflow-y: auto;
-    z-index: 9999;
-    display: none;
-    border-radius: 5px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-    margin-top: 5px;
-}
+    .resultadoCiudades {
+        position: absolute;
+        width: 100%;
+        border: 1px solid #ccc;
+        background-color: white;
+        max-height: 200px;
+        overflow-y: auto;
+        z-index: 9999;
+        display: none;
+        border-radius: 5px;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        margin-top: 5px;
+    }
 
-.buscar-limpiar {
-    width: 48%;
-}
+    .buscar-limpiar {
+        width: 48%;
+    }
 
-.dropdown-container {
-    position: relative;
-    width: 100%;
-}
+    .dropdown-container {
+        position: relative;
+        width: 100%;
+    }
 </style>

@@ -8,38 +8,38 @@ import data.*;
 import entidades.*;
 
 public class ViajeController {
-	private ViajeDAO viajeDAO;
-    private VehiculoDAO vehiculoDAO;
-	
-	public ViajeController() {
-		this.viajeDAO = new ViajeDAO();
-        this.vehiculoDAO = new VehiculoDAO();
-	}
-	
-	public LinkedList<Viaje> getAll(){
-		LinkedList<Viaje> viajes = viajeDAO.getAll();
-		return viajeDAO.getAll();
-	}
-	
-	public LinkedList<Viaje> getAllBySearch(String origen, String destino, String fecha){
-		LinkedList<Viaje> viajes = viajeDAO.getAllBySearch(origen, destino, fecha);
-		return viajes;
-	}
-	
-	public Viaje getOne(int id) {
-		return this.viajeDAO.getByViaje(id);
-	}
+    private final ViajeDAO viajeDAO;
+    private final VehiculoDAO vehiculoDAO;
 
-    public LinkedList<Viaje> getViajesUsuario(Usuario u){
+    public ViajeController() {
+        this.viajeDAO = new ViajeDAO();
+        this.vehiculoDAO = new VehiculoDAO();
+    }
+
+    public LinkedList<Viaje> getAll() {
+        LinkedList<Viaje> viajes = viajeDAO.getAll();
+        return viajeDAO.getAll();
+    }
+
+    public LinkedList<Viaje> getAllBySearch(String origen, String destino, String fecha) {
+        LinkedList<Viaje> viajes = viajeDAO.getAllBySearch(origen, destino, fecha);
+        return viajes;
+    }
+
+    public Viaje getOne(int id) {
+        return this.viajeDAO.getByViaje(id);
+    }
+
+    public LinkedList<Viaje> getViajesUsuario(Usuario u) {
         return this.viajeDAO.getByUser(u);
 
     }
-	
-	public void actualizarCantidad(int idViaje, int cantidad) {
-		Viaje viaje = this.getOne(idViaje);
-		int nueva_cant = viaje.getLugares_disponibles() - (cantidad);
-		this.viajeDAO.updateCantidad(idViaje, nueva_cant);
-	}
+
+    public void actualizarCantidad(int idViaje, int cantidad) {
+        Viaje viaje = this.getOne(idViaje);
+        int nueva_cant = viaje.getLugares_disponibles() - (cantidad);
+        this.viajeDAO.updateCantidad(idViaje, nueva_cant);
+    }
 
     public void actualizarViaje(int idViaje, Date fecha, int lugares, String origen,
                                 String destino, double precio, String lugarSalida,
@@ -182,7 +182,7 @@ public class ViajeController {
         viaje.setConductor(conductor);
         viaje.setVehiculo(vehiculo);
         viaje.setCancelado(false);
-        viaje.setCodigoValidacion((int)(Math.random() * 9000) + 1000);
+        viaje.setCodigoValidacion((int) (Math.random() * 9000) + 1000);
 
         viajeDAO.add(viaje);
     }
@@ -191,6 +191,6 @@ public class ViajeController {
     /*private boolean tieneViajeEnFecha(int idConductor, int idVehiculo, Date fecha) {
         return viajeDAO.existeViajeEnFecha(idConductor, idVehiculo, fecha);
     }*/
-	
+
 
 }

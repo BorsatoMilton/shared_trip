@@ -11,15 +11,15 @@ import entidades.Usuario;
 import entidades.Viaje;
 
 public class ReservaController {
-	private ReservaDAO reservaDAO;
-    private ViajeController viajeController;
-	
-	public ReservaController() {
-		this.reservaDAO = new ReservaDAO();
+    private final ReservaDAO reservaDAO;
+    private final ViajeController viajeController;
+
+    public ReservaController() {
+        this.reservaDAO = new ReservaDAO();
         this.viajeController = new ViajeController();
-	}
-	
-	public void nuevaReserva(int viajeId, int cantPasajeros, int idUsuario) throws Exception {
+    }
+
+    public void nuevaReserva(int viajeId, int cantPasajeros, int idUsuario) throws Exception {
 
         Viaje viaje = viajeController.getOne(viajeId);
         if (viaje == null) {
@@ -48,33 +48,33 @@ public class ReservaController {
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Date fecha = new Date();
-		String fechaString = sdf.format(fecha);
-		
-		Reserva r = new Reserva(fechaString, cantPasajeros, false, viaje, idUsuario, "EN PROCESO", 3);
+        String fechaString = sdf.format(fecha);
+
+        Reserva r = new Reserva(fechaString, cantPasajeros, false, viaje, idUsuario, "EN PROCESO", 3);
 
         reservaDAO.add(r);
 
         viajeController.actualizarCantidad(viajeId, cantPasajeros);
-	}
-	
-	public LinkedList<Reserva> getReservasUsuario(Usuario u){
-		LinkedList<Reserva> reservas = this.reservaDAO.getByUser(u);
-		return reservas;
-	}
-	
-	
-	public Reserva getOne(int id) {
-		return this.reservaDAO.getByReserva(id);
-	}
-	
-	public void actualizarEstado(int idReserva, String nuevoEstado){
-		this.reservaDAO.actualizarEstado(idReserva, nuevoEstado);
-		
-	}
-	
-	public void updateEntity(Reserva reserva, int idReserva) {
-		this.reservaDAO.update(reserva, idReserva);
-	}
+    }
+
+    public LinkedList<Reserva> getReservasUsuario(Usuario u) {
+        LinkedList<Reserva> reservas = this.reservaDAO.getByUser(u);
+        return reservas;
+    }
+
+
+    public Reserva getOne(int id) {
+        return this.reservaDAO.getByReserva(id);
+    }
+
+    public void actualizarEstado(int idReserva, String nuevoEstado) {
+        this.reservaDAO.actualizarEstado(idReserva, nuevoEstado);
+
+    }
+
+    public void updateEntity(Reserva reserva, int idReserva) {
+        this.reservaDAO.update(reserva, idReserva);
+    }
 
     public void cancelarReserva(int idReserva, int idUsuario) throws Exception {
 
@@ -106,7 +106,7 @@ public class ReservaController {
         viajeController.actualizarCantidad(viaje.getIdViaje(), cantidadPasajeros * (-1));
     }
 
-	public int obtenerCantidad(int idReserva) {
-		return this.reservaDAO.obtenerCantidad(idReserva);
-	}
+    public int obtenerCantidad(int idReserva) {
+        return this.reservaDAO.obtenerCantidad(idReserva);
+    }
 }

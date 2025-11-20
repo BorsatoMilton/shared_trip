@@ -7,7 +7,7 @@ import entidades.*;
 
 public class VehiculoController {
 
-    private VehiculoDAO vehiculoDAO;
+    private final VehiculoDAO vehiculoDAO;
 
     public VehiculoController() {
         this.vehiculoDAO = new VehiculoDAO();
@@ -81,8 +81,9 @@ public class VehiculoController {
             throw new Exception("Error al eliminar el vehículo de la base de datos");
         }
     }
-    public void crearVehiculo (String patente, String modelo,int anio, int idUsuario)
-        throws Exception {
+
+    public void crearVehiculo(String patente, String modelo, int anio, int idUsuario)
+            throws Exception {
 
         Vehiculo existente = vehiculoDAO.getByPatente(patente);
         if (existente != null) {

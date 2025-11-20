@@ -64,29 +64,26 @@ public class CRUDreservas extends HttpServlet {
         Usuario usuario = (Usuario) session.getAttribute("usuario");
         String action = request.getParameter("action");
 
-        try{
-            if("reserve".equals(action)){
+        try {
+            if ("reserve".equals(action)) {
                 reservar(request, usuario);
                 session.setAttribute("mensaje", "Reserva realizada con éxito");
-            }else if("cancelar".equals(action)){
+            } else if ("cancelar".equals(action)) {
                 cancelarReserva(request, usuario);
                 session.setAttribute("mensaje", "Reserva cancelada con éxito");
-            }else if("updateStatus".equals(action)){
+            } else if ("updateStatus".equals(action)) {
                 actualizarEstadoReserva(request);
                 session.setAttribute("mensaje", "Reserva actualizada");
             }
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             session.setAttribute("error", "Error: " + e.getMessage());
             System.out.println("Error en operación: " + e.getMessage());
         }
 
-        if("reserve".equals(action)){
+        if ("reserve".equals(action)) {
             response.sendRedirect(request.getContextPath() + "/");
-            return;
-        }else if ("cancelar".equals(action)){
+        } else if ("cancelar".equals(action)) {
             response.sendRedirect(request.getContextPath() + "/reservas");
-            return;
         }
 
     }
@@ -139,7 +136,8 @@ public class CRUDreservas extends HttpServlet {
         // Delegar al controller
         reservaController.cancelarReserva(idReserva, usuario.getIdUsuario());
     }
-    private void actualizarEstadoReserva(HttpServletRequest request){
+
+    private void actualizarEstadoReserva(HttpServletRequest request) {
         /*ReservaController reservaCtrl = new ReservaController();
 
         int idReserva = Integer.parseInt(request.getParameter("idReserva"));

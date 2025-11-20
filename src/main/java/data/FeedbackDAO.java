@@ -2,22 +2,23 @@ package data;
 
 import java.sql.*;
 import java.util.LinkedList;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import entidades.*;
 
 public class FeedbackDAO {
-    
+
     private static final Logger logger = LoggerFactory.getLogger(FeedbackDAO.class);
 
     public LinkedList<Feedback> getAll() {
         LinkedList<Feedback> feedbacks = new LinkedList<>();
         String query = "SELECT fecha_hora, id_usuario_calificado, puntuacion, observacion, id_viaje FROM feedback";
-        
+
         try (
-            Connection conn = ConnectionDB.getInstancia().getConn();
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(query);
+                Connection conn = ConnectionDB.getInstancia().getConn();
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(query)
         ) {
             while (rs.next()) {
                 Feedback f = new Feedback();
@@ -39,7 +40,7 @@ public class FeedbackDAO {
         LinkedList<Feedback> fs = new LinkedList<>();
         String query = "SELECT fecha_hora, id_usuario_calificado, puntuacion, observacion, id_viaje FROM feedback WHERE id_usuario_calificado = ?";
         Connection conn = null;
-        
+
         try {
             conn = ConnectionDB.getInstancia().getConn();
             try (PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -66,7 +67,7 @@ public class FeedbackDAO {
     public void add(Feedback f) {
         String query = "INSERT INTO feedback(fecha_hora, id_usuario_calificado, puntuacion, observacion, id_viaje) VALUES (?, ?, ?, ?, ?)";
         Connection conn = null;
-        
+
         try {
             conn = ConnectionDB.getInstancia().getConn();
             try (PreparedStatement stmt = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS)) {
@@ -75,13 +76,13 @@ public class FeedbackDAO {
                 stmt.setInt(3, f.getPuntuacion());
                 stmt.setString(4, f.getObservacion());
                 stmt.setInt(5, f.getId_viaje());
-                
+
                 int affectedRows = stmt.executeUpdate();
                 if (affectedRows > 0) {
                     logger.info("Feedback agregado exitosamente para el usuario con ID {}", f.getId_usuario_calificado());
                 }
-             }
-            
+            }
+
         } catch (SQLException e) {
             logger.error("Error al agregar feedback para el usuario con ID {}", f.getId_usuario_calificado(), e);
         } finally {

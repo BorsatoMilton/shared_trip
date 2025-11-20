@@ -50,7 +50,7 @@ function inicializarBuscadores() {
     });
 
     document.querySelectorAll('form').forEach(form => {
-        form.addEventListener('submit', function(e) {
+        form.addEventListener('submit', function (e) {
             const inputs = form.querySelectorAll('.dropdown-container input[data-key]');
             const invalid = Array.from(inputs).filter(inp => {
                 const val = inp.value.trim();
@@ -146,7 +146,7 @@ function actualizarFocoVisual(items, index) {
     const el = items[index];
     if (el) {
         el.classList.add('active');
-        el.scrollIntoView({ block: 'nearest' });
+        el.scrollIntoView({block: 'nearest'});
     }
 }
 

@@ -19,16 +19,16 @@ import validators.InputValidator;
 
 @WebServlet("/usuarios")
 public class CRUDusuarioAdmin extends HttpServlet {
-	private static final long serialVersionUID = 1L;
-	private UserController usuarioCtrl = new UserController();
-	private RolController rolCtrl = new RolController();
-    private InputValidator inputValidator = new InputValidator();
+    private static final long serialVersionUID = 1L;
+    private final UserController usuarioCtrl = new UserController();
+    private final RolController rolCtrl = new RolController();
+    private final InputValidator inputValidator = new InputValidator();
 
 
-	public CRUDusuarioAdmin() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
+    public CRUDusuarioAdmin() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
 
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -46,13 +46,13 @@ public class CRUDusuarioAdmin extends HttpServlet {
         Usuario usuarioActualizado = usuarioCtrl.getOneById(usuario.getIdUsuario());
         request.getSession().setAttribute("usuario", usuarioActualizado);
 
-        if(usuarioActualizado.getRol() == 1) {
+        if (usuarioActualizado.getRol() == 1) {
             LinkedList<Usuario> usuarios = usuarioCtrl.getAll();
             LinkedList<Rol> roles = rolCtrl.getAll();
 
             for (Usuario u : usuarios) {
                 for (Rol r : roles) {
-                    if(u.getRol() == r.getIdRol()) {
+                    if (u.getRol() == r.getIdRol()) {
                         u.setNombreRol(r.getNombre());
                     }
                 }
@@ -61,7 +61,7 @@ public class CRUDusuarioAdmin extends HttpServlet {
             request.setAttribute("usuarios", usuarios);
             request.setAttribute("roles", roles);
             request.getRequestDispatcher("usuarios.jsp").forward(request, response);
-        }else {
+        } else {
             response.sendRedirect(request.getContextPath() + "/");
         }
     }
@@ -98,7 +98,7 @@ public class CRUDusuarioAdmin extends HttpServlet {
         }
 
         if ("register".equals(action)) {
-        	preservarDatosFormulario(request, session);
+            preservarDatosFormulario(request, session);
             response.sendRedirect(request.getContextPath() + "/register.jsp");
             return;
         }
@@ -113,7 +113,7 @@ public class CRUDusuarioAdmin extends HttpServlet {
         }
 
     }
-    
+
     private void preservarDatosFormulario(HttpServletRequest request, HttpSession session) {
         session.setAttribute("formData_nombre", request.getParameter("nombre"));
         session.setAttribute("formData_apellido", request.getParameter("apellido"));
@@ -185,19 +185,16 @@ public class CRUDusuarioAdmin extends HttpServlet {
 
         if (logueado.getRol() == 1 && logueado.getIdUsuario() != id) {
             rol = inputValidator.validarRol(request.getParameter("rol"));
-        }
-
-        else if (logueado.getRol() == 1 && logueado.getIdUsuario() == id) {
+        } else if (logueado.getRol() == 1 && logueado.getIdUsuario() == id) {
             rol = inputValidator.validarRol(request.getParameter("rol"));
-        }
-
-        else if (logueado.getIdUsuario() == id) {
+        } else if (logueado.getIdUsuario() == id) {
             rol = null; // No actualizar rol
         }
 
         usuarioCtrl.actualizarUsuario(id, usuario, clave, nombre, apellido,
                 correo, telefono, rol, logueado);
     }
+
     private void eliminarUsuario(HttpServletRequest request, Usuario logueado) throws Exception {
 
         String idStr = request.getParameter("idUsuario");

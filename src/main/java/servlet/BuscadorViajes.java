@@ -15,37 +15,37 @@ import logic.ViajeController;
 
 @WebServlet("/buscar")
 public class BuscadorViajes extends HttpServlet {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
-	public BuscadorViajes() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public BuscadorViajes() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
-	 *      response)
-	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		String origen = request.getParameter("origen");
-		String destino = request.getParameter("destino");
-		String fecha = request.getParameter("fecha");
+    /**
+     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
+     * response)
+     */
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        String origen = request.getParameter("origen");
+        String destino = request.getParameter("destino");
+        String fecha = request.getParameter("fecha");
 
-		ViajeController viajeController = new ViajeController();
+        ViajeController viajeController = new ViajeController();
 
-		LinkedList<Viaje> viajesResultado = viajeController.getAllBySearch(origen, destino, fecha);
-		request.setAttribute("viajes", viajesResultado);
-		request.getRequestDispatcher("index.jsp").forward(request, response);
-	}
+        LinkedList<Viaje> viajesResultado = viajeController.getAllBySearch(origen, destino, fecha);
+        request.setAttribute("viajes", viajesResultado);
+        request.getRequestDispatcher("index.jsp").forward(request, response);
+    }
 
-	protected void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		doGet(request, response);
-	}
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        // TODO Auto-generated method stub
+        doGet(request, response);
+    }
 
 }

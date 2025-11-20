@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 const initCRUDOperations = () => {
     document.querySelectorAll('.btn-eliminar').forEach(btn => {
-        btn.addEventListener('click', function() {
+        btn.addEventListener('click', function () {
             abrirModal('borrarVehiculo', {
                 idVehiculoEliminar: this.dataset.id
             });
@@ -34,7 +34,7 @@ const initCRUDOperations = () => {
     });
 
     document.querySelectorAll('.btn-editar').forEach(btn => {
-        btn.addEventListener('click', function() {
+        btn.addEventListener('click', function () {
             abrirModal('editarVehiculo', {
                 editPatente: this.dataset.patente,
                 editModelo: this.dataset.modelo,

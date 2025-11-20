@@ -5,17 +5,17 @@ document.addEventListener('DOMContentLoaded', () => {
 const initCRUDOperations = () => {
 
     document.querySelectorAll('.btn-eliminar').forEach(btn => {
-        btn.addEventListener('click', function() {
+        btn.addEventListener('click', function () {
             abrirModal('borrarUsuario', {
                 nombreUsuario: this.dataset.nombre,
                 idUsuario: this.dataset.id
             });
         });
     });
-	
+
 
     document.querySelectorAll('.btn-editar').forEach(btn => {
-        btn.addEventListener('click', function() {
+        btn.addEventListener('click', function () {
             abrirModal('editarUsuario', {
                 editNombre: this.dataset.nombre,
                 editApellido: this.dataset.apellido,
@@ -25,13 +25,13 @@ const initCRUDOperations = () => {
                 editRol: this.dataset.rol,
                 editId: this.dataset.id
             });
-			 });
+        });
     });
 };
 
 
 const abrirModal = (modalId, data) => {
-	console.log(editId)
+    console.log(editId)
     const modalElement = document.getElementById(modalId);
     if (!modalElement) return;
 
@@ -47,7 +47,7 @@ const abrirModal = (modalId, data) => {
             }
         }
     });
-    
+
 
     const modal = new bootstrap.Modal(modalElement);
     modal.show();

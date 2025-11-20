@@ -8,11 +8,11 @@ import data.*;
 import entidades.*;
 
 public class UserController {
-	private UserDAO usuarioDAO;
+    private final UserDAO usuarioDAO;
 
-	public UserController() {
-		this.usuarioDAO = new UserDAO();
-	}
+    public UserController() {
+        this.usuarioDAO = new UserDAO();
+    }
 
     public Usuario login(Usuario u) {
 
@@ -22,13 +22,13 @@ public class UserController {
     }
 
 
-	public Usuario getOneById(int id) {
-		return usuarioDAO.getById(id);
-	}
+    public Usuario getOneById(int id) {
+        return usuarioDAO.getById(id);
+    }
 
-	public LinkedList<Usuario> getAll() {
-		return usuarioDAO.getAll();
-	}
+    public LinkedList<Usuario> getAll() {
+        return usuarioDAO.getAll();
+    }
 
     public void actualizarUsuario(int id, String usuario, String clave, String nombre,
                                   String apellido, String correo, String telefono,
@@ -91,10 +91,10 @@ public class UserController {
             throw new Exception("Error al actualizar el usuario en la base de datos");
         }
     }
-	
-	public boolean updatePassword(int id, String clave) {
-		return usuarioDAO.updatePassword(id, clave);
-	}
+
+    public boolean updatePassword(int id, String clave) {
+        return usuarioDAO.updatePassword(id, clave);
+    }
 
     public void crearUsuario(String usuario, String clave, String nombre,
                              String apellido, String correo, String telefono,

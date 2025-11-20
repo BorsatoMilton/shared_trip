@@ -18,8 +18,8 @@ public class ViajeDAO {
     public LinkedList<Viaje> getAll() {
         LinkedList<Viaje> viajes = new LinkedList<>();
         String query = "SELECT v.* FROM viajes v "
-                     + "INNER JOIN usuarios u ON u.id_usuario = v.id_conductor "
-                     + "WHERE v.fecha >= CURRENT_DATE AND u.fecha_baja IS NULL AND v.cancelado = 0";
+                + "INNER JOIN usuarios u ON u.id_usuario = v.id_conductor "
+                + "WHERE v.fecha >= CURRENT_DATE AND u.fecha_baja IS NULL AND v.cancelado = 0";
         Connection conn = null;
 
         try {
@@ -202,7 +202,7 @@ public class ViajeDAO {
 
     public void update(Viaje v, int id_viaje) {
         String query = "UPDATE viajes SET fecha=?, lugares_disponibles=?, origen=?, destino=?, "
-                     + "precio_unitario=?, cancelado=?, id_conductor=?, lugar_salida=?, id_vehiculo_viaje=? WHERE id_viaje=?";
+                + "precio_unitario=?, cancelado=?, id_conductor=?, lugar_salida=?, id_vehiculo_viaje=? WHERE id_viaje=?";
         Connection conn = null;
 
         try {
@@ -235,7 +235,7 @@ public class ViajeDAO {
 
     public void add(Viaje v) {
         String query = "INSERT INTO viajes(fecha, lugares_disponibles, origen, destino, precio_unitario, "
-                     + "cancelado, id_conductor, lugar_salida, codigo_validacion, id_vehiculo_viaje) VALUES (?,?,?,?,?,?,?,?,?,?)";
+                + "cancelado, id_conductor, lugar_salida, codigo_validacion, id_vehiculo_viaje) VALUES (?,?,?,?,?,?,?,?,?,?)";
         Connection conn = null;
 
         try {
@@ -246,7 +246,7 @@ public class ViajeDAO {
                 stmt.setString(3, v.getOrigen());
                 stmt.setString(4, v.getDestino());
                 stmt.setDouble(5, v.getPrecio_unitario());
-                stmt.setBoolean(6, false); 
+                stmt.setBoolean(6, false);
                 stmt.setInt(7, v.getConductor().getIdUsuario());
                 stmt.setString(8, v.getLugar_salida());
                 stmt.setInt(9, v.getCodigoValidacion());

@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
 const initCRUDOperations = () => {
 
     document.querySelectorAll('.btn-eliminar').forEach(btn => {
-        btn.addEventListener('click', function() {
+        btn.addEventListener('click', function () {
             abrirModal('borrarViaje', {
                 idViajeEliminar: this.dataset.id
             });
@@ -14,17 +14,17 @@ const initCRUDOperations = () => {
 
 
     document.querySelectorAll('.btn-editar').forEach(btn => {
-        btn.addEventListener('click', function() {
+        btn.addEventListener('click', function () {
             abrirModal('editarViaje', {
-				editId: this.dataset.id,
-				editFecha: this.dataset.fecha,
-				editLugaresDisponibles: this.dataset.lugares_disponibles,
+                editId: this.dataset.id,
+                editFecha: this.dataset.fecha,
+                editLugaresDisponibles: this.dataset.lugares_disponibles,
                 editOrigen: this.dataset.origen,
                 editDestino: this.dataset.destino,
                 editPrecioUnitario: this.dataset.precio_unitario,
                 editConductor: this.dataset.id_conductor,
                 editCancelado: this.dataset.cancelado,
-				editLugarSalida: this.dataset.lugar_salida
+                editLugarSalida: this.dataset.lugar_salida
             });
         });
     });
@@ -47,7 +47,7 @@ const abrirModal = (modalId, data) => {
             }
         }
     });
-    
+
 
     const modal = new bootstrap.Modal(modalElement);
     modal.show();

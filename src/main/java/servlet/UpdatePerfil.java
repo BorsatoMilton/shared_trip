@@ -16,61 +16,61 @@ import validators.InputValidator;
 
 @WebServlet("/perfil")
 public class UpdatePerfil extends HttpServlet {
-	private static final long serialVersionUID = 1L;
-	private UserController usuarioCtrl = new UserController();
-    private InputValidator inputValidator = new InputValidator();
+    private static final long serialVersionUID = 1L;
+    private final UserController usuarioCtrl = new UserController();
+    private final InputValidator inputValidator = new InputValidator();
 
     public UpdatePerfil() {
         super();
     }
 
 
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-		if(request.getSession().getAttribute("usuario") == null) {
-			response.sendRedirect(request.getContextPath() + "/login.jsp");
-			return;
-		};
-		Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
-		int idUsuario = usuario.getIdUsuario();
-		request.getSession().removeAttribute("usuario");
-		Usuario usuarioNuevo = usuarioCtrl.getOneById(idUsuario);
-		request.getSession().setAttribute("usuario", usuarioNuevo);
-		
-		response.sendRedirect(request.getContextPath() + "/perfil.jsp");
-	}
+        if (request.getSession().getAttribute("usuario") == null) {
+            response.sendRedirect(request.getContextPath() + "/login.jsp");
+            return;
+        }
+        Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
+        int idUsuario = usuario.getIdUsuario();
+        request.getSession().removeAttribute("usuario");
+        Usuario usuarioNuevo = usuarioCtrl.getOneById(idUsuario);
+        request.getSession().setAttribute("usuario", usuarioNuevo);
+
+        response.sendRedirect(request.getContextPath() + "/perfil.jsp");
+    }
 
 
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
         HttpSession session = request.getSession();
         String action = request.getParameter("action");
         Usuario logueado = (Usuario) session.getAttribute("usuario");
-		try {
-			if ("profile".equals(action)) {
-				actualizarUsuario(request, logueado);
+        try {
+            if ("profile".equals(action)) {
+                actualizarUsuario(request, logueado);
                 session.setAttribute("mensaje", "Usuario actualizado con éxito");
-			} else if ("password".equals(action)) {
-				actualizarClave(request, logueado);
+            } else if ("password".equals(action)) {
+                actualizarClave(request, logueado);
                 session.setAttribute("mensaje", "Clave actualizada con éxito");
-			} else {
-				throw new Exception("No se especifico la acción");
-			}
-			
-		}catch(Exception e) {
-			session.setAttribute("error", "Error: " + e.getMessage());
-			System.out.println("Error en editarUsuario: " + e.getMessage());
-		}
-		
-		response.sendRedirect(request.getContextPath() + "/perfil");
-	}
+            } else {
+                throw new Exception("No se especifico la acción");
+            }
+
+        } catch (Exception e) {
+            session.setAttribute("error", "Error: " + e.getMessage());
+            System.out.println("Error en editarUsuario: " + e.getMessage());
+        }
+
+        response.sendRedirect(request.getContextPath() + "/perfil");
+    }
 
 
     private void actualizarUsuario(HttpServletRequest request, Usuario logueado) throws Exception {
 
         Integer id = ((Usuario) request.getSession().getAttribute("usuario")).getIdUsuario();
 
-        if(id == null){
+        if (id == null) {
             throw new Exception("Valor de ID invalido");
         }
 
@@ -94,15 +94,15 @@ public class UpdatePerfil extends HttpServlet {
                 correo, telefono, rol, logueado);
     }
 
-	private boolean actualizarClave(HttpServletRequest request, Usuario logueado) throws Exception {
+    private boolean actualizarClave(HttpServletRequest request, Usuario logueado) throws Exception {
         int id = ((Usuario) request.getSession().getAttribute("usuario")).getIdUsuario();
-		Usuario u = usuarioCtrl.getOneById(id);
+        Usuario u = usuarioCtrl.getOneById(id);
 
-		if (u == null) {
-			throw new Exception("Usuario no encontrado");
-		}
+        if (u == null) {
+            throw new Exception("Usuario no encontrado");
+        }
 
-        if(logueado.getIdUsuario() != id) {
+        if (logueado.getIdUsuario() != id) {
             throw new Exception("No puede cambiar la clave a otro usuario");
         }
 
@@ -114,6 +114,6 @@ public class UpdatePerfil extends HttpServlet {
         }
 
         return usuarioCtrl.updatePassword(id, clave);
-	}
+    }
 
 }

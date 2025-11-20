@@ -23,18 +23,18 @@ import logic.ViajeController;
 
 @WebServlet("/viajes")
 public class CRUDviajes extends HttpServlet {
-	private static final long serialVersionUID = 1L;
-	private ViajeController viajeCtrl = new ViajeController();
-	private UserController usuarioCtrl = new UserController();
-    private VehiculoController vehiculoCtrl = new VehiculoController();
+    private static final long serialVersionUID = 1L;
+    private final ViajeController viajeCtrl = new ViajeController();
+    private final UserController usuarioCtrl = new UserController();
+    private final VehiculoController vehiculoCtrl = new VehiculoController();
 
-	public CRUDviajes() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
+    public CRUDviajes() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
 
-	protected void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
         HttpSession session = request.getSession(false);
 
@@ -79,10 +79,10 @@ public class CRUDviajes extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/");
         }
 
-	}
+    }
 
-	protected void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
         HttpSession session = request.getSession();
         Usuario usuario = (Usuario) session.getAttribute("usuario");
@@ -121,7 +121,7 @@ public class CRUDviajes extends HttpServlet {
         response.sendRedirect(request.getContextPath() + "/viajes");
     }
 
-	private void crearViaje(HttpServletRequest request, Usuario u) throws Exception {
+    private void crearViaje(HttpServletRequest request, Usuario u) throws Exception {
         String fechaStr = request.getParameter("fecha");
         String lugaresStr = request.getParameter("lugares_disponibles");
         String origen = request.getParameter("origen");
@@ -359,8 +359,8 @@ public class CRUDviajes extends HttpServlet {
         viajeCtrl.actualizarViaje(id, sqlDate, lugares, origen, destino,
                 precio, lugarSalida, vehiculoId, usuario);
     }
-    
-	private void eliminarViaje(HttpServletRequest request, Usuario u) throws Exception {
+
+    private void eliminarViaje(HttpServletRequest request, Usuario u) throws Exception {
         String idStr = request.getParameter("idViaje");
         if (idStr == null || idStr.trim().isEmpty()) {
             throw new Exception("ID de viaje inválido");
@@ -374,7 +374,7 @@ public class CRUDviajes extends HttpServlet {
         }
 
         viajeCtrl.eliminarViaje(id, u);
-	}
+    }
 
     private void cancelarViaje(HttpServletRequest request, Usuario u) throws Exception {
         String idStr = request.getParameter("viajeId");
