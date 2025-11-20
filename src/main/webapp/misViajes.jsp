@@ -170,7 +170,6 @@
                                 <th scope="col">Precio Unitario</th>
                                 <th scope="col">Lugar de Salida</th>
                                 <th scope="col">Cancelado</th>
-                                <th scope="col">Codigo Validación</th>
                                 <th scope="col" class="text-end">Acciones</th>
                             </tr>
                             </thead>
@@ -199,9 +198,6 @@
                                 <td><%= viaje.getLugar_salida() %>
                                 </td>
                                 <td><%= viaje.isCancelado() ? "Sí" : "No" %>
-                                </td>
-                                <td><%= viaje.getCodigoValidacion() %>
-                                </td>
                                 <td class="text-end action-buttons">
 
                                     <button type="button"

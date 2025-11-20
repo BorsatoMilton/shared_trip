@@ -398,7 +398,7 @@ public class CRUDviajes extends HttpServlet {
 
         Viaje viaje = viajeCtrl.cancelarViaje(id, u);
 
-        enviarNotificacionesCancelacionViaje(viaje, u);
+        //enviarNotificacionesCancelacionViaje(viaje, u);
     }
 
     private void enviarNotificacionesCancelacionViaje(Viaje viaje, Usuario chofer) {

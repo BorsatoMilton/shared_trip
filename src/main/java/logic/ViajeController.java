@@ -183,7 +183,6 @@ public class ViajeController {
         viaje.setConductor(conductor);
         viaje.setVehiculo(vehiculo);
         viaje.setCancelado(false);
-        viaje.setCodigoValidacion((int) (Math.random() * 9000) + 1000);
 
         viajeDAO.add(viaje);
     }

@@ -85,8 +85,8 @@ public class ReservaDAO {
 
     public LinkedList<Reserva> getByUser(Usuario usuario) {
 
-        String query = "SELECT r.id_pasajero_reserva, r.idReserva, r.fecha_reserva, r.estado, r.intentos_codigo ,r.cantidad_pasajeros_reservada, r.reserva_cancelada, "
-                + "v.id_viaje, v.origen, v.destino, v.fecha, v.lugares_disponibles, v.codigo_validacion, v.precio_unitario, "
+        String query = "SELECT r.id_pasajero_reserva, r.idReserva, r.fecha_reserva, r.estado ,r.cantidad_pasajeros_reservada, r.reserva_cancelada, r.codigo_reserva, "
+                + "v.id_viaje, v.origen, v.destino, v.fecha, v.lugares_disponibles, v.precio_unitario, "
                 + "u.id_usuario, u.nombre, u.apellido, u.correo, u.telefono "
                 + "FROM reservas r "
                 + "INNER JOIN viajes v ON r.id_viaje = v.id_viaje "
@@ -117,8 +117,8 @@ public class ReservaDAO {
     }
 
     public LinkedList<Reserva> getReservasByViaje(int idViaje) {
-        String query = "SELECT r.id_pasajero_reserva, r.idReserva, r.fecha_reserva, r.estado, r.intentos_codigo ,r.cantidad_pasajeros_reservada, r.reserva_cancelada, "
-                + "v.id_viaje, v.origen, v.destino, v.fecha, v.lugares_disponibles, v.codigo_validacion, v.precio_unitario, "
+        String query = "SELECT r.id_pasajero_reserva, r.idReserva, r.fecha_reserva, r.estado ,r.cantidad_pasajeros_reservada, r.reserva_cancelada, "
+                + "v.id_viaje, v.origen, v.destino, v.fecha, v.lugares_disponibles, v.precio_unitario, "
                 + "u.id_usuario, u.nombre, u.apellido, u.correo, u.telefono "
                 + "FROM reservas r "
                 + "INNER JOIN viajes v ON r.id_viaje = v.id_viaje "
@@ -150,7 +150,7 @@ public class ReservaDAO {
     public void add(Reserva reserva) {
 
         String query = "INSERT INTO reservas(fecha_reserva, cantidad_pasajeros_reservada, "
-                + "reserva_cancelada, id_viaje, id_pasajero_reserva) VALUES(?,?,?,?,?)";
+                + "reserva_cancelada, id_viaje, id_pasajero_reserva, codigo_reserva) VALUES(?,?,?,?,?,?)";
 
         validateReserva(reserva);
 
@@ -192,7 +192,7 @@ public class ReservaDAO {
     public void update(Reserva reserva, int idReserva) {
 
         String query = "UPDATE reservas SET cantidad_pasajeros_reservada = ?, reserva_cancelada = ?, "
-                + "id_viaje = ?, id_pasajero_reserva = ?, intentos_codigo = ? WHERE idReserva = ?";
+                + "id_viaje = ?, id_pasajero_reserva = ? WHERE idReserva = ?";
 
         validateReserva(reserva);
 
@@ -268,7 +268,7 @@ public class ReservaDAO {
         reserva.setId_pasajero_reserva(rs.getInt("id_pasajero_reserva"));
         reserva.setViaje(viajeDAO.getByViaje(rs.getInt("id_viaje")));
         reserva.setEstado(rs.getString("estado"));
-        reserva.setIntentos_codigo(rs.getInt("intentos_codigo"));
+        reserva.setCodigo_reserva(rs.getInt("codigo_reserva"));
 
         return reserva;
     }
@@ -287,7 +287,6 @@ public class ReservaDAO {
         viaje.setFecha(rs.getDate("fecha"));
         viaje.setLugares_disponibles(rs.getInt("lugares_disponibles"));
         viaje.setPrecio_unitario(rs.getDouble("precio_unitario"));
-        viaje.setCodigoValidacion(rs.getInt("codigo_validacion"));
         viaje.setConductor(mapConductor(rs));
         return viaje;
     }
@@ -308,16 +307,16 @@ public class ReservaDAO {
         stmt.setBoolean(3, r.isReserva_cancelada());
         stmt.setInt(4, r.getViaje().getIdViaje());
         stmt.setInt(5, r.getId_pasajero_reserva());
+        stmt.setInt(6, r.getCodigo_reserva());
     }
 
 
-    private void setUpdateParameters(PreparedStatement stmt, Reserva r, int id) throws SQLException {
+    private void setUpdateParameters(PreparedStatement stmt, Reserva r, int id_pasajero) throws SQLException {
         stmt.setInt(1, r.getCantidad_pasajeros_reservada());
         stmt.setBoolean(2, r.isReserva_cancelada());
         stmt.setInt(3, r.getViaje().getIdViaje());
         stmt.setInt(4, r.getId_pasajero_reserva());
-        stmt.setInt(5, r.getIntentos_codigo());
-        stmt.setInt(6, id);
+        stmt.setInt(5, id_pasajero);
     }
 
     private void setGeneratedId(PreparedStatement stmt, Reserva r) throws SQLException {

@@ -117,7 +117,7 @@ public class CRUDreservas extends HttpServlet {
 
         Reserva reserva = reservaController.nuevaReserva(viajeId, cantPasajeros, usuario.getIdUsuario());
 
-        enviarNotificacionesReserva(reserva, usuario);
+        //enviarNotificacionesReserva(reserva, usuario);
     }
 
     private void cancelarReserva(HttpServletRequest request, Usuario usuario) throws Exception {
@@ -136,7 +136,7 @@ public class CRUDreservas extends HttpServlet {
         }
 
         Reserva reserva = reservaController.cancelarReserva(idReserva, usuario.getIdUsuario());
-        enviarNotificacionesCancelacionReserva(reserva, usuario);
+        //enviarNotificacionesCancelacionReserva(reserva, usuario);
     }
 
     private void actualizarEstadoReserva(HttpServletRequest request) {

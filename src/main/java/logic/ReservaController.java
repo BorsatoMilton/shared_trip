@@ -51,7 +51,7 @@ public class ReservaController {
         Date fecha = new Date();
         String fechaString = sdf.format(fecha);
 
-        Reserva r = new Reserva(fechaString, cantPasajeros, false, viaje, idUsuario, "EN PROCESO", 3);
+        Reserva r = new Reserva(fechaString, cantPasajeros, false, viaje, idUsuario, "EN PROCESO");
 
         reservaDAO.add(r);
 
@@ -63,20 +63,6 @@ public class ReservaController {
     public LinkedList<Reserva> getReservasUsuario(Usuario u) {
         LinkedList<Reserva> reservas = this.reservaDAO.getByUser(u);
         return reservas;
-    }
-
-
-    public Reserva getOne(int id) {
-        return this.reservaDAO.getByReserva(id);
-    }
-
-    public void actualizarEstado(int idReserva, String nuevoEstado) {
-        this.reservaDAO.actualizarEstado(idReserva, nuevoEstado);
-
-    }
-
-    public void updateEntity(Reserva reserva, int idReserva) {
-        this.reservaDAO.update(reserva, idReserva);
     }
 
     public Reserva cancelarReserva(int idReserva, int idUsuario) throws Exception {
@@ -119,5 +105,18 @@ public class ReservaController {
 
     public int obtenerCantidad(int idReserva) {
         return this.reservaDAO.obtenerCantidad(idReserva);
+    }
+
+    public Reserva getOne(int id) {
+        return this.reservaDAO.getByReserva(id);
+    }
+
+    public void actualizarEstado(int idReserva, String nuevoEstado) {
+        this.reservaDAO.actualizarEstado(idReserva, nuevoEstado);
+
+    }
+
+    public void updateEntity(Reserva reserva, int idReserva) {
+        this.reservaDAO.update(reserva, idReserva);
     }
 }
