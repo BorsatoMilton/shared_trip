@@ -2,14 +2,24 @@ package utils;
 
 import jakarta.mail.*;
 import jakarta.mail.internet.*;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
+import io.github.cdimascio.dotenv.Dotenv;
 
 public class MailService {
 
+    Dotenv dotenv = Dotenv.load();
     private final String host = "smtp.gmail.com";
     private final int port = 587;
-    private final String username = "sharedtrip6@gmail.com";
-    private final String password = "trzc pmfv auzh tmwg"; // clave de app, NO tu clave real
+    private final String username = dotenv.get("MAIL_ADRESS");
+    private final String password = dotenv.get("MAIL_PASSWORD");
 
     private final Session session;
 
@@ -31,15 +41,53 @@ public class MailService {
         );
     }
 
-    public void enviarTexto(String to, String subject, String body) throws MessagingException {
-        Message msg = new MimeMessage(session);
-        msg.setFrom(new InternetAddress(username));
-        msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
-        msg.setSubject(subject);
-        msg.setText(body);
+    private String cargarTemplate(String nombreTemplate, Map<String, String> parametros) {
+        try {
 
-        Transport.send(msg);
+            InputStream inputStream = getClass().getClassLoader()
+                    .getResourceAsStream(nombreTemplate + ".html");
+
+            if (inputStream == null) {
+                throw new IOException("Template no encontrado: " + nombreTemplate + ".html");
+            }
+
+            String template = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+
+            for (Map.Entry<String, String> entry : parametros.entrySet()) {
+                template = template.replace("{{" + entry.getKey() + "}}",
+                        entry.getValue() != null ? entry.getValue() : "");
+            }
+
+            template = template.replaceAll("\\{\\{.*?\\}\\}", "");
+
+            return template;
+
+        } catch (IOException e) {
+            System.err.println("Error cargando template " + nombreTemplate + ": " + e.getMessage());
+            return null;
+        }
     }
+
+    public void notificarReservaRealizadaUsuario(String emailUsuario, String datosViaje, String datosChofer, int totalReservas) throws MessagingException {
+        Map<String, String> parametros = new HashMap<>();
+        parametros.put("datosViaje", datosViaje);
+        parametros.put("datosChofer", datosChofer);
+        parametros.put("totalReservas", String.valueOf(totalReservas));
+
+        String html = cargarTemplate("reserva-realizada-usuario-template", parametros);
+        enviarHtml(emailUsuario, "Reserva confirmada - SharedTrip", html);
+    }
+
+    public void notificarReservaRealizadaChofer(String emailChofer, String datosViaje, String datosPasajero, int totalReservas) throws MessagingException {
+        Map<String, String> parametros = new HashMap<>();
+        parametros.put("datosViaje", datosViaje);
+        parametros.put("datosPasajero", datosPasajero);
+        parametros.put("totalReservas", String.valueOf(totalReservas));
+
+        String html = cargarTemplate("reserva-realizada-chofer-template", parametros);
+        enviarHtml(emailChofer, "Nueva reserva en tu viaje - SharedTrip", html);
+    }
+
 
     public void enviarHtml(String to, String subject, String html) throws MessagingException {
         Message msg = new MimeMessage(session);
@@ -47,6 +95,16 @@ public class MailService {
         msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
         msg.setSubject(subject);
         msg.setContent(html, "text/html; charset=utf-8");
+
+        Transport.send(msg);
+    }
+
+    public void enviarTexto(String to, String subject, String body) throws MessagingException {
+        Message msg = new MimeMessage(session);
+        msg.setFrom(new InternetAddress(username));
+        msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
+        msg.setSubject(subject);
+        msg.setText(body);
 
         Transport.send(msg);
     }

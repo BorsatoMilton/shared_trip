@@ -31,7 +31,7 @@ src/main/webapp/WEB-INF/lib/
 *.iml
 out/
 
-.env
+src/main/resources/.env
 *.properties
 *.keystore
 *.jks

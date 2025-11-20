@@ -19,7 +19,7 @@ public class ReservaController {
         this.viajeController = new ViajeController();
     }
 
-    public void nuevaReserva(int viajeId, int cantPasajeros, int idUsuario) throws Exception {
+    public Reserva nuevaReserva(int viajeId, int cantPasajeros, int idUsuario) throws Exception {
 
         Viaje viaje = viajeController.getOne(viajeId);
         if (viaje == null) {
@@ -55,6 +55,8 @@ public class ReservaController {
         reservaDAO.add(r);
 
         viajeController.actualizarCantidad(viajeId, cantPasajeros);
+
+        return r;
     }
 
     public LinkedList<Reserva> getReservasUsuario(Usuario u) {

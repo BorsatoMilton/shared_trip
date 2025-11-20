@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
+        .header { color: #2E86C1; border-bottom: 2px solid #2E86C1; padding-bottom: 10px; }
+        .content { background-color: #f4f4f4; padding: 15px; border-radius: 5px; margin: 15px 0; }
+        .footer { color: #7F8C8D; margin-top: 20px; font-size: 14px; }
+    </style>
+</head>
+<body>
+<div class="header">
+    <h2>SharedTrip</h2>
+    <h3>Nueva Reserva en tu Viaje</h3>
+</div>
+
+<div class="content">
+    <p>Un pasajero ha reservado un asiento en tu viaje.</p>
+
+    <p><strong>Detalles del viaje:</strong><br>
+        {{datosViaje}}</p>
+
+    <p><strong>Información del pasajero:</strong><br>
+        {{datosPasajero}}</p>
+
+    <p><strong>Total de asientos reservados:</strong><br>
+        {{totalReservas}} asientos reservados</p>
+</div>
+
+<div class="footer">
+    <p>Saludos,<br>Equipo SharedTrip</p>
+</div>
+</body>
+</html>
