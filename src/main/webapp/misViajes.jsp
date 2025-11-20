@@ -27,77 +27,80 @@
 	
 <style>
 
-.opcion{
-	background-color: white;
-	height: 30px;
-	padding: 0 0 8px 8px;
-	cursor:pointer; 
-}
+    .opcion{
+        background-color: white;
+        padding: 6px 8px;
+        cursor:pointer;
+        line-height: 1.2;
+        border-bottom: 1px solid #eee;
+    }
 
-.opcion:hover {
-	background-color: #3B71CA;
-}
+    .opcion:hover {
+        background-color: #f0f7ff;
+    }
 
-.resultadoCiudades {
-    position: relative;  /* Ahora empuja los elementos hacia abajo */
-    width: 100%;
-    border: 1px solid #ccc;
-    background-color: white;
-    max-height: 200px;
-    overflow-y: auto;
-    z-index: 10;
-    display: none;
-    border-radius: 5px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-    margin-top: 5px;
-}
+    .opcion.active {
+        background-color: #3B71CA;
+        color: white;
+    }
 
-/* Asegurar que los botones estén debajo del dropdown */
-.buscar-limpiar-container {
-    margin-top: 10px;  /* Ajusta la separación */
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-}
+    .resultadoCiudades .no-results {
+        padding: 8px;
+        color: #666;
+    }
 
-/* Botones con tamaño completo */
-.buscar-limpiar {
-    width: 48%;
-}
+    .resultadoCiudades {
+        position: absolute;
+        width: 100%;
+        border: 1px solid #ccc;
+        background-color: white;
+        max-height: 200px;
+        overflow-y: auto;
+        z-index: 9999;
+        display: none;
+        border-radius: 5px;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        margin-top: 5px;
+    }
 
-.dropdown-container {
-    position: relative;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-}
+    .buscar-limpiar {
+        width: 48%;
+    }
 
-.card-header {
-	background: linear-gradient(45deg, #3f51b5, #2196f3);
-	color: white;
-}
+    .dropdown-container {
+        position: relative;
+        width: 100%;
+    }
 
-.table-hover tbody tr:hover {
-	background-color: #f8f9fa;
-}
 
-.action-buttons .btn {
-	padding: 0.375rem 0.75rem;
-}
+    .card-header {
+        background: linear-gradient(45deg, #3f51b5, #2196f3);
+        color: white;
+    }
 
-.scrollable-table {
-	overflow-x: auto;
-}
-.main-content {
-    flex: 1 0 auto;
-    width: 100%;
-    padding-bottom: 60px; 
-}
-body {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-}
+    .table-hover tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+
+    .action-buttons .btn {
+        padding: 0.375rem 0.75rem;
+    }
+
+    .scrollable-table {
+        overflow-x: auto;
+    }
+
+    .main-content {
+        flex: 1 0 auto;
+        width: 100%;
+        padding-bottom: 60px;
+    }
+
+    body {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
 
 </style>
 </head>
@@ -233,7 +236,7 @@ body {
 		                } else {
 		            %>
 							<tr>
-								<td colspan="8" class="text-center">No existen viajes.</td>
+								<td colspan="10" class="text-center">No existen viajes.</td>
 							</tr>
 							<%
 		                }
@@ -257,99 +260,121 @@ body {
     </footer>
 <!-------------------------------------------------  Modal EDITAR VIAJE ----------------------------------------------------------------------------------------->
 
-<div class="modal fade" id="editarViaje">
-		<div class="modal-dialog modal-dialog-centered modal-lg">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title" id="nuevoViajeLabel">
-						<i class="bi bi-person-plus me-2"></i>Editar Viaje
-					</h5>
-					<button type="button" class="btn-close" data-bs-dismiss="modal"
-						aria-label="Close"></button>
-				</div>
-				<form method="POST" action="viajes" id="formEditar">
-					<input type="hidden" name="action" value="update">
+    <div class="modal fade" id="editarViaje">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title" id="nuevoViajeLabel">
+                        <i class="bi bi-person-plus me-2"></i>Editar Viaje
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                </div>
+
+
+                <form method="POST" action="viajes" id="formEditar">
+                    <input type="hidden" name="action" value="update">
                     <input type="hidden" name="idViaje" id="editId">
-					
-					<div class="modal-body">
-						<div class="mb-3">
 
-							<div class="row g-2">
-								<div class="col">
-								<label class="form-label">Fecha Viaje</label>
-									<input type="date" class="form-control" placeholder="fecha"
-										name="fecha" id="editFecha" required>
-								</div>
-								<div class="col">
-									<label class="form-label">Lugar de Salida</label>
-									<input type="text" class="form-control" placeholder="LugarSalida"
-										name="lugar_salida" id="editLugarSalida" required>
-								</div>
-								
-							</div>
-						</div>
-						
-						<div class="mb-3">
-							<label class="form-label">Origen</label>
-							<div class="row g-2">
-								<div class="col">
-									<input type="text" class="form-control" placeholder="origen"
-										name="origen" id="editOrigen" required>
-								</div>
-								<div class="col">
-									<label class="form-label">Destino</label>
-									<input type="text" class="form-control" placeholder="Destino"
-										name="destino" id="editDestino" required>
-								</div>
-							</div>
-						</div>
-						
-						<div class="mb-3">
-							<label class="form-label">Lugares Disponibles</label>
-							<div class="row g-2">
-								<div class="col">
-									<input type="number" class="form-control" placeholder="lugares_disponibles"
-										name="lugares_disponibles" id="editLugaresDisponibles" required>
-								</div>
-								<div class="col">
-									<label class="form-label">Precio Unitario</label>
-									<input type="number" step=any class="form-control" placeholder="precio_unitario"
-										name="precio_unitario" id="editPrecioUnitario" required>
-								</div>
-							</div>
-						</div>
 
-                        <div class="mb-3">
-                            <label class="form-label" for="idVehiculo">Vehículo</label>
+                    <div class="modal-body">
 
-                            <select name="idVehiculo" id="idVehiculo" class="form-select w-100">
-                                <%
-                                    if (vehiculos != null && !vehiculos.isEmpty()) {
-                                        for (Vehiculo v : vehiculos) {
-                                %>
-                                <option value="<%=v.getId_vehiculo()%>">
-                                    <%=v.getPatente()%>
-                                </option>
-                                <%
-                                        }
-                                    }
-                                %>
-                            </select>
+
+                        <div class="row g-2 mb-3">
+
+                            <div class="col-12 col-md-4">
+                                <label for="fecha" class="form-label">Fecha de Viaje:</label>
+                                <input type="date" class="form-control" id="fecha" name="fecha">
+                            </div>
+
+                            <div class="col">
+                                <label class="form-label">Lugar de Salida</label>
+                                <input type="text" class="form-control"
+                                       placeholder="LugarSalida"
+                                       name="lugar_salida"
+                                       id="editLugarSalida"
+                                       required>
+                            </div>
+
                         </div>
 
 
-					</div>
-					<div class="modal-footer">
-						<button type="button" class="btn btn-secondary"
-							data-bs-dismiss="modal">Cancelar</button>
-						<button type="submit" class="btn btn-primary">Guardar
-							Viaje</button>
-					</div>
-					</form>
-					</div>
-			</div>
-		</div>
-	
+                        <div class="mb-3">
+                            <label for="origen" class="form-label">Origen:</label>
+                            <div class="dropdown-container">
+                                <input type="text" class="form-control" id="editOrigen"
+                                       name="origen" placeholder="Ciudad de origen"
+                                       required autocomplete="off"
+                                       aria-autocomplete="list"
+                                       aria-controls="resultadoCiudadesOrigen">
+                                <div id="resultadoCiudadesOrigenEdit" class="resultadoCiudades"
+                                     role="listbox"></div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="destino" class="form-label">Destino:</label>
+                            <div class="dropdown-container">
+                                <input type="text" class="form-control" id="editDestino"
+                                       name="destino" placeholder="Ciudad de destino"
+                                       required autocomplete="off"
+                                       aria-autocomplete="list"
+                                       aria-controls="resultadoCiudadesDestino">
+                                <div id="resultadoCiudadesDestinoEdit" class="resultadoCiudades"
+                                     role="listbox"></div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Lugares Disponibles</label>
+                            <div class="row g-2">
+                                <div class="col">
+                                    <input type="number" class="form-control"
+                                           placeholder="lugares_disponibles"
+                                           name="lugares_disponibles"
+                                           id="editLugaresDisponibles" required>
+                                </div>
+
+                                <div class="col">
+                                    <label class="form-label">Precio Unitario</label>
+                                    <input type="number" step="any"
+                                           class="form-control"
+                                           placeholder="precio_unitario"
+                                           name="precio_unitario"
+                                           id="editPrecioUnitario" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="idVehiculo">Vehículo</label>
+                            <select name="idVehiculo" id="idVehiculo"
+                                    class="form-select w-100">
+                                <% if (vehiculos != null && !vehiculos.isEmpty()) {
+                                    for (Vehiculo v : vehiculos) { %>
+                                <option value="<%=v.getId_vehiculo()%>">
+                                    <%=v.getPatente()%>
+                                </option>
+                                <% } } %>
+                            </select>
+                        </div>
+
+                    </div>
+
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary"
+                                data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar Viaje</button>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+
 
 <!-------------------------------------------------------------------- MODAL BORRAR VIAJE ----------------------------------------------------------------->
 	<div class="modal fade" id="borrarViaje">
@@ -374,7 +399,7 @@ body {
 			</div>
 		</div>
 	</div>
-<!------------------------------------------------MODAL #nuevoVehiculo --------------------------------------------------------------------------------->
+<!------------------------------------------------MODAL #nuevoViaje --------------------------------------------------------------------------------->
 <div class="modal fade" id="nuevoViaje" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -388,8 +413,8 @@ body {
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="fecha">Fecha</label>
-                                <input type="date" class="form-control" name="fecha" id="fecha" required>
+                                <label for="fecha" class="form-label">Fecha de Viaje:</label> <input
+                                    type="date" class="form-control" id="fecha" name="fecha">
                             </div>
 
                             <div class="mb-3">
@@ -400,8 +425,8 @@ body {
                             <div class="mb-3">
                                 <label for="origen" class="form-label">Origen:</label>
                                 <div class="dropdown-container">
-                                    <input type="text" class="form-control" id="origen" name="origen" placeholder="Ciudad de origen" required>
-                                    <div id="resultadoCiudadesOrigen" class="resultadoCiudades"></div>
+                                    <input type="text" class="form-control" id="newOrigen" name="origen" placeholder="Ciudad de origen" required autocomplete="off" aria-autocomplete="list" aria-controls="resultadoCiudadesOrigen">
+                                    <div id="resultadoCiudadesOrigenNew" class="resultadoCiudades" role="listbox" aria-label="Sugerencias de origen"></div>
                                 </div>
                             </div>
 
@@ -417,12 +442,11 @@ body {
                                 <label for="lugar_salida">Lugar de Salida</label>
                                 <input type="text" class="form-control" name="lugar_salida" id="lugar_salida" placeholder="Ingrese el lugar de salida" required>
                             </div>
-
                             <div class="mb-3">
-                                <label for="destino" class="form-label" >Destino:</label>
+                                <label for="destino" class="form-label">Destino:</label>
                                 <div class="dropdown-container">
-                                    <input type="text" class="form-control" id="destino" name="destino" placeholder="Ciudad de destino" required>
-                                    <div id="resultadoCiudadesDestino" class="resultadoCiudades"></div>
+                                    <input type="text" class="form-control" id="newDestino" name="destino" placeholder="Ciudad de destino" required autocomplete="off" aria-autocomplete="list" aria-controls="resultadoCiudadesDestino">
+                                    <div id="resultadoCiudadesDestinoNew" class="resultadoCiudades" role="listbox" aria-label="Sugerencias de destino"></div>
                                 </div>
                             </div>
                         </div>
@@ -452,14 +476,14 @@ body {
             </div>
         </div>
     </div>
-</div>		
+</div>
 
 
-    <script src = "scripts/buscadorMunicipios.js"></script>
     <script src="js/scriptViajes.js"></script>
     <script
             src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
             integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
             crossorigin="anonymous"></script>
+    <script src="<%= request.getContextPath() %>/js/buscadorMunicipios.js"></script>
 </body>
 </html>

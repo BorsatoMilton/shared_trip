@@ -10,20 +10,19 @@
 	<form action="buscar" method="get" id="formBusqueda">
 		<div class="row">
 
-			<div class="mb-3 col-12 col-md-4">
-				<label for="origen" class="form-label">Origen:</label>
-				<div class="dropdown-container">
-					<input type="text" class="form-control" id="origen" name="origen" placeholder="Ciudad de origen" required>
-					<div id="resultadoCiudadesOrigen" class="resultadoCiudades"></div>
-				</div>
-
-			</div>
+            <div class="mb-3 col-12 col-md-4">
+                <label for="origen" class="form-label">Origen:</label>
+                <div class="dropdown-container">
+                    <input type="text" class="form-control" id="origen" name="origen" placeholder="Ciudad de origen" required autocomplete="off" aria-autocomplete="list" aria-controls="resultadoCiudadesOrigen">
+                    <div id="resultadoCiudadesOrigen" class="resultadoCiudades" role="listbox" aria-label="Sugerencias de origen"></div>
+                </div>
+            </div>
 
 			<div class="mb-3 col-12 col-md-4">
 				<label for="destino" class="form-label">Destino:</label>
 				<div class="dropdown-container">
-					<input type="text" class="form-control" id="destino" name="destino" placeholder="Ciudad de destino" required>
-					<div id="resultadoCiudadesDestino" class="resultadoCiudades"></div>
+					<input type="text" class="form-control" id="destino" name="destino" placeholder="Ciudad de destino" required autocomplete="off" aria-autocomplete="list" aria-controls="resultadoCiudadesDestino">
+					<div id="resultadoCiudadesDestino" class="resultadoCiudades" role="listbox" aria-label="Sugerencias de destino"></div>
 				</div>
 			</div>
 
@@ -48,7 +47,6 @@
 <script src="<%= request.getContextPath() %>/js/buscadorMunicipios.js"></script>
 
 
-</script>
 <style>
 .container {
 	background-color: rgb(166, 164, 164);
@@ -57,39 +55,41 @@
 }
 
 .opcion{
-	background-color: white;
-	height: 30px;
-	padding: 0 0 8px 8px;
-	cursor:pointer;
+    background-color: white;
+    padding: 6px 8px;
+    cursor:pointer;
+    line-height: 1.2;
+    border-bottom: 1px solid #eee;
 }
 
 .opcion:hover {
-	background-color: #3B71CA;
+    background-color: #f0f7ff;
+}
+
+.opcion.active {
+    background-color: #3B71CA;
+    color: white;
+}
+
+.resultadoCiudades .no-results {
+    padding: 8px;
+    color: #666;
 }
 
 .resultadoCiudades {
-    position: relative;  /* Ahora empuja los elementos hacia abajo */
+    position: absolute;
     width: 100%;
     border: 1px solid #ccc;
     background-color: white;
     max-height: 200px;
     overflow-y: auto;
-    z-index: 10;
+    z-index: 9999;
     display: none;
     border-radius: 5px;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
     margin-top: 5px;
 }
 
-/* Asegurar que los botones est�n debajo del dropdown */
-.buscar-limpiar-container {
-    margin-top: 10px;  /* Ajusta la separaci�n */
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-}
-
-/* Botones con tama�o completo */
 .buscar-limpiar {
     width: 48%;
 }
@@ -97,10 +97,5 @@
 .dropdown-container {
     position: relative;
     width: 100%;
-    display: flex;
-    flex-direction: column;
 }
-
-
-
 </style>
