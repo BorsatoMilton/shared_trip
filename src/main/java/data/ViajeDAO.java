@@ -4,6 +4,7 @@ import java.sql.*;
 import java.time.LocalDate;
 import java.util.LinkedList;
 
+import entidades.Vehiculo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -176,7 +177,7 @@ public class ViajeDAO {
 
     public void update(Viaje v, int id_viaje) {
         String query = "UPDATE viajes SET fecha=?, lugares_disponibles=?, origen=?, destino=?, "
-                     + "precio_unitario=?, cancelado=?, id_conductor=?, lugar_salida=? WHERE id_viaje=?";
+                     + "precio_unitario=?, cancelado=?, id_conductor=?, lugar_salida=?, id_vehiculo_viaje=? WHERE id_viaje=?";
         Connection conn = null;
 
         try {
@@ -190,7 +191,8 @@ public class ViajeDAO {
                 stmt.setBoolean(6, v.isCancelado());
                 stmt.setInt(7, v.getConductor().getIdUsuario());
                 stmt.setString(8, v.getLugar_salida());
-                stmt.setInt(9, id_viaje);
+                stmt.setInt(9, v.getVehiculo().getId_vehiculo());
+                stmt.setInt(10, id_viaje);
 
                 int rowsAffected = stmt.executeUpdate();
                 if (rowsAffected > 0) {
@@ -208,7 +210,7 @@ public class ViajeDAO {
 
     public void add(Viaje v) {
         String query = "INSERT INTO viajes(fecha, lugares_disponibles, origen, destino, precio_unitario, "
-                     + "cancelado, id_conductor, lugar_salida, codigo_validacion) VALUES (?,?,?,?,?,?,?,?,?)";
+                     + "cancelado, id_conductor, lugar_salida, codigo_validacion, id_vehiculo_viaje) VALUES (?,?,?,?,?,?,?,?,?,?)";
         Connection conn = null;
 
         try {
@@ -223,6 +225,7 @@ public class ViajeDAO {
                 stmt.setInt(7, v.getConductor().getIdUsuario());
                 stmt.setString(8, v.getLugar_salida());
                 stmt.setInt(9, v.getCodigoValidacion());
+                stmt.setInt(10, v.getVehiculo().getId_vehiculo());
 
                 int affectedRows = stmt.executeUpdate();
                 if (affectedRows > 0) {
@@ -275,6 +278,10 @@ public class ViajeDAO {
         v.setCancelado(rs.getBoolean("cancelado"));
         v.setLugar_salida(rs.getString("lugar_salida"));
         v.setCodigoValidacion(rs.getInt("codigo_validacion"));
+
+        VehiculoDAO vDAO = new VehiculoDAO();
+        Vehiculo veh = vDAO.getById_vehiculo(rs.getInt("id_vehiculo_viaje"));
+        v.setVehiculo(veh);
 
         UserDAO usuarioDAO = new UserDAO();
         Usuario conductor = usuarioDAO.getById(rs.getInt("id_conductor"));

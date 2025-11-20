@@ -5,6 +5,7 @@
 <%@ page import="java.time.LocalDateTime"%>
 <%@ page import="java.time.ZoneId"%>
 <%@ page import="java.sql.Date"%>
+<%@ page import="entidades.Vehiculo" %>
 
 <!DOCTYPE html>
 <html>
@@ -172,6 +173,8 @@ body {
 						</thead>
 						<tbody>
 							<%
+                                LinkedList<Vehiculo> vehiculos = (LinkedList<Vehiculo>) request.getAttribute("vehiculos");
+
 		                LinkedList<Viaje> viajes = (LinkedList<Viaje>) request.getAttribute("viajes");
 		                if (viajes != null && !viajes.isEmpty()) {
 		                    for (Viaje viaje : viajes) {
@@ -316,6 +319,25 @@ body {
 							</div>
 						</div>
 
+                        <div class="mb-3">
+                            <label class="form-label" for="idVehiculo">Vehículo</label>
+
+                            <select name="idVehiculo" id="idVehiculo" class="form-select w-100">
+                                <%
+                                    if (vehiculos != null && !vehiculos.isEmpty()) {
+                                        for (Vehiculo v : vehiculos) {
+                                %>
+                                <option value="<%=v.getId_vehiculo()%>">
+                                    <%=v.getPatente()%>
+                                </option>
+                                <%
+                                        }
+                                    }
+                                %>
+                            </select>
+                        </div>
+
+
 					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-secondary"
@@ -403,6 +425,23 @@ body {
                                     <div id="resultadoCiudadesDestino" class="resultadoCiudades"></div>
                                 </div>
                             </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="idVehiculo">Vehículo</label>
+
+                            <select name="idVehiculo" id="idVehiculo" class="form-select w-100">
+                                <%
+                                    if (vehiculos != null && !vehiculos.isEmpty()) {
+                                        for (Vehiculo v : vehiculos) {
+                                %>
+                                <option value="<%=v.getId_vehiculo()%>">
+                                    <%=v.getPatente()%>
+                                </option>
+                                <%
+                                        }
+                                    }
+                                %>
+                            </select>
                         </div>
                     </div>
                     <div class="modal-footer">

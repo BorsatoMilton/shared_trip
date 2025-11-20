@@ -14,8 +14,10 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import entidades.Usuario;
+import entidades.Vehiculo;
 import entidades.Viaje;
 import logic.UserController;
+import logic.VehiculoController;
 import logic.ViajeController;
 
 @WebServlet("/viajes")
@@ -23,6 +25,7 @@ public class CRUDviajes extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private ViajeController viajeCtrl = new ViajeController();
 	private UserController usuarioCtrl = new UserController();
+    private VehiculoController vehiculoCtrl = new VehiculoController();
 
 	public CRUDviajes() {
 		super();
@@ -44,6 +47,7 @@ public class CRUDviajes extends HttpServlet {
 
         LinkedList<Viaje> viajes = new LinkedList<>();
         LinkedList<Usuario> usuarios = null;
+        LinkedList<Vehiculo> vehiculos = null;
 
         if ("admin".equalsIgnoreCase(tipo)) {
             viajes = viajeCtrl.getAll();
@@ -52,6 +56,7 @@ public class CRUDviajes extends HttpServlet {
 
         } else if ("usuario".equalsIgnoreCase(tipo)) {
             viajes = viajeCtrl.getViajesUsuario(usuario);
+            vehiculos = vehiculoCtrl.getVehiculosUsuario(usuario);
         }
 
         for (Viaje v : viajes) {
@@ -63,6 +68,7 @@ public class CRUDviajes extends HttpServlet {
 
         request.setAttribute("viajes", viajes);
         request.setAttribute("usuarios", usuarios);
+        request.setAttribute("vehiculos", vehiculos);
 
         request.getRequestDispatcher("misViajes.jsp").forward(request, response);
 	}
@@ -167,6 +173,9 @@ public class CRUDviajes extends HttpServlet {
 		v.setLugar_salida(request.getParameter("lugar_salida"));
         v.setConductor(usuario);
         v.setCodigoValidacion((int)(Math.random() * 900) + 100);
-	}
+
+        Vehiculo vehiculo = vehiculoCtrl.getOne(Integer.parseInt(request.getParameter("idVehiculo")));
+	    v.setVehiculo(vehiculo);
+    }
 
 }
