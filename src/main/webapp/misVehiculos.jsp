@@ -70,15 +70,17 @@ body {
 				<div class="card shadow-lg">
 					<div
 					class="card-header d-flex justify-content-between align-items-center">
-					<h3 class="mb-0">
-						<i class="bi bi-car-front-fill"></i> Administración de Vehículos
-					</h3>
-					<button type="button" id="btnNuevoVehiculo" class="btn btn-light" data-bs-toggle="modal"
-						data-bs-target="#nuevoVehiculo">
-						<i class="bi bi-plus-circle me-2"></i>Nuevo Vehículo
-					</button>
-				</div>
-					
+                        <h3 class="mb-0">
+                            <i class="bi bi-car-front-fill"></i> Administración de Vehículos
+                        </h3>
+                        <% if("usuario".equals(request.getSession().getAttribute("rol"))){ %>
+                            <button type="button" id="btnNuevoVehiculo" class="btn btn-light" data-bs-toggle="modal"
+                                    data-bs-target="#nuevoVehiculo">
+                                <i class="bi bi-plus-circle me-2"></i>Nuevo Vehículo
+                            </button>
+                            <%
+                        }    %>
+				    </div>
 					<div class="card-body">
 					<% 
 			        	String mensaje = (String) session.getAttribute("mensaje");
@@ -136,19 +138,17 @@ body {
 
 										<button type="button"
 											class="btn btn-sm btn-warning btn-editar"
-											data-bs-toggle="modal" data-bs-target="#editarVehiculo"
 											data-id="<%=vehiculo.getId_vehiculo()%>"
 											data-patente="<%=vehiculo.getPatente()%>"
 											data-modelo="<%=vehiculo.getModelo()%>"
 											data-anio="<%=vehiculo.getAnio()%>"
-											data-usuarioDuenioId="<%=vehiculo.getUsuario_duenio_id()%>">
+											data-usuario-duenio-id="<%=vehiculo.getUsuario_duenio_id()%>">
 											
 											<i class="bi bi-pencil"></i>
 										</button>
 										
 										<button type="button"
 											class="btn btn-sm btn-danger btn-eliminar"
-											data-bs-toggle="modal" data-bs-target="#borrarVehiculo"
 											data-id="<%=vehiculo.getId_vehiculo()%>">
 											<i class="bi bi-trash"></i>
 										</button>
@@ -177,7 +177,7 @@ body {
 
 <!-------------------------------------------------  Modal EDITAR VEHICULO ----------------------------------------------------------------------->
 
-<div class="modal fade" id="editarVehiculo">
+    <div class="modal fade" id="editarVehiculo" tabindex="-1" aria-hidden="true">
 		<div class="modal-dialog modal-dialog-centered modal-lg">
 			<div class="modal-content">
 				<div class="modal-header">
@@ -226,15 +226,15 @@ body {
 						<button type="submit" class="btn btn-primary">Guardar
 							Vehiculo</button>
 					</div>
-					</form>
-					
-					</div>
+                </form>
+
+            </div>
 		
-			</div>
-		</div>
+        </div>
+    </div>
 	
 <!-------------------------------------------------------------------- MODAL BORRAR VEHICULO ----------------------------------------------------------------->
-	<div class="modal fade" id="borrarVehiculo">
+    <div class="modal fade" id="borrarVehiculo" tabindex="-1" aria-hidden="true">
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
