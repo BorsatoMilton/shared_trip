@@ -101,6 +101,7 @@ public class CRUDusuarioAdmin extends HttpServlet {
         }
 
         if ("register".equals(action)) {
+        	preservarDatosFormulario(request, session);
             response.sendRedirect(request.getContextPath() + "/register.jsp");
             return;
         }
@@ -114,6 +115,14 @@ public class CRUDusuarioAdmin extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/usuarios");
         }
 
+    }
+    
+    private void preservarDatosFormulario(HttpServletRequest request, HttpSession session) {
+        session.setAttribute("formData_nombre", request.getParameter("nombre"));
+        session.setAttribute("formData_apellido", request.getParameter("apellido"));
+        session.setAttribute("formData_correo", request.getParameter("correo"));
+        session.setAttribute("formData_usuario", request.getParameter("usuario"));
+        session.setAttribute("formData_telefono", request.getParameter("telefono"));
     }
 
     private void crearUsuario(HttpServletRequest request, Usuario admin) throws Exception {

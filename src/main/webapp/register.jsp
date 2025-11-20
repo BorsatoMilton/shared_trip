@@ -47,6 +47,7 @@
                                            name="nombre" 
                                            placeholder="Nombre"
                                            required
+                                           value="<%= session.getAttribute("formData_nombre") != null ? session.getAttribute("formData_nombre") : (request.getParameter("nombre") != null ? request.getParameter("nombre") : "") %>"
                                            >
                                     <label for="nombre" class="form-label">
                                         Nombre
@@ -61,7 +62,9 @@
                                            id="apellido" 
                                            name="apellido" 
                                            placeholder="Apellido"
-                                           required>
+                                           required
+                                           value="<%= session.getAttribute("formData_apellido") != null ? session.getAttribute("formData_apellido") : (request.getParameter("apellido") != null ? request.getParameter("apellido") : "") %>"
+                                           >
                                     <label for="apellido" class="form-label">
                                         Apellido
                                     </label>
@@ -75,7 +78,9 @@
                                            id="correo" 
                                            name="correo" 
                                            placeholder="Correo Electrónico"
-                                           required>
+                                           required
+                                           value="<%= session.getAttribute("formData_correo") != null ? session.getAttribute("formData_correo") : (request.getParameter("correo") != null ? request.getParameter("correo") : "") %>"
+                                           >
                                     <label for="correo" class="form-label">
                                         Correo Electrónico
                                     </label>
@@ -91,7 +96,9 @@
                                            placeholder="Usuario"
                                            required
                                            minlength="6"
-                                           maxlength="20">
+                                           maxlength="20"
+                                           value="<%= session.getAttribute("formData_usuario") != null ? session.getAttribute("formData_usuario") : (request.getParameter("usuario") != null ? request.getParameter("usuario") : "") %>"
+                                           >
                                     <label for="usuario" class="form-label">
                                         Usuario
                                     </label>
@@ -122,7 +129,9 @@
                                            name="telefono" 
                                            placeholder="Teléfono"
                                            required
-                                           pattern="[0-9]{9,15}">
+                                           pattern="[0-9]{9,15}"
+                                           value="<%= session.getAttribute("formData_telefono") != null ? session.getAttribute("formData_telefono") : (request.getParameter("telefono") != null ? request.getParameter("telefono") : "") %>"
+                                           >
                                     <label for="telefono" class="form-label">
                                         Teléfono
                                     </label>
@@ -157,6 +166,16 @@
 
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+<script>
+// Limpiar datos del formulario de la sesión después de cargarlos
+document.addEventListener('DOMContentLoaded', function() {
+    // Hacer una petición para limpiar los datos de sesión
+    fetch('<%= request.getContextPath() %>/LimpiarDatosFormulario', {
+        method: 'POST'
+    }).catch(error => console.log('Error limpiando datos de sesión:', error));
+});
+</script>
 
 </body>
 </html>
