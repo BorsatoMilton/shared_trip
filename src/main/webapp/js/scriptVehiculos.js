@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     initCRUDOperations();
-    
+
     document.querySelectorAll('.modal').forEach(modal => {
         modal.addEventListener('hide.bs.modal', () => {
 

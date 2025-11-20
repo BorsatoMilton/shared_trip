@@ -176,6 +176,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }).catch(error => console.log('Error limpiando datos de sesión:', error));
 });
 </script>
+<script src="js/notificacionesTiempo.js"></script>
 
 </body>
 </html>

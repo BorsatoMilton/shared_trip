@@ -114,9 +114,15 @@ public class UserDAO {
     }
 
 
-    public Usuario getOneByUserOrEmail(String user, String correo) {
+    public Usuario getOneByUserOrEmail(String user, String correo, Integer idExcluir) {
+
         String query = "SELECT id_usuario, usuario, nombre, apellido, correo, telefono, id_rol "
-                + "FROM usuarios WHERE (usuario = ? OR correo = ?) AND fecha_baja IS NULL";
+                + "FROM usuarios "
+                + "WHERE (usuario = ? OR correo = ?) AND fecha_baja IS NULL";
+
+        if (idExcluir != null) {
+            query += " AND id_usuario <> ?";
+        }
 
         try (Connection conn = ConnectionDB.getInstancia().getConn();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -124,11 +130,16 @@ public class UserDAO {
             stmt.setString(1, user);
             stmt.setString(2, correo);
 
+            if (idExcluir != null) {
+                stmt.setInt(3, idExcluir);
+            }
+
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     return mapUsuario(rs);
                 }
             }
+
         } catch (SQLException e) {
             logger.error("Error al obtener el usuario por nombre de usuario o correo", e);
         } finally {

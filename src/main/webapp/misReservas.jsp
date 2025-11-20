@@ -84,7 +84,7 @@ body {
 							aria-label="Close"></button>
 					</div>
 					<%
-			            session.removeAttribute("mensaje");
+			            session.removeAttribute("error");
 			        	}
 		   			 %>
 					<div class="scrollable-table">
@@ -174,7 +174,7 @@ body {
 
 <script
 		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-		
+<script src="js/notificacionesTiempo.js"></script>
 
 <footer>
 	<div class="row align-items-end" style="height: 10vh">
