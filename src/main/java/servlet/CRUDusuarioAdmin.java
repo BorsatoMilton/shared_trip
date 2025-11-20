@@ -40,11 +40,15 @@ public class CRUDusuarioAdmin extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
-        if (usuario == null) {
-            response.sendRedirect("login.jsp");
+
+        HttpSession session = request.getSession(false);
+
+        if (session == null || session.getAttribute("usuario") == null) {
+            response.sendRedirect(request.getContextPath() + "/login.jsp");
             return;
         }
+
+        Usuario usuario = (Usuario) session.getAttribute("usuario");
 
         Usuario usuarioActualizado = usuarioCtrl.getOneById(usuario.getIdUsuario());
         request.getSession().setAttribute("usuario", usuarioActualizado);

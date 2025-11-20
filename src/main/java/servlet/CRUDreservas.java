@@ -37,12 +37,14 @@ public class CRUDreservas extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
+        HttpSession session = request.getSession(false);
 
-        if (usuario == null) {
-            response.sendRedirect("login.jsp");
+        if (session == null || session.getAttribute("usuario") == null) {
+            response.sendRedirect(request.getContextPath() + "/login.jsp");
             return;
         }
+
+        Usuario usuario = (Usuario) session.getAttribute("usuario");
 
         LinkedList<Reserva> reservas = reservaController.getReservasUsuario(usuario);
 
@@ -53,13 +55,14 @@ public class CRUDreservas extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        HttpSession session = request.getSession();
-        Usuario usuario = (Usuario) session.getAttribute("usuario");
-        String action = request.getParameter("action");
-        if (session.getAttribute("usuario") == null) {
-            response.sendRedirect("login.jsp");
+        HttpSession session = request.getSession(false);
+
+        if (session == null || session.getAttribute("usuario") == null) {
+            response.sendRedirect(request.getContextPath() + "/login.jsp");
             return;
         }
+        Usuario usuario = (Usuario) session.getAttribute("usuario");
+        String action = request.getParameter("action");
 
         try{
             if("reserve".equals(action)){
