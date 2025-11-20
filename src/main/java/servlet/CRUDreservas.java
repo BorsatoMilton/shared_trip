@@ -18,9 +18,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.util.Date;
 import java.util.LinkedList;
 
 @WebServlet("/reservas")
@@ -138,7 +135,8 @@ public class CRUDreservas extends HttpServlet {
             throw new Exception("Formato de número inválido");
         }
 
-        reservaController.cancelarReserva(idReserva, usuario.getIdUsuario());
+        Reserva reserva = reservaController.cancelarReserva(idReserva, usuario.getIdUsuario());
+        enviarNotificacionesCancelacionReserva(reserva, usuario);
     }
 
     private void actualizarEstadoReserva(HttpServletRequest request) {
@@ -180,7 +178,6 @@ public class CRUDreservas extends HttpServlet {
             Viaje viaje = reserva.getViaje();
             Usuario chofer = viaje.getConductor();
 
-            // Obtener el TOTAL real de reservas del viaje, no solo de esta reserva
             int totalReservas = reserva.getCantidad_pasajeros_reservada();
 
             String datosViaje = formatDatosViaje(viaje);
@@ -205,6 +202,39 @@ public class CRUDreservas extends HttpServlet {
             System.err.println("Error enviando emails de notificación: " + e.getMessage());
         } catch (Exception e) {
             System.err.println("Error preparando notificaciones: " + e.getMessage());
+        }
+    }
+
+    private void enviarNotificacionesCancelacionReserva(Reserva reserva, Usuario usuario) {
+        try {
+            Viaje viaje = reserva.getViaje();
+            Usuario chofer = viaje.getConductor();
+
+            int nuevoTotalReservas = reserva.getCantidad_pasajeros_reservada();
+
+            String datosViaje = formatDatosViaje(viaje);
+            String datosChofer = formatDatosChofer(chofer, viaje.getVehiculo().getPatente());
+            String datosPasajero = formatDatosPasajero(usuario, reserva.getCantidad_pasajeros_reservada());
+
+
+            mailService.notificarCancelacionReservaUsuario(
+                    usuario.getCorreo(),
+                    datosViaje,
+                    datosChofer
+            );
+
+            mailService.notificarCancelacionReservaChofer(
+                    chofer.getCorreo(),
+                    datosViaje,
+                    datosPasajero,
+                    reserva.getCantidad_pasajeros_reservada(),
+                    nuevoTotalReservas
+            );
+
+        } catch (MessagingException e) {
+            System.err.println("Error enviando emails de cancelación: " + e.getMessage());
+        } catch (Exception e) {
+            System.err.println("Error preparando notificaciones de cancelación: " + e.getMessage());
         }
     }
 

@@ -78,7 +78,7 @@ public class ReservaController {
         this.reservaDAO.update(reserva, idReserva);
     }
 
-    public void cancelarReserva(int idReserva, int idUsuario) throws Exception {
+    public Reserva cancelarReserva(int idReserva, int idUsuario) throws Exception {
 
         Reserva reserva = reservaDAO.getByReserva(idReserva);
         if (reserva == null) {
@@ -106,6 +106,7 @@ public class ReservaController {
 
         int cantidadPasajeros = reserva.getCantidad_pasajeros_reservada();
         viajeController.actualizarCantidad(viaje.getIdViaje(), cantidadPasajeros * (-1));
+        return reserva;
     }
 
     public int obtenerCantidad(int idReserva) {

@@ -7,27 +7,27 @@
         .header { color: #2E86C1; border-bottom: 2px solid #2E86C1; padding-bottom: 10px; }
         .content { background-color: #f4f4f4; padding: 15px; border-radius: 5px; margin: 15px 0; }
         .footer { color: #7F8C8D; margin-top: 20px; font-size: 14px; }
-        .warning { background-color: #fff3cd; border: 1px solid #ffeaa7; padding: 10px; border-radius: 5px; margin: 10px 0; }
+        .info { background-color: #e8f4fd; border: 1px solid #b3d9ff; padding: 10px; border-radius: 5px; margin: 10px 0; }
     </style>
 </head>
 <body>
 <div class="header">
     <h2>SharedTrip</h2>
-    <h3>Reserva Cancelada</h3>
+    <h3>Reserva Cancelada por Pasajero</h3>
 </div>
 
 <div class="content">
-    <p>Tu reserva ha sido cancelada exitosamente.</p>
+    <p>Un pasajero ha cancelado una reserva en tu viaje.</p>
 
-    <div class="warning">
-        <strong>Reserva cancelada</strong>
+    <div class="info">
+        <strong>Se ha liberado {{asientosLiberados}} asiento(s)</strong>
     </div>
 
-    <p><strong>Detalles del viaje cancelado:</strong><br>
+    <p><strong>Detalles del viaje:</strong><br>
         {{datosViaje}}</p>
 
-    <p><strong>Información del chofer:</strong><br>
-        {{datosChofer}}</p>
+    <p><strong>Información del pasajero:</strong><br>
+        {{datosPasajero}}</p>
 
 </div>
 
