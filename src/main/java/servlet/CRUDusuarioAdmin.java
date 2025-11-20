@@ -2,7 +2,6 @@ package servlet;
 
 import java.io.IOException;
 import java.util.LinkedList;
-import java.util.regex.Pattern;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -15,7 +14,7 @@ import entidades.Rol;
 import entidades.Usuario;
 import logic.RolController;
 import logic.UserController;
-import validators.InputValidator;
+import utils.InputValidator;
 
 @WebServlet("/usuarios")
 public class CRUDusuarioAdmin extends HttpServlet {

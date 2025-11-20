@@ -1,7 +1,6 @@
 package servlet;
 
 import java.io.IOException;
-import java.util.regex.Pattern;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -11,7 +10,7 @@ import javax.servlet.http.HttpSession;
 
 import entidades.Usuario;
 import logic.UserController;
-import validators.InputValidator;
+import utils.InputValidator;
 
 
 @WebServlet("/perfil")

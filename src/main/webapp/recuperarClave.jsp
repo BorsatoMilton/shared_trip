@@ -30,7 +30,8 @@
                         <h4 class="mb-0">Recuperar Contraseña</h4>
                     </div>
                     <div class="card-body">
-                        <form method="POST" action="enviarCorreo">
+                        <form method="POST" action="auth">
+                            <input type="hidden" name="action" value="recover">
                             <div class="mb-3">
                                 <label for="email" class="form-label">Correo Electrónico</label>
                                 <input type="email" class="form-control" id="email" name="email" required>

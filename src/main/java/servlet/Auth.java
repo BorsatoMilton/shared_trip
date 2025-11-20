@@ -2,8 +2,10 @@ package servlet;
 
 import entidades.Rol;
 import entidades.Usuario;
+import jakarta.mail.MessagingException;
 import logic.RolController;
 import logic.UserController;
+import utils.MailService;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -18,6 +20,7 @@ import java.util.LinkedList;
 public class Auth extends HttpServlet {
     private static final long serialVersionUID = 1L;
     UserController userController = new UserController();
+    MailService mailService = new MailService();
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -33,6 +36,14 @@ public class Auth extends HttpServlet {
             login(request, response);
         } else if ("logout".equals(action)) {
             logout(request, response);
+        }else if("recover".equals(action)) {
+            try {
+                recoverPassword(request,response);
+            } catch (MessagingException e) {
+                throw new RuntimeException(e);
+            }
+        }else {
+            throw new ServletException("Acción invalida");
         }
     }
 
@@ -89,5 +100,14 @@ public class Auth extends HttpServlet {
             session.invalidate();
         }
         response.sendRedirect(request.getContextPath() + "/");
+    }
+
+    // ---------------------- RECUPERAR CLAVE ---------------------------
+    private void recoverPassword(HttpServletRequest request, HttpServletResponse response)
+            throws MessagingException {
+        String email = request.getParameter("email");
+
+        mailService.enviarTexto(email, "Recuperar clave", "Prueba mail");
+
     }
 }
