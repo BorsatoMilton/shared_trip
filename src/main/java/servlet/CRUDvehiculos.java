@@ -217,7 +217,6 @@ public class CRUDvehiculos extends HttpServlet {
             throw new Exception("ID de vehículo debe ser un número");
         }
 
-        // Delegar al controller
         vehiculoCtrl.eliminarVehiculo(id, usuario);
     }
 

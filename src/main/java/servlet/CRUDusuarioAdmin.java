@@ -15,22 +15,15 @@ import entidades.Rol;
 import entidades.Usuario;
 import logic.RolController;
 import logic.UserController;
+import validators.InputValidator;
 
 @WebServlet("/usuarios")
 public class CRUDusuarioAdmin extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private UserController usuarioCtrl = new UserController();
 	private RolController rolCtrl = new RolController();
+    private InputValidator inputValidator = new InputValidator();
 
-    private static final Pattern EMAIL_PATTERN = Pattern.compile(
-            "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$"
-    );
-    private static final Pattern TELEFONO_PATTERN = Pattern.compile(
-            "^\\+?[0-9]{8,15}$"
-    );
-    private static final Pattern USUARIO_PATTERN = Pattern.compile(
-            "^[a-zA-Z0-9._-]{3,20}$"
-    );
 
 	public CRUDusuarioAdmin() {
 		super();
@@ -135,25 +128,25 @@ public class CRUDusuarioAdmin extends HttpServlet {
             throw new Exception("No tiene permisos para crear usuarios");
         }
 
-        String usuario = validarUsuario(request.getParameter("usuario"));
-        String clave = validarClave(request.getParameter("clave"));
-        String nombre = validarNombre(request.getParameter("nombre"));
-        String apellido = validarApellido(request.getParameter("apellido"));
-        String correo = validarEmail(request.getParameter("correo"));
-        String telefono = validarTelefono(request.getParameter("telefono"));
-        int rol = validarRol(request.getParameter("rol"));
+        String usuario = inputValidator.validarUsuario(request.getParameter("usuario"));
+        String clave = inputValidator.validarClave(request.getParameter("clave"));
+        String nombre = inputValidator.validarNombre(request.getParameter("nombre"));
+        String apellido = inputValidator.validarApellido(request.getParameter("apellido"));
+        String correo = inputValidator.validarEmail(request.getParameter("correo"));
+        String telefono = inputValidator.validarTelefono(request.getParameter("telefono"));
+        int rol = inputValidator.validarRol(request.getParameter("rol"));
 
         usuarioCtrl.crearUsuario(usuario, clave, nombre, apellido, correo, telefono, rol);
     }
 
     private void registrarUsuario(HttpServletRequest request) throws Exception {
 
-        String usuario = validarUsuario(request.getParameter("usuario"));
-        String clave = validarClave(request.getParameter("clave"));
-        String nombre = validarNombre(request.getParameter("nombre"));
-        String apellido = validarApellido(request.getParameter("apellido"));
-        String correo = validarEmail(request.getParameter("correo"));
-        String telefono = validarTelefono(request.getParameter("telefono"));
+        String usuario = inputValidator.validarUsuario(request.getParameter("usuario"));
+        String clave = inputValidator.validarClave(request.getParameter("clave"));
+        String nombre = inputValidator.validarNombre(request.getParameter("nombre"));
+        String apellido = inputValidator.validarApellido(request.getParameter("apellido"));
+        String correo = inputValidator.validarEmail(request.getParameter("correo"));
+        String telefono = inputValidator.validarTelefono(request.getParameter("telefono"));
 
         int rol = 2; // usuario normal
 
@@ -174,16 +167,16 @@ public class CRUDusuarioAdmin extends HttpServlet {
             throw new Exception("ID de usuario debe ser un número");
         }
 
-        String usuario = validarUsuario(request.getParameter("usuario"));
-        String nombre = validarNombre(request.getParameter("nombre"));
-        String apellido = validarApellido(request.getParameter("apellido"));
-        String correo = validarEmail(request.getParameter("correo"));
-        String telefono = validarTelefono(request.getParameter("telefono"));
+        String usuario = inputValidator.validarUsuario(request.getParameter("usuario"));
+        String nombre = inputValidator.validarNombre(request.getParameter("nombre"));
+        String apellido = inputValidator.validarApellido(request.getParameter("apellido"));
+        String correo = inputValidator.validarEmail(request.getParameter("correo"));
+        String telefono = inputValidator.validarTelefono(request.getParameter("telefono"));
 
 
         String clave = request.getParameter("clave");
         if (clave != null && !clave.trim().isEmpty()) {
-            clave = validarClave(clave);
+            clave = inputValidator.validarClave(clave);
         } else {
             clave = null;
         }
@@ -191,11 +184,11 @@ public class CRUDusuarioAdmin extends HttpServlet {
         Integer rol = null;
 
         if (logueado.getRol() == 1 && logueado.getIdUsuario() != id) {
-            rol = validarRol(request.getParameter("rol"));
+            rol = inputValidator.validarRol(request.getParameter("rol"));
         }
 
         else if (logueado.getRol() == 1 && logueado.getIdUsuario() == id) {
-            rol = validarRol(request.getParameter("rol"));
+            rol = inputValidator.validarRol(request.getParameter("rol"));
         }
 
         else if (logueado.getIdUsuario() == id) {
@@ -222,125 +215,5 @@ public class CRUDusuarioAdmin extends HttpServlet {
         usuarioCtrl.eliminarUsuario(id, logueado);
     }
 
-    private String validarUsuario(String usuario) throws Exception {
-        if (usuario == null || usuario.trim().isEmpty()) {
-            throw new Exception("El nombre de usuario es obligatorio");
-        }
 
-        usuario = usuario.trim();
-
-        if (!USUARIO_PATTERN.matcher(usuario).matches()) {
-            throw new Exception("El usuario debe tener entre 3-20 caracteres " +
-                    "(solo letras, números, puntos, guiones)");
-        }
-
-        return usuario;
-    }
-
-    private String validarClave(String clave) throws Exception {
-        if (clave == null || clave.trim().isEmpty()) {
-            throw new Exception("La contraseña es obligatoria");
-        }
-
-        if (clave.length() < 6) {
-            throw new Exception("La contraseña debe tener al menos 6 caracteres");
-        }
-
-        if (clave.length() > 100) {
-            throw new Exception("La contraseña es demasiado larga");
-        }
-
-        if (!clave.matches(".*[A-Za-z].*") || !clave.matches(".*[0-9].*")) {
-            throw new Exception("La contraseña debe contener letras y números");
-        }
-
-        return clave;
-    }
-
-    private String validarNombre(String nombre) throws Exception {
-        if (nombre == null || nombre.trim().isEmpty()) {
-            throw new Exception("El nombre es obligatorio");
-        }
-
-        nombre = nombre.trim();
-
-        if (nombre.length() < 2 || nombre.length() > 50) {
-            throw new Exception("El nombre debe tener entre 2 y 50 caracteres");
-        }
-
-        if (!nombre.matches("^[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+$")) {
-            throw new Exception("El nombre solo puede contener letras");
-        }
-
-        return nombre;
-    }
-
-    private String validarApellido(String apellido) throws Exception {
-        if (apellido == null || apellido.trim().isEmpty()) {
-            throw new Exception("El apellido es obligatorio");
-        }
-
-        apellido = apellido.trim();
-
-        if (apellido.length() < 2 || apellido.length() > 50) {
-            throw new Exception("El apellido debe tener entre 2 y 50 caracteres");
-        }
-
-        if (!apellido.matches("^[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+$")) {
-            throw new Exception("El apellido solo puede contener letras");
-        }
-
-        return apellido;
-    }
-
-    private String validarEmail(String email) throws Exception {
-        if (email == null || email.trim().isEmpty()) {
-            throw new Exception("El email es obligatorio");
-        }
-
-        email = email.trim().toLowerCase();
-
-        if (!EMAIL_PATTERN.matcher(email).matches()) {
-            throw new Exception("Formato de email inválido");
-        }
-
-        if (email.length() > 100) {
-            throw new Exception("El email es demasiado largo");
-        }
-
-        return email;
-    }
-
-    private String validarTelefono(String telefono) throws Exception {
-        if (telefono == null || telefono.trim().isEmpty()) {
-            throw new Exception("El teléfono es obligatorio");
-        }
-
-        telefono = telefono.trim().replaceAll("[\\s-]", "");
-
-        if (!TELEFONO_PATTERN.matcher(telefono).matches()) {
-            throw new Exception("Formato de teléfono inválido (8-15 dígitos)");
-        }
-
-        return telefono;
-    }
-
-    private int validarRol(String rolStr) throws Exception {
-        if (rolStr == null || rolStr.trim().isEmpty()) {
-            throw new Exception("El rol es obligatorio");
-        }
-
-        int rol;
-        try {
-            rol = Integer.parseInt(rolStr);
-        } catch (NumberFormatException e) {
-            throw new Exception("El rol debe ser un número");
-        }
-
-        if (rol < 1 || rol > 2) {
-            throw new Exception("Rol inválido");
-        }
-
-        return rol;
-    }
 }
