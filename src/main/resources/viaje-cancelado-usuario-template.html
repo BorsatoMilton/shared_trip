@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
+        .header { color: #2E86C1; border-bottom: 2px solid #2E86C1; padding-bottom: 10px; }
+        .content { background-color: #f4f4f4; padding: 15px; border-radius: 5px; margin: 15px 0; }
+        .footer { color: #7F8C8D; margin-top: 20px; font-size: 14px; }
+        .important { background-color: #ffeaa7; border: 1px solid #fdcb6e; padding: 10px; border-radius: 5px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+<div class="header">
+    <h2>SharedTrip</h2>
+    <h3>Viaje Cancelado</h3>
+</div>
+
+<div class="content">
+    <p>El viaje en el que tenías una reserva ha sido cancelado.</p>
+
+    <div class="important">
+        <strong>Viaje cancelado por el chofer</strong>
+    </div>
+
+    <p><strong>Detalles del viaje cancelado:</strong><br>
+        {{datosViaje}}</p>
+
+    <p><strong>Información del chofer:</strong><br>
+        {{datosChofer}}</p>
+
+
+    <p style="color: #e74c3c;">
+        <strong>Tu reserva ha sido automáticamente cancelada y no se te cobrará ningún monto.</strong>
+    </p>
+</div>
+
+<div class="footer">
+    <p>Saludos,<br>Equipo SharedTrip</p>
+    <p style="font-size: 12px; margin-top: 10px;">
+        Lamentamos los inconvenientes ocasionados.
+    </p>
+</div>
+</body>
+</html>

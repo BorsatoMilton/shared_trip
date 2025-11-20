@@ -112,6 +112,27 @@ public class MailService {
         enviarHtml(emailChofer, "Cancelación de reserva - SharedTrip", html);
     }
 
+    public void notificarCancelacionViajeUsuarios(String emailUsuario, String datosViaje,
+                                                  String datosChofer) throws MessagingException {
+        Map<String, String> parametros = new HashMap<>();
+        parametros.put("datosViaje", datosViaje);
+        parametros.put("datosChofer", datosChofer);
+
+        String html = cargarTemplate("viaje-cancelado-usuario-template", parametros);
+        enviarHtml(emailUsuario, "Viaje cancelado - SharedTrip", html);
+    }
+
+    public void notificarCancelacionViajeChofer(String emailChofer, String datosViaje,
+                                                int totalReservas, int totalPasajeros) throws MessagingException {
+        Map<String, String> parametros = new HashMap<>();
+        parametros.put("datosViaje", datosViaje);
+        parametros.put("totalReservas", String.valueOf(totalReservas));
+        parametros.put("totalPasajeros", String.valueOf(totalPasajeros));
+
+        String html = cargarTemplate("viaje-cancelado-chofer-template", parametros);
+        enviarHtml(emailChofer, "Viaje cancelado - SharedTrip", html);
+    }
+
 
     public void enviarHtml(String to, String subject, String html) throws MessagingException {
         Message msg = new MimeMessage(session);

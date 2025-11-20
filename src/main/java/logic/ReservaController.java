@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.List;
 
 import data.ReservaDAO;
 import entidades.Reserva;
@@ -107,6 +108,13 @@ public class ReservaController {
         int cantidadPasajeros = reserva.getCantidad_pasajeros_reservada();
         viajeController.actualizarCantidad(viaje.getIdViaje(), cantidadPasajeros * (-1));
         return reserva;
+    }
+
+    public LinkedList<Reserva> getReservasPorViaje(int idViaje) throws Exception {
+        if(idViaje < 0) {
+            throw new Exception("ID de viaje inválido");
+        }
+        return reservaDAO.getReservasByViaje(idViaje);
     }
 
     public int obtenerCantidad(int idReserva) {

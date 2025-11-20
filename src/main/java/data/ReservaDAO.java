@@ -2,6 +2,7 @@ package data;
 
 import java.sql.*;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -109,6 +110,37 @@ public class ReservaDAO {
 
         } catch (SQLException e) {
             handleSQLException("Error al obtener reservas por usuario", e);
+        } finally {
+            ConnectionDB.getInstancia().releaseConn();
+        }
+        return reservas;
+    }
+
+    public LinkedList<Reserva> getReservasByViaje(int idViaje) {
+        String query = "SELECT r.id_pasajero_reserva, r.idReserva, r.fecha_reserva, r.estado, r.intentos_codigo ,r.cantidad_pasajeros_reservada, r.reserva_cancelada, "
+                + "v.id_viaje, v.origen, v.destino, v.fecha, v.lugares_disponibles, v.codigo_validacion, v.precio_unitario, "
+                + "u.id_usuario, u.nombre, u.apellido, u.correo, u.telefono "
+                + "FROM reservas r "
+                + "INNER JOIN viajes v ON r.id_viaje = v.id_viaje "
+                + "INNER JOIN usuarios u ON u.id_usuario = v.id_conductor "
+                + "WHERE r.id_viaje = ? AND r.reserva_cancelada = false";
+
+
+        LinkedList<Reserva> reservas = new LinkedList<>();
+
+        try (Connection conn = ConnectionDB.getInstancia().getConn();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setInt(1, idViaje);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    reservas.add(mapFullReserva(rs));
+                }
+            }
+            logger.debug("Encontradas {} reservas el viaje {}", reservas.size(), idViaje);
+
+        } catch (SQLException e) {
+            handleSQLException("Error al obtener reservas por viaje", e);
         } finally {
             ConnectionDB.getInstancia().releaseConn();
         }

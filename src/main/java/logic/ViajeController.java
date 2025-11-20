@@ -116,7 +116,7 @@ public class ViajeController {
         viajeDAO.delete(viaje);
     }
 
-    public void cancelarViaje(int idViaje, Usuario usuario) throws Exception {
+    public Viaje cancelarViaje(int idViaje, Usuario usuario) throws Exception {
 
 
         Viaje viaje = viajeDAO.getByViaje(idViaje);
@@ -148,6 +148,7 @@ public class ViajeController {
         if (!cancelado) {
             throw new Exception("Error al cancelar el viaje en la base de datos");
         }
+        return viaje;
     }
 
     public void crearViaje(Date fecha, int lugares, String origen, String destino,

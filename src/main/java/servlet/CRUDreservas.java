@@ -247,10 +247,11 @@ public class CRUDreservas extends HttpServlet {
         String destino = viaje.getDestino() != null ? viaje.getDestino() : "No especificado";
         String fecha = viaje.getFecha() != null ? viaje.getFecha().toString() : "No especificado";
         String precio = viaje.getPrecio_unitario() != null ? String.valueOf(viaje.getPrecio_unitario()) : "No especificado";
+        String lugar_salida = viaje.getLugar_salida() != null ? viaje.getLugar_salida() : "No especificado";
 
         return String.format(
-                "Origen: %s<br>Destino: %s<br>Fecha: %s<br>Precio por asiento: $%s",
-                origen, destino, fecha, precio
+                "Origen: %s<br>Destino: %s<br>Lugar de Salida: %s<br>Fecha: %s<br>Precio por asiento: $%s",
+                origen, destino, lugar_salida, fecha, precio
         );
     }
 

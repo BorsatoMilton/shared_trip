@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
+        .header { color: #2E86C1; border-bottom: 2px solid #2E86C1; padding-bottom: 10px; }
+        .content { background-color: #f4f4f4; padding: 15px; border-radius: 5px; margin: 15px 0; }
+        .footer { color: #7F8C8D; margin-top: 20px; font-size: 14px; }
+        .summary { background-color: #e8f4fd; border: 1px solid #b3d9ff; padding: 10px; border-radius: 5px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+<div class="header">
+    <h2>SharedTrip</h2>
+    <h3>Viaje Cancelado</h3>
+</div>
+
+<div class="content">
+    <p>Has cancelado tu viaje exitosamente.</p>
+
+    <p><strong>Detalles del viaje cancelado:</strong><br>
+        {{datosViaje}}</p>
+
+    <p style="color: #2E86C1; font-size: 14px;">
+        Todos los pasajeros con reserva en este viaje han sido notificados automáticamente.
+    </p>
+</div>
+
+<div class="footer">
+    <p>Saludos,<br>Equipo SharedTrip</p>
+</div>
+</body>
+</html>
