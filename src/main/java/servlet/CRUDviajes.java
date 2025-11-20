@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -14,12 +15,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import entidades.Reserva;
 import entidades.Usuario;
 import entidades.Vehiculo;
 import entidades.Viaje;
+import jakarta.mail.MessagingException;
+import logic.ReservaController;
 import logic.UserController;
 import logic.VehiculoController;
 import logic.ViajeController;
+import utils.MailService;
 
 @WebServlet("/viajes")
 public class CRUDviajes extends HttpServlet {
@@ -27,6 +32,8 @@ public class CRUDviajes extends HttpServlet {
     private final ViajeController viajeCtrl = new ViajeController();
     private final UserController usuarioCtrl = new UserController();
     private final VehiculoController vehiculoCtrl = new VehiculoController();
+    private final ReservaController reservaCtrl = new ReservaController();
+    private final MailService mailService = new MailService();
 
     public CRUDviajes() {
         super();
@@ -389,8 +396,84 @@ public class CRUDviajes extends HttpServlet {
             throw new Exception("ID de viaje debe ser un número");
         }
 
-        viajeCtrl.cancelarViaje(id, u);
+        Viaje viaje = viajeCtrl.cancelarViaje(id, u);
+
+        enviarNotificacionesCancelacionViaje(viaje, u);
     }
+
+    private void enviarNotificacionesCancelacionViaje(Viaje viaje, Usuario chofer) {
+        try {
+
+            LinkedList<Reserva> reservas = reservaCtrl.getReservasPorViaje(viaje.getIdViaje());
+
+            String datosViaje = formatDatosViaje(viaje);
+            String datosChofer = formatDatosChofer(chofer, viaje.getVehiculo().getPatente());
+
+            int totalPasajeros = reservas.stream()
+                    .mapToInt(Reserva::getCantidad_pasajeros_reservada)
+                    .sum();
+
+            mailService.notificarCancelacionViajeChofer(
+                    chofer.getCorreo(),
+                    datosViaje,
+                    reservas.size(),
+                    totalPasajeros
+            );
+
+
+            for (Reserva reserva : reservas) {
+                Usuario pasajero = usuarioCtrl.getOneById(reserva.getId_pasajero_reserva());
+
+                if (pasajero != null && pasajero.getCorreo() != null) {
+                    mailService.notificarCancelacionViajeUsuarios(
+                            pasajero.getCorreo(),
+                            datosViaje,
+                            datosChofer
+                    );
+                }
+            }
+
+        } catch (MessagingException e) {
+            System.err.println("Error enviando emails de cancelación de viaje: " + e.getMessage());
+        } catch (Exception e) {
+            System.err.println("Error preparando notificaciones de cancelación de viaje: " + e.getMessage());
+        }
+    }
+
+    private String formatDatosViaje(Viaje viaje) {
+        if (viaje == null) {
+            return "Información del viaje no disponible";
+        }
+
+        String origen = viaje.getOrigen() != null ? viaje.getOrigen() : "No especificado";
+        String destino = viaje.getDestino() != null ? viaje.getDestino() : "No especificado";
+        String fecha = viaje.getFecha() != null ? viaje.getFecha().toString() : "No especificado";
+        String precio = viaje.getPrecio_unitario() != null ? String.valueOf(viaje.getPrecio_unitario()) : "No especificado";
+        String lugar_salida = viaje.getLugar_salida() != null ? viaje.getLugar_salida() : "No especificado";
+
+        return String.format(
+                "Origen: %s<br>Destino: %s<br>Lugar de Salida: %s<br>Fecha: %s<br>Precio por asiento: $%s",
+                origen, destino, lugar_salida, fecha, precio
+        );
+    }
+
+    private String formatDatosChofer(Usuario chofer, String patente) {
+        if (chofer == null) {
+            return "Información del chofer no disponible";
+        }
+
+        String nombreCompleto = (chofer.getNombre() != null ? chofer.getNombre() : "No especificado")
+                + (chofer.getApellido() != null ? " " + chofer.getApellido() : "");
+        String telefono = chofer.getTelefono() != null ? chofer.getTelefono() : "No especificado";
+        String correo = chofer.getCorreo() != null ? chofer.getCorreo() : "No especificado";
+        String vehiculo = patente != null ? patente : "No especificado";
+
+        return String.format(
+                "Nombre: %s<br>Teléfono: %s<br>Email: %s<br>Vehículo: %s",
+                nombreCompleto, telefono, correo, vehiculo
+        );
+    }
+
 
 
 }

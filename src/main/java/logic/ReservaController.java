@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.List;
 
 import data.ReservaDAO;
 import entidades.Reserva;
@@ -19,7 +20,7 @@ public class ReservaController {
         this.viajeController = new ViajeController();
     }
 
-    public void nuevaReserva(int viajeId, int cantPasajeros, int idUsuario) throws Exception {
+    public Reserva nuevaReserva(int viajeId, int cantPasajeros, int idUsuario) throws Exception {
 
         Viaje viaje = viajeController.getOne(viajeId);
         if (viaje == null) {
@@ -55,6 +56,8 @@ public class ReservaController {
         reservaDAO.add(r);
 
         viajeController.actualizarCantidad(viajeId, cantPasajeros);
+
+        return r;
     }
 
     public LinkedList<Reserva> getReservasUsuario(Usuario u) {
@@ -76,7 +79,7 @@ public class ReservaController {
         this.reservaDAO.update(reserva, idReserva);
     }
 
-    public void cancelarReserva(int idReserva, int idUsuario) throws Exception {
+    public Reserva cancelarReserva(int idReserva, int idUsuario) throws Exception {
 
         Reserva reserva = reservaDAO.getByReserva(idReserva);
         if (reserva == null) {
@@ -104,6 +107,14 @@ public class ReservaController {
 
         int cantidadPasajeros = reserva.getCantidad_pasajeros_reservada();
         viajeController.actualizarCantidad(viaje.getIdViaje(), cantidadPasajeros * (-1));
+        return reserva;
+    }
+
+    public LinkedList<Reserva> getReservasPorViaje(int idViaje) throws Exception {
+        if(idViaje < 0) {
+            throw new Exception("ID de viaje inválido");
+        }
+        return reservaDAO.getReservasByViaje(idViaje);
     }
 
     public int obtenerCantidad(int idReserva) {

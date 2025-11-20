@@ -8,7 +8,7 @@ public class Viaje {
     public int lugares_disponibles;
     public String origen;
     public String destino;
-    public double precio_unitario;
+    public Double precio_unitario;
     public boolean cancelado;
     public String lugar_salida;
     public String tiempo_cancelacion; //fijarse el tipo
@@ -73,7 +73,7 @@ public class Viaje {
         this.destino = destino;
     }
 
-    public double getPrecio_unitario() {
+    public Double getPrecio_unitario() {
         return precio_unitario;
     }
 

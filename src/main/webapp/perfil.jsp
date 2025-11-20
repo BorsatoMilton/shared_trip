@@ -58,14 +58,12 @@
 <div class="main-content">
     <div class="container-fluid p-0">
         <%
-            Object usuarioObj = session.getAttribute("usuario");
-            if (usuarioObj == null || !(usuarioObj instanceof Usuario usuario)) {
+            Usuario usuario = (Usuario) session.getAttribute("usuario");
+            if (usuario == null) {
                 response.sendRedirect(request.getContextPath() + "/login.jsp");
                 return;
             }
-
         %>
-
         <%
             String mensaje = (String) session.getAttribute("mensaje");
             if (mensaje != null) {
