@@ -3,6 +3,7 @@ package servlet;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.LinkedList;
 
@@ -49,133 +50,345 @@ public class CRUDviajes extends HttpServlet {
         LinkedList<Usuario> usuarios = null;
         LinkedList<Vehiculo> vehiculos = null;
 
-        if ("admin".equalsIgnoreCase(tipo)) {
-            viajes = viajeCtrl.getAll();
-            usuarios = usuarioCtrl.getAll();
-            System.out.println("Viajes: " + viajes);
-
-        } else if ("usuario".equalsIgnoreCase(tipo)) {
-            viajes = viajeCtrl.getViajesUsuario(usuario);
-            vehiculos = vehiculoCtrl.getVehiculosUsuario(usuario);
-        }
-
-        for (Viaje v : viajes) {
-            if (v.getConductor() != null && v.getConductor().getIdUsuario() > 0) {
-                Usuario u = usuarioCtrl.getOneById(v.getConductor().getIdUsuario());
-                v.setConductor(u);
+        try {
+            if ("admin".equalsIgnoreCase(tipo)) {
+                viajes = viajeCtrl.getAll();
+                usuarios = usuarioCtrl.getAll();
+            } else if ("usuario".equalsIgnoreCase(tipo)) {
+                viajes = viajeCtrl.getViajesUsuario(usuario);
+                vehiculos = vehiculoCtrl.getVehiculosUsuario(usuario);
             }
+
+            for (Viaje v : viajes) {
+                if (v.getConductor() != null && v.getConductor().getIdUsuario() > 0) {
+                    Usuario u = usuarioCtrl.getOneById(v.getConductor().getIdUsuario());
+                    v.setConductor(u);
+                }
+            }
+
+            request.setAttribute("viajes", viajes);
+            request.setAttribute("usuarios", usuarios);
+            request.setAttribute("vehiculos", vehiculos);
+
+            request.getRequestDispatcher("misViajes.jsp").forward(request, response);
+
+        } catch (Exception e) {
+            session.setAttribute("error", "Error al cargar los viajes: " + e.getMessage());
+            response.sendRedirect(request.getContextPath() + "/");
         }
 
-        request.setAttribute("viajes", viajes);
-        request.setAttribute("usuarios", usuarios);
-        request.setAttribute("vehiculos", vehiculos);
-
-        request.getRequestDispatcher("misViajes.jsp").forward(request, response);
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		HttpSession session = request.getSession();
-		String action = request.getParameter("action");
 
-		try {
-			if ("update".equals(action)) {
-				actualizarViaje(request, session);
-				session.setAttribute("mensaje", "Viaje actualizado con éxito");
-			} else if ("delete".equals(action)) {
-				eliminarViaje(request);
-				session.setAttribute("mensaje", "Viaje eliminado con éxito");
-			} else if ("add".equals(action)) {
-				crearViaje(request, session);
-				session.setAttribute("mensaje", "Viaje creado con éxito");
-			} else if ("cancelarViaje".equals(action)) {
-                boolean cancelar = cancelarViaje(request);
-                if (cancelar) {
-                    session.setAttribute("mensaje", "Viaje cancelado con éxito");
-                } else {
-                    session.setAttribute("mensaje", "Ocurrió un error al cancelar el viaje");
-                }
-            }
+        HttpSession session = request.getSession();
+        Usuario usuario = (Usuario) session.getAttribute("usuario");
 
-		} catch (Exception e) {
-			session.setAttribute("error", "Error: " + e.getMessage());
-			if ("update".equals(action)) {
-				System.out.println("Error en actualizarViaje: " + e.getMessage());
-			}
-			else if ("delete".equals(action)) {
-				System.out.println("Error en eliminarViaje: " + e.getMessage());
-			}
-			else {
-				System.out.println("Error en crearViaje: " + e.getMessage());
-			}
-			
-		}
+        if (usuario == null) {
+            response.sendRedirect("login.jsp");
+            return;
+        }
 
-		response.sendRedirect(request.getContextPath() + "/viajes");
-	}
-
-	private void crearViaje(HttpServletRequest request, HttpSession session) throws Exception {
-		Viaje v = new Viaje();
-		cargarDatosViaje(request, v, session);
-
-		viajeCtrl.altaViaje(v);
-	}
-
-	private void actualizarViaje(HttpServletRequest request, HttpSession session) throws Exception {
-		int id = Integer.parseInt(request.getParameter("idViaje"));
-		
-		Viaje v = viajeCtrl.getOne(id);
-
-		if (v == null) {
-			throw new Exception("Viaje no encontrado");
-		}
-
-		cargarDatosViaje(request, v, session);
-		viajeCtrl.updateViaje(v, id);
-	}
-
-	private void eliminarViaje(HttpServletRequest request) throws Exception {
-		int id = Integer.parseInt(request.getParameter("idViaje"));
-		Viaje v = viajeCtrl.getOne(id);
-
-		if (v == null) {
-			throw new Exception("Viaje no encontrado");
-		}
-
-		viajeCtrl.deleteViaje(v);
-	}
-
-    private boolean cancelarViaje(HttpServletRequest request) throws Exception {
-        int idViaje = Integer.parseInt(request.getParameter("viajeId"));
-        boolean cancelada = viajeCtrl.cancelar(idViaje);
-        return cancelada;
-
-    }
-
-
-	private void cargarDatosViaje(HttpServletRequest request, Viaje v, HttpSession session) {
-		Usuario usuario = (Usuario) session.getAttribute("usuario");
-		String fechaStr = request.getParameter("fecha"); 
-        SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd");
+        String action = request.getParameter("action");
 
         try {
-            Date utilDate = formato.parse(fechaStr); 
-            java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime()); 
-            v.setFecha(sqlDate); 
-        } catch (ParseException e) {
+            if ("update".equals(action)) {
+                actualizarViaje(request, usuario);
+                session.setAttribute("mensaje", "Viaje actualizado con éxito");
+
+            } else if ("delete".equals(action)) {
+                eliminarViaje(request, usuario);
+                session.setAttribute("mensaje", "Viaje eliminado con éxito");
+
+            } else if ("add".equals(action)) {
+                crearViaje(request, usuario);
+                session.setAttribute("mensaje", "Viaje creado con éxito");
+
+            } else if ("cancelarViaje".equals(action)) {
+                cancelarViaje(request, usuario);
+                session.setAttribute("mensaje", "Viaje cancelado con éxito");
+            }
+
+        } catch (Exception e) {
+            session.setAttribute("error", e.getMessage());
+            System.out.println("Error en " + action + ": " + e.getMessage());
             e.printStackTrace();
         }
-        v.setLugares_disponibles(Integer.parseInt(request.getParameter("lugares_disponibles")));
-        v.setOrigen(request.getParameter("origen"));
-		v.setDestino(request.getParameter("destino"));
-        v.setPrecio_unitario(Double.parseDouble(request.getParameter("precio_unitario")));
-        v.setCancelado(false);
-		v.setLugar_salida(request.getParameter("lugar_salida"));
-        v.setConductor(usuario);
-        v.setCodigoValidacion((int)(Math.random() * 900) + 100);
 
-        Vehiculo vehiculo = vehiculoCtrl.getOne(Integer.parseInt(request.getParameter("idVehiculo")));
-	    v.setVehiculo(vehiculo);
+        response.sendRedirect(request.getContextPath() + "/viajes");
     }
+
+	private void crearViaje(HttpServletRequest request, Usuario u) throws Exception {
+        String fechaStr = request.getParameter("fecha");
+        String lugaresStr = request.getParameter("lugares_disponibles");
+        String origen = request.getParameter("origen");
+        String destino = request.getParameter("destino");
+        String precioStr = request.getParameter("precio_unitario");
+        String lugarSalida = request.getParameter("lugar_salida");
+        String vehiculoIdStr = request.getParameter("idVehiculo");
+
+        if (fechaStr == null || fechaStr.trim().isEmpty()) {
+            throw new Exception("La fecha es obligatoria");
+        }
+
+        if (lugaresStr == null || lugaresStr.trim().isEmpty()) {
+            throw new Exception("Los lugares disponibles son obligatorios");
+        }
+
+        if (origen == null || origen.trim().isEmpty()) {
+            throw new Exception("El origen es obligatorio");
+        }
+
+        if (destino == null || destino.trim().isEmpty()) {
+            throw new Exception("El destino es obligatorio");
+        }
+
+        if (precioStr == null || precioStr.trim().isEmpty()) {
+            throw new Exception("El precio es obligatorio");
+        }
+
+        if (lugarSalida == null || lugarSalida.trim().isEmpty()) {
+            throw new Exception("El lugar de salida es obligatorio");
+        }
+
+        if (vehiculoIdStr == null || vehiculoIdStr.trim().isEmpty()) {
+            throw new Exception("Debe seleccionar un vehículo");
+        }
+
+        int lugares;
+        double precio;
+        int vehiculoId;
+
+        try {
+            lugares = Integer.parseInt(lugaresStr);
+        } catch (NumberFormatException e) {
+            throw new Exception("Los lugares disponibles deben ser un número");
+        }
+
+        try {
+            precio = Double.parseDouble(precioStr);
+        } catch (NumberFormatException e) {
+            throw new Exception("El precio debe ser un número válido");
+        }
+
+        try {
+            vehiculoId = Integer.parseInt(vehiculoIdStr);
+        } catch (NumberFormatException e) {
+            throw new Exception("ID de vehículo inválido");
+        }
+
+
+        SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd");
+        formato.setLenient(false);
+        Date utilDate;
+
+        try {
+            utilDate = formato.parse(fechaStr);
+        } catch (ParseException e) {
+            throw new Exception("Formato de fecha inválido. Use AAAA-MM-DD");
+        }
+
+        java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
+        LocalDate fechaViaje = sqlDate.toLocalDate();
+
+        if (fechaViaje.isBefore(LocalDate.now())) {
+            throw new Exception("La fecha del viaje no puede ser en el pasado");
+        }
+
+        if (lugares < 1) {
+            throw new Exception("Debe haber al menos 1 lugar disponible");
+        }
+
+        if (precio < 0) {
+            throw new Exception("El precio no puede ser negativo");
+        }
+
+        if (precio > 999999) {
+            throw new Exception("El precio es demasiado alto");
+        }
+
+        origen = origen.trim();
+        destino = destino.trim();
+
+        if (origen.equalsIgnoreCase(destino)) {
+            throw new Exception("El origen y destino no pueden ser iguales");
+        }
+
+        if (origen.length() < 2 || origen.length() > 100) {
+            throw new Exception("El origen debe tener entre 2 y 100 caracteres");
+        }
+
+        if (destino.length() < 2 || destino.length() > 100) {
+            throw new Exception("El destino debe tener entre 2 y 100 caracteres");
+        }
+
+        if (lugarSalida.length() < 2 || lugarSalida.length() > 200) {
+            throw new Exception("El lugar de salida debe tener entre 3 y 200 caracteres");
+        }
+
+        viajeCtrl.crearViaje(sqlDate, lugares, origen, destino, precio,
+                lugarSalida, vehiculoId, u);
+    }
+
+    private void actualizarViaje(HttpServletRequest request, Usuario usuario) throws Exception {
+
+
+        String idStr = request.getParameter("idViaje");
+        if (idStr == null || idStr.trim().isEmpty()) {
+            throw new Exception("ID de viaje inválido");
+        }
+
+        int id;
+        try {
+            id = Integer.parseInt(idStr);
+        } catch (NumberFormatException e) {
+            throw new Exception("ID de viaje debe ser un número");
+        }
+
+        String fechaStr = request.getParameter("fecha");
+        String lugaresStr = request.getParameter("lugares_disponibles");
+        String origen = request.getParameter("origen");
+        String destino = request.getParameter("destino");
+        String precioStr = request.getParameter("precio_unitario");
+        String lugarSalida = request.getParameter("lugar_salida");
+        String vehiculoIdStr = request.getParameter("idVehiculo");
+
+
+        if (fechaStr == null || fechaStr.trim().isEmpty()) {
+            throw new Exception("La fecha es obligatoria");
+        }
+
+        if (lugaresStr == null || lugaresStr.trim().isEmpty()) {
+            throw new Exception("Los lugares disponibles son obligatorios");
+        }
+
+        if (origen == null || origen.trim().isEmpty()) {
+            throw new Exception("El origen es obligatorio");
+        }
+
+        if (destino == null || destino.trim().isEmpty()) {
+            throw new Exception("El destino es obligatorio");
+        }
+
+        if (precioStr == null || precioStr.trim().isEmpty()) {
+            throw new Exception("El precio es obligatorio");
+        }
+
+        if (lugarSalida == null || lugarSalida.trim().isEmpty()) {
+            throw new Exception("El lugar de salida es obligatorio");
+        }
+
+        if (vehiculoIdStr == null || vehiculoIdStr.trim().isEmpty()) {
+            throw new Exception("Debe seleccionar un vehículo");
+        }
+
+        int lugares;
+        double precio;
+        int vehiculoId;
+
+        try {
+            lugares = Integer.parseInt(lugaresStr);
+        } catch (NumberFormatException e) {
+            throw new Exception("Los lugares disponibles deben ser un número");
+        }
+
+        try {
+            precio = Double.parseDouble(precioStr);
+        } catch (NumberFormatException e) {
+            throw new Exception("El precio debe ser un número válido");
+        }
+
+        try {
+            vehiculoId = Integer.parseInt(vehiculoIdStr);
+        } catch (NumberFormatException e) {
+            throw new Exception("ID de vehículo inválido");
+        }
+
+
+        SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd");
+        formato.setLenient(false);
+        Date utilDate;
+
+        try {
+            utilDate = formato.parse(fechaStr);
+        } catch (ParseException e) {
+            throw new Exception("Formato de fecha inválido. Use AAAA-MM-DD");
+        }
+
+        java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
+        LocalDate fechaViaje = sqlDate.toLocalDate();
+
+        if (fechaViaje.isBefore(LocalDate.now())) {
+            throw new Exception("La fecha del viaje no puede ser en el pasado");
+        }
+
+        if (lugares < 1) {
+            throw new Exception("Debe haber al menos 1 lugar disponible");
+        }
+
+        if (precio < 0) {
+            throw new Exception("El precio no puede ser negativo");
+        }
+
+        if (precio > 999999) {
+            throw new Exception("El precio es demasiado alto");
+        }
+
+        origen = origen.trim();
+        destino = destino.trim();
+
+        if (origen.equalsIgnoreCase(destino)) {
+            throw new Exception("El origen y destino no pueden ser iguales");
+        }
+
+        if (origen.length() < 2 || origen.length() > 100) {
+            throw new Exception("El origen debe tener entre 2 y 100 caracteres");
+        }
+
+        if (destino.length() < 2 || destino.length() > 100) {
+            throw new Exception("El destino debe tener entre 2 y 100 caracteres");
+        }
+
+        if (lugarSalida.length() < 2 || lugarSalida.length() > 200) {
+            throw new Exception("El lugar de salida debe tener entre 3 y 200 caracteres");
+        }
+
+        viajeCtrl.actualizarViaje(id, sqlDate, lugares, origen, destino,
+                precio, lugarSalida, vehiculoId, usuario);
+    }
+    
+	private void eliminarViaje(HttpServletRequest request, Usuario u) throws Exception {
+        String idStr = request.getParameter("idViaje");
+        if (idStr == null || idStr.trim().isEmpty()) {
+            throw new Exception("ID de viaje inválido");
+        }
+
+        int id;
+        try {
+            id = Integer.parseInt(idStr);
+        } catch (NumberFormatException e) {
+            throw new Exception("ID de viaje debe ser un número");
+        }
+
+        viajeCtrl.eliminarViaje(id, u);
+	}
+
+    private void cancelarViaje(HttpServletRequest request, Usuario u) throws Exception {
+        String idStr = request.getParameter("viajeId");
+        if (idStr == null || idStr.trim().isEmpty()) {
+            throw new Exception("ID de viaje inválido");
+        }
+
+        int id;
+        try {
+            id = Integer.parseInt(idStr);
+        } catch (NumberFormatException e) {
+            throw new Exception("ID de viaje debe ser un número");
+        }
+
+        viajeCtrl.cancelarViaje(id, u);
+    }
+
 
 }

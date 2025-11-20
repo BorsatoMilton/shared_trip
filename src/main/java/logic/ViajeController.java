@@ -1,5 +1,7 @@
 package logic;
 
+import java.sql.Date;
+import java.time.LocalDate;
 import java.util.LinkedList;
 
 import data.*;
@@ -7,15 +9,16 @@ import entidades.*;
 
 public class ViajeController {
 	private ViajeDAO viajeDAO;
+    private VehiculoDAO vehiculoDAO;
 	
 	public ViajeController() {
 		this.viajeDAO = new ViajeDAO();
+        this.vehiculoDAO = new VehiculoDAO();
 	}
 	
 	public LinkedList<Viaje> getAll(){
-		LinkedList<Viaje>viajes = viajeDAO.getAll();
+		LinkedList<Viaje> viajes = viajeDAO.getAll();
 		return viajeDAO.getAll();
-		
 	}
 	
 	public LinkedList<Viaje> getAllBySearch(String origen, String destino, String fecha){
@@ -26,36 +29,168 @@ public class ViajeController {
 	public Viaje getOne(int id) {
 		return this.viajeDAO.getByViaje(id);
 	}
+
+    public LinkedList<Viaje> getViajesUsuario(Usuario u){
+        return this.viajeDAO.getByUser(u);
+
+    }
 	
 	public void actualizarCantidad(int idViaje, int cantidad) {
 		Viaje viaje = this.getOne(idViaje);
 		int nueva_cant = viaje.getLugares_disponibles() - (cantidad);
 		this.viajeDAO.updateCantidad(idViaje, nueva_cant);
 	}
-	
-	public void updateViaje(Viaje v, int id) {
-		viajeDAO.update(v, id);
-	}
-	
-	public void deleteViaje(Viaje v) {
-		viajeDAO.delete(v);
-	}
-	
-	public LinkedList<Viaje> getViajesUsuario(Usuario u){
-		return this.viajeDAO.getByUser(u);
-		
-	}
-	
-	public boolean cancelar(int idViaje) {
-		return this.viajeDAO.cancelarViaje(idViaje);
-		
-	}
-	
-	public void altaViaje(Viaje viaje) {
-		viajeDAO.add(viaje);
-		
-	}
-	
+
+    public void actualizarViaje(int idViaje, Date fecha, int lugares, String origen,
+                                String destino, double precio, String lugarSalida,
+                                int vehiculoId, Usuario usuario) throws Exception {
+
+        Viaje viaje = viajeDAO.getByViaje(idViaje);
+        if (viaje == null) {
+            throw new Exception("El viaje no existe");
+        }
+
+        if (!"admin".equals(usuario.getNombreRol()) &&
+                viaje.getConductor().getIdUsuario() != usuario.getIdUsuario()) {
+            throw new Exception("No tiene permisos para modificar este viaje");
+        }
+
+        if (viaje.isCancelado()) {
+            throw new Exception("No se puede modificar un viaje cancelado");
+        }
+
+        LocalDate fechaViaje = viaje.getFecha().toLocalDate();
+        if (fechaViaje.isBefore(LocalDate.now())) {
+            throw new Exception("No se puede modificar un viaje que ya pasó");
+        }
+
+        Vehiculo vehiculo = vehiculoDAO.getById_vehiculo(vehiculoId);
+        if (vehiculo == null) {
+            throw new Exception("El vehículo seleccionado no existe");
+        }
+
+        if (vehiculo.getUsuario_duenio_id() != usuario.getIdUsuario() &&
+                !"admin".equals(usuario.getNombreRol())) {
+            throw new Exception("El vehículo seleccionado no le pertenece");
+        }
+
+        int disponibles = viaje.getLugares_disponibles();
+        if (lugares > disponibles) {
+            throw new Exception("Hay solo" + disponibles + " lugares disponibles. ");
+        }
+
+        // 7. Actualizar el viaje
+        viaje.setFecha(fecha);
+        viaje.setLugares_disponibles(lugares);
+        viaje.setOrigen(origen);
+        viaje.setDestino(destino);
+        viaje.setPrecio_unitario(precio);
+        viaje.setLugar_salida(lugarSalida);
+        viaje.setVehiculo(vehiculo);
+
+        viajeDAO.update(viaje, idViaje);
+    }
+
+    public void eliminarViaje(int idViaje, Usuario usuario) throws Exception {
+
+
+        Viaje viaje = viajeDAO.getByViaje(idViaje);
+        if (viaje == null) {
+            throw new Exception("El viaje no existe");
+        }
+
+
+        if (!"admin".equals(usuario.getNombreRol()) &&
+                viaje.getConductor().getIdUsuario() != usuario.getIdUsuario()) {
+            throw new Exception("No tiene permisos para eliminar este viaje");
+        }
+
+
+        /*int reservasActivas = viajeDAO.getReservasActivas(idViaje);
+        if (reservasActivas > 0) {
+            throw new Exception("No se puede eliminar un viaje con " + reservasActivas +
+                    " reservas activas. Cancélelo en su lugar.");
+        }
+        */
+
+        viajeDAO.delete(viaje);
+    }
+
+    public void cancelarViaje(int idViaje, Usuario usuario) throws Exception {
+
+
+        Viaje viaje = viajeDAO.getByViaje(idViaje);
+        if (viaje == null) {
+            throw new Exception("El viaje no existe");
+        }
+
+        if (!"admin".equals(usuario.getNombreRol()) &&
+                viaje.getConductor().getIdUsuario() != usuario.getIdUsuario()) {
+            throw new Exception("No tiene permisos para cancelar este viaje");
+        }
+
+        if (viaje.isCancelado()) {
+            throw new Exception("El viaje ya está cancelado");
+        }
+
+        LocalDate fechaViaje = viaje.getFecha().toLocalDate();
+        if (fechaViaje.isBefore(LocalDate.now())) {
+            throw new Exception("No se puede cancelar un viaje que ya pasó");
+        }
+
+        /*int reservasActivas = viajeDAO.getReservasActivas(idViaje);
+        if (reservasActivas > 0) {
+            // TODO: Enviar notificaciones/emails a pasajeros
+            System.out.println("NOTIFICAR: " + reservasActivas + " pasajeros afectados");
+        } */
+
+        boolean cancelado = viajeDAO.cancelarViaje(idViaje);
+        if (!cancelado) {
+            throw new Exception("Error al cancelar el viaje en la base de datos");
+        }
+    }
+
+    public void crearViaje(Date fecha, int lugares, String origen, String destino,
+                           double precio, String lugarSalida, int vehiculoId,
+                           Usuario conductor) throws Exception {
+
+        Vehiculo vehiculo = vehiculoDAO.getById_vehiculo(vehiculoId);
+        if (vehiculo == null) {
+            throw new Exception("El vehículo seleccionado no existe");
+        }
+
+        if (vehiculo.getUsuario_duenio_id() != conductor.getIdUsuario()) {
+            throw new Exception("El vehículo seleccionado no le pertenece");
+        }
+
+        LocalDate fechaViaje = fecha.toLocalDate();
+        if (fechaViaje.isBefore(LocalDate.now())) {
+            throw new Exception("La fecha del viaje no puede ser en el pasado");
+        }
+
+        /*if (tieneViajeEnFecha(conductor.getIdUsuario(), vehiculoId, fecha)) {
+            throw new Exception("Ya tiene un viaje programado para esa fecha con ese vehículo");
+        }*/
+
+        Viaje viaje = new Viaje();
+        viaje.setFecha(fecha);
+        viaje.setLugares_disponibles(lugares);
+        viaje.setOrigen(origen);
+        viaje.setDestino(destino);
+        viaje.setPrecio_unitario(precio);
+        viaje.setLugar_salida(lugarSalida);
+        viaje.setConductor(conductor);
+        viaje.setVehiculo(vehiculo);
+        viaje.setCancelado(false);
+        viaje.setCodigoValidacion((int)(Math.random() * 9000) + 1000);
+
+        viajeDAO.add(viaje);
+    }
+
+
+    /*private boolean tieneViajeEnFecha(int idConductor, int idVehiculo, Date fecha) {
+        return viajeDAO.existeViajeEnFecha(idConductor, idVehiculo, fecha);
+    }*/
 	
 
 }

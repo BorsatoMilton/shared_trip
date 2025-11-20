@@ -125,6 +125,31 @@ public class ViajeDAO {
         return viajes;
     }
 
+    /*public boolean existeViajeEnFecha(int idConductor, int idVehiculo, Date fecha){
+        String sql = "SELECT COUNT(*) AS total FROM viajes WHERE id_conductor = ? AND id_vehiculo_viaje = ? AND fecha = ? AND cancelado = 0";
+
+        try (PreparedStatement stmt = ConnectionDB.getInstancia().getConn().prepareStatement(sql)) {
+
+            stmt.setInt(1, idConductor);
+            stmt.setInt(2, idVehiculo);
+            stmt.setDate(3, fecha);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("total") > 0;
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            ConnectionDB.getInstancia().releaseConn();
+        }
+
+        return false;
+    }*/
+
+
     public void updateCantidad(int idViaje, int cantPasajeros) {
         String query = "UPDATE viajes SET lugares_disponibles = ? WHERE id_viaje = ?";
         Connection conn = null;
