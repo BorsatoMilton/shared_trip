@@ -20,8 +20,8 @@ public class CRUDfeedback extends HttpServlet {
     private FeedbackDAO feedbackDAO = new FeedbackDAO();
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
         HttpSession session = request.getSession();
-        System.out.println("Entré al doGet de CRUDfeedback");
         String token = request.getParameter("t");
 
         if (token == null || token.trim().isEmpty()) {

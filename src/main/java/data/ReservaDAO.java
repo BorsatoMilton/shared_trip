@@ -352,7 +352,7 @@ public class ReservaDAO {
         reserva.setCantidad_pasajeros_reservada(rs.getInt("cantidad_pasajeros_reservada"));
         reserva.setReserva_cancelada(rs.getBoolean("reserva_cancelada"));
         reserva.setPasajero(usuarioDAO.getById(rs.getInt("id_pasajero_reserva")));
-        //reserva.setViaje(viajeDAO.getByViaje(rs.getInt("id_viaje")));
+        reserva.setViaje(viajeDAO.getByViaje(rs.getInt("id_viaje")));
         reserva.setEstado(rs.getString("estado"));
         reserva.setCodigo_reserva(rs.getInt("codigo_reserva"));
 

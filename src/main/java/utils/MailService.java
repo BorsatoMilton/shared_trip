@@ -10,7 +10,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import io.github.cdimascio.dotenv.Dotenv;
-import io.github.cdimascio.dotenv.Dotenv;
+
+import entidades.Usuario;
 
 public class MailService {
 
@@ -134,15 +135,16 @@ public class MailService {
         enviarHtml(emailChofer, "Viaje cancelado - SharedTrip", html);
     }
 
-    public void notificarFeedback(String emailPasajero, String datosViaje, String token)  throws MessagingException {
+    public void notificarFeedback(Usuario pasajero, String datosViaje, String token)  throws MessagingException {
         Map<String, String> parametros = new HashMap<>();
         String linkFeedback = appUrl + "/feedback?t=" + token;
 
+        parametros.put("nombrePasajero", pasajero.getNombre());
         parametros.put("datosViaje", datosViaje);
         parametros.put("linkFeedback", linkFeedback);
 
         String html = cargarTemplate("feedback-pasajero-template", parametros);
-        enviarHtml(emailPasajero, "Nos interesa conocer tu opinión - SharedTrip", html);
+        enviarHtml(pasajero.getCorreo(), "Nos interesa conocer tu opinión - SharedTrip", html);
 
     }
 

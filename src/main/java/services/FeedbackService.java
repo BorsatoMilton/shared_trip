@@ -45,7 +45,7 @@ public class FeedbackService {
             String datosViaje = formatDatosViaje(viaje, chofer);
 
             mailService.notificarFeedback(
-                    pasajero.getCorreo(),
+                    pasajero,
                     datosViaje,
                     token
                     );
@@ -66,13 +66,12 @@ public class FeedbackService {
         String origen = viaje.getOrigen() != null ? viaje.getOrigen() : "No especificado";
         String destino = viaje.getDestino() != null ? viaje.getDestino() : "No especificado";
         String fecha = viaje.getFecha() != null ? viaje.getFecha().toString() : "No especificado";
-        String lugar_salida = viaje.getLugar_salida() != null ? viaje.getLugar_salida() : "No especificado";
         String nombreCompleto = (chofer.getNombre() != null ? chofer.getNombre() : "No especificado")
                 + (chofer.getApellido() != null ? " " + chofer.getApellido() : "");
 
         return String.format(
-                "Origen: %s<br>Destino: %s<br>Lugar de Salida: %s<br>Fecha: %s<br>Conductor: %s",
-                origen, destino, lugar_salida, fecha, nombreCompleto
+                "Origen: %s<br>Destino: %s<br>Fecha: %s<br>Conductor: %s",
+                origen, destino, fecha, nombreCompleto
         );
     }
 

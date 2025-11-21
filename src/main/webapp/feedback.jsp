@@ -35,8 +35,6 @@
     <% } %>
 
     <% if (reserva != null) {
-        // intentamos obtener info segura para mostrar
-        int codigo = reserva.getCodigo_reserva();
         Viaje viaje = reserva.getViaje();
         Usuario pasajero = reserva.getPasajero();
     %>
@@ -44,10 +42,9 @@
     <p>Hola <strong><%= pasajero != null ? pasajero.getNombre() : "usuario" %></strong>, gracias por viajar con nosotros.</p>
 
     <div class="info">
-        <strong>Reserva:</strong> <%= codigo %><br>
         <strong>Viaje:</strong> <%= (viaje != null ? viaje.getOrigen() + " → " + viaje.getDestino() : "Sin datos") %><br>
         <strong>Fecha:</strong> <%= (viaje != null ? viaje.getFecha() : "") %><br>
-        <strong>Conductor:</strong> <%= (viaje != null && viaje.getConductor() != null ? viaje.getConductor().getNombre() : "") %>
+        <strong>Conductor:</strong> <%= (viaje != null && viaje.getConductor() != null ? viaje.getConductor().getNombre() + " " + viaje.getConductor().getApellido(): "") %>
     </div>
 
     <form method="post" action="<%= request.getContextPath() + "/feedback" %>">
