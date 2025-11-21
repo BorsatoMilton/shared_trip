@@ -134,6 +134,15 @@ public class MailService {
         enviarHtml(emailChofer, "Viaje cancelado - SharedTrip", html);
     }
 
+    public void notificarFeedback(String emailPasajero, String datosViaje)  throws MessagingException {
+        Map<String, String> parametros = new HashMap<>();
+        parametros.put("datosViaje", datosViaje);
+
+        String html = cargarTemplate("feedback-pasajero-template", parametros);
+        enviarHtml(emailPasajero, "Nos interesa conocer tu opinión - SharedTrip", html);
+
+    }
+
 
     public void enviarHtml(String to, String subject, String html) throws MessagingException {
         Message msg = new MimeMessage(session);

@@ -1,4 +1,35 @@
 package utils;
 
-public class SchedulerCronFeedback {
+import services.FeedbackService;
+
+import javax.servlet.ServletContextListener;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.annotation.WebListener;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
+@WebListener
+public class CronFeedbackListener implements ServletContextListener {
+    private ScheduledExecutorService scheduler;
+    private FeedbackService feedbackService = new FeedbackService();
+
+    @Override
+    public void contextInitialized(ServletContextEvent sce) {
+        scheduler = Executors.newSingleThreadScheduledExecutor();
+
+        scheduler.scheduleAtFixedRate(() -> {
+            try {
+                System.out.println("Procesando feedback... desde cron");
+                feedbackService.procesarFeedbackPendiente();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }, 0, 2, TimeUnit.MINUTES); // CAMBIAR A 24HS
+    }
+
+    @Override
+    public void contextDestroyed(ServletContextEvent sce) {
+        if (scheduler != null) scheduler.shutdownNow();
+    }
 }

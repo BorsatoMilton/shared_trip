@@ -31,4 +31,8 @@
         <session-timeout>30</session-timeout> <!-- En minutos -->
     </session-config>
 
+    <listener>
+        <listener-class>utils.CronFeedbackListener</listener-class>
+    </listener>
+
 </web-app>

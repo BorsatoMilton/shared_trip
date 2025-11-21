@@ -118,7 +118,7 @@ public class CRUDreservas extends HttpServlet {
             throw new Exception("La cantidad de pasajeros debe ser mayor a 0");
         }
 
-        Reserva reserva = reservaController.nuevaReserva(viajeId, cantPasajeros, usuario.getIdUsuario());
+        Reserva reserva = reservaController.nuevaReserva(viajeId, cantPasajeros, usuario);
 
         enviarNotificacionesReserva(reserva, usuario);
     }
