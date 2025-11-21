@@ -6,11 +6,10 @@ import jakarta.mail.internet.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import io.github.cdimascio.dotenv.Dotenv;
 import io.github.cdimascio.dotenv.Dotenv;
 
 public class MailService {
@@ -20,6 +19,7 @@ public class MailService {
     private final int port = 587;
     private final String username = dotenv.get("MAIL_ADRESS");
     private final String password = dotenv.get("MAIL_PASSWORD");
+    private final String appUrl = dotenv.get("APP_URL");
 
     private final Session session;
 
@@ -132,6 +132,18 @@ public class MailService {
 
         String html = cargarTemplate("viaje-cancelado-chofer-template", parametros);
         enviarHtml(emailChofer, "Viaje cancelado - SharedTrip", html);
+    }
+
+    public void notificarFeedback(String emailPasajero, String datosViaje, String token)  throws MessagingException {
+        Map<String, String> parametros = new HashMap<>();
+        String linkFeedback = appUrl + "/feedback?t=" + token;
+
+        parametros.put("datosViaje", datosViaje);
+        parametros.put("linkFeedback", linkFeedback);
+
+        String html = cargarTemplate("feedback-pasajero-template", parametros);
+        enviarHtml(emailPasajero, "Nos interesa conocer tu opinión - SharedTrip", html);
+
     }
 
 

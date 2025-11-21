@@ -422,7 +422,7 @@ public class CRUDviajes extends HttpServlet {
 
 
             for (Reserva reserva : reservas) {
-                Usuario pasajero = usuarioCtrl.getOneById(reserva.getId_pasajero_reserva());
+                Usuario pasajero = reserva.getPasajero();
 
                 if (pasajero != null && pasajero.getCorreo() != null) {
                     mailService.notificarCancelacionViajeUsuarios(

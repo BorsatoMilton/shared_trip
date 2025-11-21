@@ -20,14 +20,14 @@ public class ReservaController {
         this.viajeController = new ViajeController();
     }
 
-    public Reserva nuevaReserva(int viajeId, int cantPasajeros, int idUsuario) throws Exception {
+    public Reserva nuevaReserva(int viajeId, int cantPasajeros, Usuario usuario) throws Exception {
 
         Viaje viaje = viajeController.getOne(viajeId);
         if (viaje == null) {
             throw new Exception("El viaje seleccionado no existe");
         }
 
-        if (viaje.getConductor().getIdUsuario() == idUsuario) {
+        if (viaje.getConductor().getIdUsuario() == usuario.getIdUsuario()) {
             throw new Exception("No puede reservar en su propio viaje");
         }
 
@@ -69,7 +69,7 @@ public class ReservaController {
             }
         } while (repetido);
 
-        Reserva r = new Reserva(fechaString, cantPasajeros, false, viaje, idUsuario, codigo_verificacion);
+        Reserva r = new Reserva(fechaString, cantPasajeros, false, viaje, usuario, codigo_verificacion);
 
         reservaDAO.add(r);
 
@@ -90,7 +90,7 @@ public class ReservaController {
             throw new Exception("La reserva no existe");
         }
 
-        if (reserva.getId_pasajero_reserva() != idUsuario) {
+        if (reserva.getPasajero().getIdUsuario() != idUsuario) {
             throw new Exception("No tiene permisos para cancelar esta reserva");
         }
 
