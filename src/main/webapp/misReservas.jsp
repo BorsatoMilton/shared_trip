@@ -5,12 +5,12 @@
 <%@ page import="entidades.Viaje" %>
 <%@ page import="entidades.Usuario" %>
 
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-         pageEncoding="ISO-8859-1" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+         pageEncoding="UTF-8" %>
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="ISO-8859-1">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Mis Reservas</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -57,7 +57,7 @@
                 <div
                         class="card-header d-flex justify-content-between align-items-center">
                     <h3 class="mb-0">
-                        <i class="bi bi-people-fill me-2"></i>Administración de Reservas
+                        <i class="bi bi-people-fill me-2"></i>AdministraciÃ³n de Reservas
                     </h3>
                 </div>
 
@@ -93,13 +93,13 @@
                         <table class="table table-hover table-borderless">
                             <thead class="table-light">
                             <tr>
+                                <th scope="col">Origen</th>
                                 <th scope="col">Destino</th>
-                                <th scope="col">Fecha de Reserva</th>
                                 <th scope="col">Fecha de Viaje</th>
-                                <th scope="col">Cantidad pasajeros</th>
+                                <th scope="col">Pasajeros</th>
                                 <th scope="col">Total</th>
-                                <th scope="col">Cancelado</th>
-                                <th scope="col">Codigo Validacion</th>
+                                <th scope="col">Estado</th>
+                                <th scope="col">CÃ³digo Reserva</th>
                                 <th scope="col">Acciones</th>
                             </tr>
                             </thead>
@@ -111,39 +111,21 @@
 
                             %>
                             <tr class="align-middle">
-                                <td><%= reserva.getViaje().getDestino() %>
+                                <td><%= reserva.getViaje().getOrigen() %>
                                 </td>
-                                <td><%= reserva.getFecha_reserva() %>
+                                <td><%= reserva.getViaje().getDestino() %>
                                 </td>
                                 <td><%= reserva.getViaje().getFecha() %>
                                 </td>
                                 <td><%= reserva.getCantidad_pasajeros_reservada()%>
                                 </td>
-                                <td><%= reserva.getViaje().getPrecio_unitario() * reserva.getCantidad_pasajeros_reservada()%>
-                                </td>
-                                <td><%= reserva.isReserva_cancelada() ? "Sí" : "No" %>
-                                </td>
                                 <td>
-                                    <% if (reserva.getEstado().equalsIgnoreCase("EN PROCESO")) { %>
-                                    <form method="post" action="ActualizarEstadoReserva">
-                                        <input type="number" placeholder="3 intentos" name="codigo_validacion_usuario"
-                                               min="100" max="999"
-                                               class="codigo-input" data-reserva-id="<%= reserva.getIdReserva() %>">
-                                        <input type="hidden" value="<%= reserva.getIdReserva() %>" name="idReserva">
-                                        <button type="submit"
-                                                class="btn btn-primary btn-validar"
-                                                data-reserva-id="<%= reserva.getIdReserva() %>"
-                                                data-codigo-correcto="<%= reserva.getViaje().getCodigoValidacion() %>">
-                                            <i class="bi bi-check"></i>
-                                        </button>
-                                    </form>
-
-
-                                    <% } else { %>
-                                    <%= reserva.getEstado() %>
-                                    <% } %>
+                                    $<%= reserva.getViaje().getPrecio_unitario() * reserva.getCantidad_pasajeros_reservada()%>
                                 </td>
-
+                                <td><%= reserva.getEstado() %>
+                                </td>
+                                <td><%= reserva.getCodigo_reserva()%>
+                                </td>
                                 <td class="text-end action-buttons">
                                     <form action="reservas" method="POST">
                                         <input type="hidden" name="action" value="cancelar">
@@ -153,8 +135,8 @@
                                         <input type="hidden" name="viajeId"
                                                value="<%= reserva.getViaje().getIdViaje() %>">
                                         <button type="submit" class="btn btn-danger"
-                                                <% if (reserva.isReserva_cancelada()) { %>
-                                                disabled <% } %>>Cancelar
+                                                <% if (reserva.isReserva_cancelada() || "CONFIRMADA".equals(reserva.getEstado())) { %>
+                                                disabled <% } %>><i class="bi bi-x-circle-fill"></i>
                                         </button>
                                     </form>
                                 </td>

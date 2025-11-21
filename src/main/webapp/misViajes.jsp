@@ -6,27 +6,21 @@
 <%@ page import="java.time.ZoneId" %>
 <%@ page import="java.sql.Date" %>
 <%@ page import="entidades.Vehiculo" %>
+<%@ page import="java.time.LocalDate" %>
 
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="ISO-8859-1">
-
     <title>Mis Viajes</title>
-    <link
-            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-            rel="stylesheet"
-            integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
-            crossorigin="anonymous">
-
-    <link
-            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-            rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+          crossorigin="anonymous">
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
     <style>
-
         .opcion {
             background-color: white;
             padding: 6px 8px;
@@ -72,7 +66,6 @@
             width: 100%;
         }
 
-
         .card-header {
             background: linear-gradient(45deg, #3f51b5, #2196f3);
             color: white;
@@ -101,26 +94,23 @@
             display: flex;
             flex-direction: column;
         }
-
     </style>
 </head>
 <body>
 
-<div class="container-fluid p-0"></div>
-<div class="row align-items-start" style="height: 10vh">
-    <div class="col">
-        <jsp:include page="header.jsp"></jsp:include>
+<div class="container-fluid p-0">
+    <div class="row align-items-start" style="height: 10vh">
+        <div class="col">
+            <jsp:include page="header.jsp"></jsp:include>
+        </div>
     </div>
 </div>
 
 <div class="main-content">
     <div class="container-fluid p-0">
-
-
         <main class="container mt-4">
             <div class="card shadow-lg">
-                <div
-                        class="card-header d-flex justify-content-between align-items-center">
+                <div class="card-header d-flex justify-content-between align-items-center">
                     <h3 class="mb-0">
                         <i class="bi bi-people-fill me-2"></i>Administración de Viajes
                     </h3>
@@ -135,8 +125,7 @@
                         String mensaje = (String) session.getAttribute("mensaje");
                         if (mensaje != null) {
                     %>
-                    <div class="alert alert-info alert-dismissible fade show"
-                         role="alert">
+                    <div class="alert alert-info alert-dismissible fade show" role="alert">
                         <%=mensaje%>
                         <button type="button" class="btn-close" data-bs-dismiss="alert"
                                 aria-label="Close"></button>
@@ -148,8 +137,7 @@
                         String error = (String) session.getAttribute("error");
                         if (error != null) {
                     %>
-                    <div class="alert alert-danger alert-dismissible fade show"
-                         role="alert">
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
                         <%=error%>
                         <button type="button" class="btn-close" data-bs-dismiss="alert"
                                 aria-label="Close"></button>
@@ -162,30 +150,25 @@
                         <table class="table table-hover table-borderless">
                             <thead class="table-light">
                             <tr>
-                                <th scope="col">ID Viaje</th>
                                 <th scope="col">Origen</th>
                                 <th scope="col">Destino</th>
                                 <th scope="col">Fecha</th>
-                                <th scope="col">Lugares Disponibles</th>
+                                <th scope="col">Lugares</th>
                                 <th scope="col">Precio Unitario</th>
                                 <th scope="col">Lugar de Salida</th>
                                 <th scope="col">Cancelado</th>
-                                <th scope="col">Codigo Validación</th>
                                 <th scope="col" class="text-end">Acciones</th>
                             </tr>
                             </thead>
                             <tbody>
                             <%
                                 LinkedList<Vehiculo> vehiculos = (LinkedList<Vehiculo>) request.getAttribute("vehiculos");
-
                                 LinkedList<Viaje> viajes = (LinkedList<Viaje>) request.getAttribute("viajes");
+
                                 if (viajes != null && !viajes.isEmpty()) {
                                     for (Viaje viaje : viajes) {
-
                             %>
                             <tr class="align-middle">
-                                <td><%= viaje.getIdViaje() %>
-                                </td>
                                 <td><%= viaje.getOrigen() %>
                                 </td>
                                 <td><%= viaje.getDestino() %>
@@ -200,8 +183,6 @@
                                 </td>
                                 <td><%= viaje.isCancelado() ? "Sí" : "No" %>
                                 </td>
-                                <td><%= viaje.getCodigoValidacion() %>
-                                </td>
                                 <td class="text-end action-buttons">
 
                                     <button type="button"
@@ -215,30 +196,47 @@
                                             data-cancelado="<%=viaje.isCancelado()%>"
                                             data-id_conductor="<%=viaje.getConductor()%>"
                                             data-lugar_salida="<%=viaje.getLugar_salida()%>">
-
                                         <i class="bi bi-pencil"></i>
                                     </button>
 
+                                    <% if (viaje.isCancelado()) { %>
                                     <button type="button"
                                             class="btn btn-sm btn-danger btn-eliminar"
-                                            data-id="<%=viaje.getIdViaje()%>" <% if (!viaje.isCancelado()) { %>
-                                            disabled <% } %>>
+                                            data-id="<%=viaje.getIdViaje()%>">
                                         <i class="bi bi-trash"></i>
                                     </button>
-                                    <form action="viajes" method="post">
-                                        <input type="hidden" name="viajeId"
-                                               value="<%= viaje.getIdViaje() %>">
+                                    <% } %>
+
+
+                                    <form action="viajes" method="post" class="d-inline">
+                                        <input type="hidden" name="viajeId" value="<%= viaje.getIdViaje() %>">
                                         <%
                                             Date fechaViaje = viaje.getFecha();
                                             LocalDateTime fechaViajeLocalDateTime = fechaViaje.toLocalDate().atStartOfDay();
                                         %>
                                         <input type="hidden" name="action" value="cancelarViaje">
-
-                                        <button type="submit" class="btn btn-danger"
+                                        <% if (!viaje.isCancelado()) { %>
+                                        <button type="submit" class="btn btn-danger btn-sm"
                                                 <% if (viaje.isCancelado() || fechaViajeLocalDateTime.isBefore(LocalDateTime.now())) { %>
-                                                disabled <% } %>>Cancelar
+                                                disabled <% } %>>
+                                            <i class="bi bi-x-circle-fill"></i>
                                         </button>
+                                        <% } %>
                                     </form>
+
+                                    <%
+                                        LocalDate fechaViajeLocal = null;
+                                        if (viaje.getFecha() != null) {
+                                            fechaViajeLocal = viaje.getFecha().toLocalDate();
+                                        }
+                                    %>
+                                    <% if (fechaViajeLocal != null && fechaViajeLocal.equals(LocalDate.now()) && !viaje.isCancelado()) { %>
+                                    <button type="button"
+                                            class="btn btn-sm btn-primary btn-codigo"
+                                            data-id="<%= viaje.getIdViaje() %>">
+                                        <i class="bi bi-key"></i> Código
+                                    </button>
+                                    <% } %>
                                 </td>
                             </tr>
                             <%
@@ -246,7 +244,7 @@
                             } else {
                             %>
                             <tr>
-                                <td colspan="10" class="text-center">No existen viajes.</td>
+                                <td colspan="8" class="text-center">No existen viajes.</td>
                             </tr>
                             <%
                                 }
@@ -260,7 +258,6 @@
     </div>
 </div>
 
-
 <footer>
     <div class="row align-items-end" style="height: 10vh">
         <div class="col">
@@ -268,128 +265,125 @@
         </div>
     </div>
 </footer>
-<!-------------------------------------------------  Modal EDITAR VIAJE ----------------------------------------------------------------------------------------->
 
-<div class="modal fade" id="editarViaje">
+<!-- MODAL INTRODUCIR CODIGO -->
+<div class="modal fade" id="introducirCodigo" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Validar Reserva</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="formCodigoValidacion" method="POST" action="reservas">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="codigo" class="form-label">Código de validación</label>
+                        <input type="number" class="form-control" name="codigo" id="codigo"
+                               placeholder="Ingrese el código de validación" required>
+                    </div>
+                    <input type="hidden" name="action" value="validate">
+                    <input type="hidden" name="idViaje" id="idViajeAverificar">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Verificar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL EDITAR VIAJE -->
+<div class="modal fade" id="editarViaje" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
-
             <div class="modal-header">
-                <h5 class="modal-title" id="nuevoViajeLabel">
+                <h5 class="modal-title">
                     <i class="bi bi-person-plus me-2"></i>Editar Viaje
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-
-
             <form method="POST" action="viajes" id="formEditar">
                 <input type="hidden" name="action" value="update">
                 <input type="hidden" name="idViaje" id="editId">
 
-
                 <div class="modal-body">
-
-
                     <div class="row g-2 mb-3">
-
                         <div class="col-12 col-md-4">
-                            <label for="fecha" class="form-label">Fecha de Viaje:</label>
-                            <input type="date" class="form-control" id="fecha" name="fecha">
+                            <label for="editFecha" class="form-label">Fecha de Viaje:</label>
+                            <input type="date" class="form-control" id="editFecha" name="fecha">
                         </div>
-
                         <div class="col">
                             <label class="form-label">Lugar de Salida</label>
                             <input type="text" class="form-control"
-                                   placeholder="LugarSalida"
+                                   placeholder="Lugar Salida"
                                    name="lugar_salida"
                                    id="editLugarSalida"
                                    required>
                         </div>
-
                     </div>
 
-
                     <div class="mb-3">
-                        <label for="origen" class="form-label">Origen:</label>
+                        <label for="editOrigen" class="form-label">Origen:</label>
                         <div class="dropdown-container">
                             <input type="text" class="form-control" id="editOrigen"
                                    name="origen" placeholder="Ciudad de origen"
-                                   required autocomplete="off"
-                                   aria-autocomplete="list"
-                                   aria-controls="resultadoCiudadesOrigen">
-                            <div id="resultadoCiudadesOrigenEdit" class="resultadoCiudades"
-                                 role="listbox"></div>
+                                   required autocomplete="off">
+                            <div id="resultadoCiudadesOrigenEdit" class="resultadoCiudades"></div>
                         </div>
                     </div>
 
                     <div class="mb-3">
-                        <label for="destino" class="form-label">Destino:</label>
+                        <label for="editDestino" class="form-label">Destino:</label>
                         <div class="dropdown-container">
                             <input type="text" class="form-control" id="editDestino"
                                    name="destino" placeholder="Ciudad de destino"
-                                   required autocomplete="off"
-                                   aria-autocomplete="list"
-                                   aria-controls="resultadoCiudadesDestino">
-                            <div id="resultadoCiudadesDestinoEdit" class="resultadoCiudades"
-                                 role="listbox"></div>
+                                   required autocomplete="off">
+                            <div id="resultadoCiudadesDestinoEdit" class="resultadoCiudades"></div>
+                        </div>
+                    </div>
+
+                    <div class="row g-2 mb-3">
+                        <div class="col">
+                            <label class="form-label">Lugares Disponibles</label>
+                            <input type="number" class="form-control"
+                                   placeholder="Lugares disponibles"
+                                   name="lugares_disponibles"
+                                   id="editLugaresDisponibles" required>
+                        </div>
+                        <div class="col">
+                            <label class="form-label">Precio Unitario</label>
+                            <input type="number" step="any" class="form-control"
+                                   placeholder="Precio unitario"
+                                   name="precio_unitario"
+                                   id="editPrecioUnitario" required>
                         </div>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Lugares Disponibles</label>
-                        <div class="row g-2">
-                            <div class="col">
-                                <input type="number" class="form-control"
-                                       placeholder="lugares_disponibles"
-                                       name="lugares_disponibles"
-                                       id="editLugaresDisponibles" required>
-                            </div>
-
-                            <div class="col">
-                                <label class="form-label">Precio Unitario</label>
-                                <input type="number" step="any"
-                                       class="form-control"
-                                       placeholder="precio_unitario"
-                                       name="precio_unitario"
-                                       id="editPrecioUnitario" required>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label" for="idVehiculo">Vehículo</label>
-                        <select name="idVehiculo" id="idVehiculo"
-                                class="form-select w-100">
+                        <label class="form-label" for="editIdVehiculo">Vehículo</label>
+                        <select name="idVehiculo" id="editIdVehiculo" class="form-select w-100">
                             <% if (vehiculos != null && !vehiculos.isEmpty()) {
                                 for (Vehiculo v : vehiculos) { %>
-                            <option value="<%=v.getId_vehiculo()%>">
-                                <%=v.getPatente()%>
+                            <option value="<%=v.getId_vehiculo()%>"><%=v.getPatente()%>
                             </option>
                             <% }
                             } %>
                         </select>
                     </div>
-
                 </div>
-
 
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary"
-                            data-bs-dismiss="modal">Cancelar
-                    </button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <button type="submit" class="btn btn-primary">Guardar Viaje</button>
                 </div>
-
             </form>
-
         </div>
     </div>
 </div>
 
-
-<!-------------------------------------------------------------------- MODAL BORRAR VIAJE ----------------------------------------------------------------->
-<div class="modal fade" id="borrarViaje">
+<!-- MODAL BORRAR VIAJE -->
+<div class="modal fade" id="borrarViaje" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -397,27 +391,26 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                ¿Estás seguro de eliminar el viaje <span id="nombreViaje"></span>?
+                ¿Estás seguro de eliminar este viaje?
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary"
-                        data-bs-dismiss="modal">Cancelar
-                </button>
-                <form id="formEliminar" method="POST" action="viajes">
-                    <input type="hidden" name="action" value="delete"> <input
-                        type="hidden" name="idViaje" id="idViajeEliminar">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <form id="formEliminar" method="POST" action="viajes" class="d-inline">
+                    <input type="hidden" name="action" value="delete">
+                    <input type="hidden" name="idViaje" id="idViajeEliminar">
                     <button type="submit" class="btn btn-danger">Eliminar</button>
                 </form>
             </div>
         </div>
     </div>
 </div>
-<!------------------------------------------------MODAL #nuevoViaje --------------------------------------------------------------------------------->
-<div class="modal fade" id="nuevoViaje" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+
+<!-- MODAL NUEVO VIAJE -->
+<div class="modal fade" id="nuevoViaje" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="nuevoViaje">Nuevo Viaje</h1>
+                <h5 class="modal-title">Nuevo Viaje</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -426,62 +419,51 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="fecha" class="form-label">Fecha de Viaje:</label> <input
-                                    type="date" class="form-control" id="fecha" name="fecha">
+                                <label for="fecha" class="form-label">Fecha de Viaje:</label>
+                                <input type="date" class="form-control" id="fecha" name="fecha" required>
                             </div>
-
                             <div class="mb-3">
                                 <label for="lugares_disponibles">Lugares Disponibles</label>
-                                <input type="text" class="form-control" name="lugares_disponibles"
-                                       id="lugares_disponibles" placeholder="Ingrese los lugares disponibles " required>
+                                <input type="number" class="form-control" name="lugares_disponibles"
+                                       id="lugares_disponibles" placeholder="Ingrese los lugares disponibles" required>
                             </div>
-
                             <div class="mb-3">
-                                <label for="origen" class="form-label">Origen:</label>
+                                <label for="newOrigen" class="form-label">Origen:</label>
                                 <div class="dropdown-container">
                                     <input type="text" class="form-control" id="newOrigen" name="origen"
-                                           placeholder="Ciudad de origen" required autocomplete="off"
-                                           aria-autocomplete="list" aria-controls="resultadoCiudadesOrigen">
-                                    <div id="resultadoCiudadesOrigenNew" class="resultadoCiudades" role="listbox"
-                                         aria-label="Sugerencias de origen"></div>
+                                           placeholder="Ciudad de origen" required autocomplete="off">
+                                    <div id="resultadoCiudadesOrigenNew" class="resultadoCiudades"></div>
                                 </div>
                             </div>
-
                         </div>
-
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="precio_unitario">Precio Unitario</label>
-                                <input type="number" step=any class="form-control" name="precio_unitario"
+                                <input type="number" step="any" class="form-control" name="precio_unitario"
                                        id="precio_unitario" placeholder="Ingrese el precio unitario" required>
                             </div>
-
                             <div class="mb-3">
                                 <label for="lugar_salida">Lugar de Salida</label>
                                 <input type="text" class="form-control" name="lugar_salida" id="lugar_salida"
                                        placeholder="Ingrese el lugar de salida" required>
                             </div>
                             <div class="mb-3">
-                                <label for="destino" class="form-label">Destino:</label>
+                                <label for="newDestino" class="form-label">Destino:</label>
                                 <div class="dropdown-container">
                                     <input type="text" class="form-control" id="newDestino" name="destino"
-                                           placeholder="Ciudad de destino" required autocomplete="off"
-                                           aria-autocomplete="list" aria-controls="resultadoCiudadesDestino">
-                                    <div id="resultadoCiudadesDestinoNew" class="resultadoCiudades" role="listbox"
-                                         aria-label="Sugerencias de destino"></div>
+                                           placeholder="Ciudad de destino" required autocomplete="off">
+                                    <div id="resultadoCiudadesDestinoNew" class="resultadoCiudades"></div>
                                 </div>
                             </div>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label" for="idVehiculo">Vehículo</label>
-
-                            <select name="idVehiculo" id="idVehiculo" class="form-select w-100">
+                            <label class="form-label" for="idVehiculoNuevo">Vehículo</label>
+                            <select name="idVehiculo" id="idVehiculoNuevo" class="form-select w-100" required>
                                 <%
                                     if (vehiculos != null && !vehiculos.isEmpty()) {
                                         for (Vehiculo v : vehiculos) {
                                 %>
-                                <option value="<%=v.getId_vehiculo()%>">
-                                    <%=v.getPatente()%>
+                                <option value="<%=v.getId_vehiculo()%>"><%=v.getPatente()%>
                                 </option>
                                 <%
                                         }
@@ -492,7 +474,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                        <button type="submit" class="btn btn-primary" onclick="envioFormulario()">Guardar</button>
+                        <button type="submit" class="btn btn-primary">Guardar</button>
                     </div>
                 </form>
             </div>
@@ -501,12 +483,11 @@
 </div>
 
 
-<script src="js/scriptViajes.js"></script>
-<script
-        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
-<script src="js/notificacionesTiempo.js"></script>
+<script src="<%= request.getContextPath() %>/js/notificacionesTiempo.js"></script>
 <script src="<%= request.getContextPath() %>/js/buscadorMunicipios.js"></script>
+<script src="<%= request.getContextPath() %>/js/scriptViajes.js"></script>
 </body>
 </html>

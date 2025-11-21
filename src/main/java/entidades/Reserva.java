@@ -8,8 +8,8 @@ public class Reserva {
     private boolean reserva_cancelada;
     private int id_pasajero_reserva;
     private String estado;
-    private int intentos_codigo;
     private Viaje viaje;
+    private int codigo_reserva;
 
     public int getIdReserva() {
         return idReserva;
@@ -67,16 +67,16 @@ public class Reserva {
         this.estado = estado;
     }
 
-    public int getIntentos_codigo() {
-        return intentos_codigo;
+    public int getCodigo_reserva() {
+        return codigo_reserva;
+    }
+    public void setCodigo_reserva(int codigo_reserva) {
+        this.codigo_reserva = codigo_reserva;
     }
 
-    public void setIntentos_codigo(int intentos_codigo) {
-        this.intentos_codigo = intentos_codigo;
-    }
 
     public Reserva(String fecha, int cantidad_pasajeros_reservada, boolean reserva_cancelada, Viaje viaje,
-                   int id_pasajero_reserva, String estado, int intentos_codigo) {
+                   int id_pasajero_reserva, String estado) {
         super();
         this.fecha_reserva = fecha;
         this.cantidad_pasajeros_reservada = cantidad_pasajeros_reservada;
@@ -84,7 +84,7 @@ public class Reserva {
         this.viaje = viaje;
         this.id_pasajero_reserva = id_pasajero_reserva;
         this.estado = estado;
-        this.intentos_codigo = intentos_codigo;
+        this.codigo_reserva = ((int) (Math.random() * 9000) + 1000);
     }
 
     public Reserva() {

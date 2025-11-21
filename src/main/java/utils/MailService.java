@@ -68,11 +68,12 @@ public class MailService {
         }
     }
 
-    public void notificarReservaRealizadaUsuario(String emailUsuario, String datosViaje, String datosChofer, int totalReservas) throws MessagingException {
+    public void notificarReservaRealizadaUsuario(String emailUsuario, String datosViaje, String datosChofer, int totalReservas, int cod_reserva) throws MessagingException {
         Map<String, String> parametros = new HashMap<>();
         parametros.put("datosViaje", datosViaje);
         parametros.put("datosChofer", datosChofer);
         parametros.put("totalReservas", String.valueOf(totalReservas));
+        parametros.put("codReserva", String.valueOf(cod_reserva));
 
         String html = cargarTemplate("reserva-realizada-usuario-template", parametros);
         enviarHtml(emailUsuario, "Reserva confirmada - SharedTrip", html);

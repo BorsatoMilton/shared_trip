@@ -23,7 +23,6 @@ import java.util.LinkedList;
 @WebServlet("/reservas")
 public class CRUDreservas extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    ViajeController viajeController = new ViajeController();
     ReservaController reservaController = new ReservaController();
     MailService mailService = new MailService();
 
@@ -71,9 +70,9 @@ public class CRUDreservas extends HttpServlet {
             } else if ("cancelar".equals(action)) {
                 cancelarReserva(request, usuario);
                 session.setAttribute("mensaje", "Reserva cancelada con éxito");
-            } else if ("updateStatus".equals(action)) {
-                actualizarEstadoReserva(request);
-                session.setAttribute("mensaje", "Reserva actualizada");
+            } else if ("validate".equals(action)) {
+                validarReserva(request);
+                session.setAttribute("mensaje", "Reserva validada");
             }
         } catch (Exception e) {
             session.setAttribute("error", "Error: " + e.getMessage());
@@ -84,6 +83,8 @@ public class CRUDreservas extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/");
         } else if ("cancelar".equals(action)) {
             response.sendRedirect(request.getContextPath() + "/reservas");
+        } else if ("validate".equals(action)) {
+            response.sendRedirect(request.getContextPath() + "/viajes");
         }
 
     }
@@ -139,39 +140,57 @@ public class CRUDreservas extends HttpServlet {
         enviarNotificacionesCancelacionReserva(reserva, usuario);
     }
 
-    private void actualizarEstadoReserva(HttpServletRequest request) {
-        /*ReservaController reservaCtrl = new ReservaController();
+    private void validarReserva(HttpServletRequest request) throws Exception {
+        String idViaje = request.getParameter("idViaje");
+        String codigoStr = request.getParameter("codigo");
 
-        int idReserva = Integer.parseInt(request.getParameter("idReserva"));
-        Reserva reserva = reservaCtrl.getOne(idReserva);
-        int codigoCorrecto = reserva.getViaje().getCodigoValidacion();
-
-        int codigoIngresado = Integer.parseInt(request.getParameter("codigo_validacion_usuario"));
-
-        int intentos = reserva.getIntentos_codigo();
-
-        if (intentos <= 0) {
-            reservaCtrl.actualizarEstado(idReserva,"INVALIDADA" );
-            return;
+        if (idViaje == null || idViaje.trim().isEmpty()) {
+            throw new Exception("ID de viaje inválido");
         }
 
-        if (codigoIngresado == codigoCorrecto) {
-            reservaCtrl.actualizarEstado(idReserva,"PAGADA" );
+        if (codigoStr == null || codigoStr.trim().isEmpty()) {
+            throw new Exception("Código de validación requerido");
+        }
 
-        } else {
-            intentos--;
-            reserva.setIntentos_codigo(intentos);
+        Integer codigoValidacion;
+        try {
+            codigoValidacion = Integer.parseInt(codigoStr);
+        } catch (NumberFormatException e) {
+            throw new Exception("Código de validación debe ser un número");
+        }
 
+        if (codigoValidacion < 1000 || codigoValidacion > 9999) {
+            throw new Exception("Código de validación inválido");
+        }
 
-            if (intentos <= 0) {
-                reservaCtrl.actualizarEstado(idReserva,"INVALIDADA" );
+        int id = Integer.parseInt(idViaje);
+        LinkedList<Reserva> reservas = reservaController.getReservasPorViaje(id);
+
+        if (reservas.isEmpty()) {
+            throw new Exception("No existen reservas para este viaje");
+        }
+
+        boolean reservaEncontrada = false;
+
+        for (Reserva reserva : reservas) {
+            if (reserva.getCodigo_reserva() == codigoValidacion) {
+                reservaEncontrada = true;
+
+                reserva.setEstado("CONFIRMADA");
+                reservaController.actualizarEstadoReserva(reserva);
+
+                request.getSession().setAttribute("mensaje",
+                        "Reserva validada correctamente. Código: " + codigoValidacion);
+
+                break;
             }
-
         }
-        reservaCtrl.updateEntity(reserva, idReserva);
-        response.sendRedirect("misReservas");*/
-        System.out.println("En construcción ...");
+
+        if (!reservaEncontrada) {
+            throw new Exception("No existe ninguna reserva con el código ingresado: " + codigoValidacion);
+        }
     }
+
 
     private void enviarNotificacionesReserva(Reserva reserva, Usuario usuario) {
         try {
@@ -179,7 +198,7 @@ public class CRUDreservas extends HttpServlet {
             Usuario chofer = viaje.getConductor();
 
             int totalReservas = reserva.getCantidad_pasajeros_reservada();
-
+            int cod_reserva = reserva.getCodigo_reserva();
             String datosViaje = formatDatosViaje(viaje);
             String datosChofer = formatDatosChofer(chofer, viaje.getVehiculo().getPatente());
             String datosPasajero = formatDatosPasajero(usuario, reserva.getCantidad_pasajeros_reservada());
@@ -188,7 +207,8 @@ public class CRUDreservas extends HttpServlet {
                     usuario.getCorreo(),
                     datosViaje,
                     datosChofer,
-                    totalReservas
+                    totalReservas,
+                    cod_reserva
             );
 
             mailService.notificarReservaRealizadaChofer(

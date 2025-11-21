@@ -4,6 +4,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
 const initCRUDOperations = () => {
 
+    document.querySelectorAll('.btn-codigo').forEach(btn => {
+        btn.addEventListener('click', function () {
+            abrirModal('introducirCodigo', {
+                idViajeAverificar: this.dataset.id
+            });
+        });
+    });
+
+
     document.querySelectorAll('.btn-eliminar').forEach(btn => {
         btn.addEventListener('click', function () {
             abrirModal('borrarViaje', {

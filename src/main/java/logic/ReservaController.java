@@ -51,7 +51,7 @@ public class ReservaController {
         Date fecha = new Date();
         String fechaString = sdf.format(fecha);
 
-        Reserva r = new Reserva(fechaString, cantPasajeros, false, viaje, idUsuario, "EN PROCESO", 3);
+        Reserva r = new Reserva(fechaString, cantPasajeros, false, viaje, idUsuario, "EN PROCESO");
 
         reservaDAO.add(r);
 
@@ -63,20 +63,6 @@ public class ReservaController {
     public LinkedList<Reserva> getReservasUsuario(Usuario u) {
         LinkedList<Reserva> reservas = this.reservaDAO.getByUser(u);
         return reservas;
-    }
-
-
-    public Reserva getOne(int id) {
-        return this.reservaDAO.getByReserva(id);
-    }
-
-    public void actualizarEstado(int idReserva, String nuevoEstado) {
-        this.reservaDAO.actualizarEstado(idReserva, nuevoEstado);
-
-    }
-
-    public void updateEntity(Reserva reserva, int idReserva) {
-        this.reservaDAO.update(reserva, idReserva);
     }
 
     public Reserva cancelarReserva(int idReserva, int idUsuario) throws Exception {
@@ -92,6 +78,10 @@ public class ReservaController {
 
         if (reserva.isReserva_cancelada()) {
             throw new Exception("La reserva ya está cancelada");
+        }
+
+        if ("CONFIRMADA".equals(reserva.getEstado())) {
+            throw new Exception("No se puede cancelar esta reserva, ya esta CONFIRMADA");
         }
 
         Viaje viaje = reserva.getViaje();
@@ -111,13 +101,33 @@ public class ReservaController {
     }
 
     public LinkedList<Reserva> getReservasPorViaje(int idViaje) throws Exception {
-        if(idViaje < 0) {
+        if (idViaje < 0) {
             throw new Exception("ID de viaje inválido");
         }
         return reservaDAO.getReservasByViaje(idViaje);
     }
 
+    public void actualizarEstadoReserva(Reserva reserva) throws Exception {
+        if (reserva == null) {
+            throw new Exception("La reserva no existe");
+        }
+        reservaDAO.actualizarEstado(reserva.getIdReserva(), reserva.getEstado());
+    }
+
     public int obtenerCantidad(int idReserva) {
         return this.reservaDAO.obtenerCantidad(idReserva);
+    }
+
+    public Reserva getOne(int id) {
+        return this.reservaDAO.getByReserva(id);
+    }
+
+    public void actualizarEstado(int idReserva, String nuevoEstado) {
+        this.reservaDAO.actualizarEstado(idReserva, nuevoEstado);
+
+    }
+
+    public void updateEntity(Reserva reserva, int idReserva) {
+        this.reservaDAO.update(reserva, idReserva);
     }
 }
