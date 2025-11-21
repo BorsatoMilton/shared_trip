@@ -42,7 +42,17 @@ public class InputValidator {
             throw new Exception("La contraseña es demasiado larga");
         }
 
-        if (!clave.matches(".*[A-Za-z].*") || !clave.matches(".*[0-9].*")) {
+        boolean tieneLetra = false;
+        boolean tieneNumero = false;
+
+        for (char c : clave.toCharArray()) {
+            if (Character.isLetter(c)) tieneLetra = true;
+            if (Character.isDigit(c)) tieneNumero = true;
+
+            if (tieneLetra && tieneNumero) break;
+        }
+
+        if (!tieneLetra || !tieneNumero) {
             throw new Exception("La contraseña debe contener letras y números");
         }
 
