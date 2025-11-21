@@ -117,7 +117,7 @@ public class ReservaDAO {
     }
 
     public LinkedList<Reserva> getReservasByViaje(int idViaje) {
-        String query = "SELECT r.id_pasajero_reserva, r.idReserva, r.fecha_reserva, r.estado ,r.cantidad_pasajeros_reservada, r.reserva_cancelada, "
+        String query = "SELECT r.id_pasajero_reserva, r.idReserva, r.fecha_reserva, r.estado ,r.cantidad_pasajeros_reservada, r.reserva_cancelada, r.codigo_reserva, "
                 + "v.id_viaje, v.origen, v.destino, v.fecha, v.lugares_disponibles, v.precio_unitario, "
                 + "u.id_usuario, u.nombre, u.apellido, u.correo, u.telefono "
                 + "FROM reservas r "
@@ -214,8 +214,7 @@ public class ReservaDAO {
 
     public boolean cancelarReserva(int idReserva) {
 
-        String query = "UPDATE reservas SET reserva_cancelada = true WHERE idReserva = ?";
-
+        String query = "UPDATE reservas SET reserva_cancelada = true, estado = 'CANCELADA' WHERE idReserva = ?";
 
         try (Connection conn = ConnectionDB.getInstancia().getConn();
              PreparedStatement stmt = conn.prepareStatement(query)) {

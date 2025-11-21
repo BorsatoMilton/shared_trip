@@ -80,6 +80,10 @@ public class ReservaController {
             throw new Exception("La reserva ya está cancelada");
         }
 
+        if ("CONFIRMADA".equals(reserva.getEstado())) {
+            throw new Exception("No se puede cancelar esta reserva, ya esta CONFIRMADA");
+        }
+
         Viaje viaje = reserva.getViaje();
         LocalDate fechaViaje = viaje.getFecha().toLocalDate();
 
@@ -97,10 +101,17 @@ public class ReservaController {
     }
 
     public LinkedList<Reserva> getReservasPorViaje(int idViaje) throws Exception {
-        if(idViaje < 0) {
+        if (idViaje < 0) {
             throw new Exception("ID de viaje inválido");
         }
         return reservaDAO.getReservasByViaje(idViaje);
+    }
+
+    public void actualizarEstadoReserva(Reserva reserva) throws Exception {
+        if (reserva == null) {
+            throw new Exception("La reserva no existe");
+        }
+        reservaDAO.actualizarEstado(reserva.getIdReserva(), reserva.getEstado());
     }
 
     public int obtenerCantidad(int idReserva) {

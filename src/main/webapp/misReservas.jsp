@@ -93,13 +93,13 @@
                         <table class="table table-hover table-borderless">
                             <thead class="table-light">
                             <tr>
+                                <th scope="col">Origen</th>
                                 <th scope="col">Destino</th>
-                                <th scope="col">Fecha de Reserva</th>
                                 <th scope="col">Fecha de Viaje</th>
-                                <th scope="col">Cantidad pasajeros</th>
+                                <th scope="col">Pasajeros</th>
                                 <th scope="col">Total</th>
-                                <th scope="col">Cancelado</th>
-                                <th scope="col">Codigo Reserva</th>
+                                <th scope="col">Estado</th>
+                                <th scope="col">Código Reserva</th>
                                 <th scope="col">Acciones</th>
                             </tr>
                             </thead>
@@ -111,19 +111,21 @@
 
                             %>
                             <tr class="align-middle">
-                                <td><%= reserva.getViaje().getDestino() %>
+                                <td><%= reserva.getViaje().getOrigen() %>
                                 </td>
-                                <td><%= reserva.getFecha_reserva() %>
+                                <td><%= reserva.getViaje().getDestino() %>
                                 </td>
                                 <td><%= reserva.getViaje().getFecha() %>
                                 </td>
                                 <td><%= reserva.getCantidad_pasajeros_reservada()%>
                                 </td>
-                                <td><%= reserva.getViaje().getPrecio_unitario() * reserva.getCantidad_pasajeros_reservada()%>
+                                <td>
+                                    $<%= reserva.getViaje().getPrecio_unitario() * reserva.getCantidad_pasajeros_reservada()%>
                                 </td>
-                                <td><%= reserva.isReserva_cancelada() ? "Sí" : "No" %>
+                                <td><%= reserva.getEstado() %>
                                 </td>
-                                <td><%= reserva.getCodigo_reserva()%></td>
+                                <td><%= reserva.getCodigo_reserva()%>
+                                </td>
                                 <td class="text-end action-buttons">
                                     <form action="reservas" method="POST">
                                         <input type="hidden" name="action" value="cancelar">
@@ -133,8 +135,8 @@
                                         <input type="hidden" name="viajeId"
                                                value="<%= reserva.getViaje().getIdViaje() %>">
                                         <button type="submit" class="btn btn-danger"
-                                                <% if (reserva.isReserva_cancelada()) { %>
-                                                disabled <% } %>>Cancelar
+                                                <% if (reserva.isReserva_cancelada() || "CONFIRMADA".equals(reserva.getEstado())) { %>
+                                                disabled <% } %>><i class="bi bi-x-circle-fill"></i>
                                         </button>
                                     </form>
                                 </td>
