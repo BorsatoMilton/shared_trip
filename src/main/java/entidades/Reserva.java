@@ -10,6 +10,7 @@ public class Reserva {
     private String estado;
     private Viaje viaje;
     private int codigo_reserva;
+    private String feedback_token;
 
     public int getIdReserva() {
         return idReserva;
@@ -73,6 +74,10 @@ public class Reserva {
     public void setCodigo_reserva(int codigo_reserva) {
         this.codigo_reserva = codigo_reserva;
     }
+
+    public String getFeedback_token() {return feedback_token;}
+
+    public void setFeedback_token(String feedback_token) {this.feedback_token = feedback_token;}
 
 
     public Reserva(String fecha, int cantidad_pasajeros_reservada, boolean reserva_cancelada, Viaje viaje,

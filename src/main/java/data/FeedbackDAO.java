@@ -2,7 +2,6 @@ package data;
 
 import java.sql.*;
 import java.util.LinkedList;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import entidades.*;
@@ -12,9 +11,10 @@ public class FeedbackDAO {
     private static final Logger logger = LoggerFactory.getLogger(FeedbackDAO.class);
     private UserDAO userDAO = new UserDAO();
     private ReservaDAO reservaDAO = new ReservaDAO();
+
     public LinkedList<Feedback> getAll() {
         LinkedList<Feedback> feedbacks = new LinkedList<>();
-        String query = "SELECT fecha_hora_feedback, id_usuario_calificado, puntuacion, observacion, id_reserva FROM feedback";
+        String query = "SELECT fecha_hora_feedback, id_usuario_calificado, puntuacion, observacion, id_reserva, token FROM feedback";
 
         try (
                 Connection conn = ConnectionDB.getInstancia().getConn();
@@ -35,7 +35,7 @@ public class FeedbackDAO {
 
     public LinkedList<Feedback> getByUser(Usuario u) {
         LinkedList<Feedback> fs = new LinkedList<>();
-        String query = "SELECT fecha_hora_feedback, id_usuario_calificado, puntuacion, observacion, id_reserva FROM feedback WHERE id_usuario_calificado = ?";
+        String query = "SELECT fecha_hora_feedback, id_usuario_calificado, puntuacion, observacion, id_reserva, token FROM feedback WHERE id_usuario_calificado = ?";
         Connection conn = null;
 
         try {
@@ -57,19 +57,18 @@ public class FeedbackDAO {
         return fs;
     }
 
-    public LinkedList<Feedback> getByReserva(Reserva r) {
-        LinkedList<Feedback> fs = new LinkedList<>();
-        String query = "SELECT fecha_hora_feedback, id_usuario_calificado, puntuacion, observacion, id_reserva FROM feedback WHERE id_reserva = ?";
-        Connection conn = null;
 
+    public Feedback getByReserva(Reserva r) {
+        String query = "SELECT fecha_hora_feedback, id_usuario_calificado, puntuacion, observacion, id_reserva, token FROM feedback WHERE id_reserva = ?";
+        Connection conn = null;
+        Feedback f = null;
         try {
             conn = ConnectionDB.getInstancia().getConn();
             try (PreparedStatement stmt = conn.prepareStatement(query)) {
                 stmt.setInt(1, r.getIdReserva());
                 try (ResultSet rs = stmt.executeQuery()) {
                     while (rs.next()) {
-                        Feedback f = mappingFeedback(rs);
-                        fs.add(f);
+                        f = mappingFeedback(rs);
                     }
                 }
             }
@@ -78,11 +77,38 @@ public class FeedbackDAO {
         } finally {
             ConnectionDB.getInstancia().releaseConn();
         }
-        return fs;
+        return f;
+    }
+
+    public void guardarFeedback(String observacion, int puntuacion, String token) {
+        String query = "UPDATE feedback SET fecha_hora_feedback=?, puntuacion=?, observacion=? WHERE token=?";
+        Connection conn = null;
+
+        try {
+            conn = ConnectionDB.getInstancia().getConn();
+            try (PreparedStatement stmt = conn.prepareStatement(query)) {
+                java.sql.Timestamp now = new java.sql.Timestamp(System.currentTimeMillis());
+                stmt.setTimestamp(1, now);
+                stmt.setInt(2, puntuacion);
+                stmt.setString(3, observacion);
+                stmt.setString(4, token);
+
+                int rowsAffected = stmt.executeUpdate();
+                if (rowsAffected > 0) {
+                    logger.info("Feedback para la reserva con token: {} otorgado exitosamente", token);
+                } else {
+                    logger.warn("No se encontró feedback con token: {}", token);
+                }
+            }
+        } catch (SQLException e) {
+            logger.error("Error al actualizar feedback con token: {}", token, e);
+        } finally {
+            ConnectionDB.getInstancia().releaseConn();
+        }
     }
 
     public void add(Feedback f) {
-        String query = "INSERT INTO feedback(id_usuario_calificado, id_reserva) VALUES (?, ?)";
+        String query = "INSERT INTO feedback(id_usuario_calificado, id_reserva, token) VALUES (?, ?, ?)";
         Connection conn = null;
 
         try {
@@ -90,6 +116,7 @@ public class FeedbackDAO {
             try (PreparedStatement stmt = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS)) {
                 stmt.setInt(1, f.getUsuario_calificado().getIdUsuario());
                 stmt.setInt(2, f.getReserva().getIdReserva());
+                stmt.setString(3, f.getToken());
 
                 int affectedRows = stmt.executeUpdate();
                 if (affectedRows > 0) {
@@ -109,6 +136,7 @@ public class FeedbackDAO {
         f.setFecha_hora(rs.getDate("fecha_hora_feedback"));
         f.setObservacion(rs.getString("observacion"));
         f.setPuntuacion(rs.getInt("puntuacion"));
+        f.setToken(rs.getString("token"));
         f.setUsuario_calificado(userDAO.getById(rs.getInt("id_usuario_calificado")));
         f.setReserva(reservaDAO.getByReserva(rs.getInt("id_reserva")));
         return f;

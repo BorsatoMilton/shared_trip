@@ -65,6 +65,31 @@ public class ReservaDAO {
         return reserva;
     }
 
+
+    public Reserva getByToken(String token) {
+        Reserva reserva = null;
+        String query = "SELECT r.* FROM reservas r WHERE r.feedback_token = ?";
+        Connection conn = null;
+
+        try {
+            conn = ConnectionDB.getInstancia().getConn();
+            try (PreparedStatement stmt = conn.prepareStatement(query)) {
+                stmt.setString(1, token);
+
+                try (ResultSet rs = stmt.executeQuery()) {
+                    if (rs.next()) {
+                        reserva = mapReserva(rs);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            logger.error("Error al obtener Reserva con token: {}", token, e);
+        } finally {
+            ConnectionDB.getInstancia().releaseConn();
+        }
+        return reserva;
+    }
+
     public int obtenerCantidad(int idReserva) {
 
         String query = "SELECT cantidad_pasajeros_reservada FROM reservas WHERE idReserva = ?";
@@ -251,6 +276,28 @@ public class ReservaDAO {
             ConnectionDB.getInstancia().releaseConn();
         }
     }
+
+    public void guardarToken(int idReserva, String token) throws SQLException {
+        String sql = "UPDATE reservas SET feedback_token = ? WHERE idReserva = ?";
+        try (Connection conn = ConnectionDB.getInstancia().getConn();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, token);
+            stmt.setInt(2, idReserva);
+            stmt.executeUpdate();
+
+            int affected = stmt.executeUpdate();
+            checkAffectedRows(affected, "actualizar");
+
+            logger.info("Reserva actualizada ID: {}", idReserva);
+        } catch (SQLException e) {
+        handleSQLException("Error al guardar el token en la reserva " + idReserva, e);
+        } finally {
+            ConnectionDB.getInstancia().releaseConn();
+        }
+
+    }
+
 
     public boolean cancelarReserva(int idReserva) {
 

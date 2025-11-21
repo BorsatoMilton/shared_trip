@@ -1,9 +1,8 @@
 package services;
 
+import utils.Generators;
 import data.FeedbackDAO;
 import data.ReservaDAO;
-import data.ViajeDAO;
-import data.UserDAO;
 import entidades.Feedback;
 import entidades.Reserva;
 import entidades.Viaje;
@@ -16,6 +15,7 @@ import java.util.LinkedList;
 public class FeedbackService {
     private MailService mailService = new MailService();
     private FeedbackDAO feedbackDAO = new FeedbackDAO();
+    private Generators generators = new Generators();
 
 
     public void procesarFeedbackPendiente() throws Exception {
@@ -28,25 +28,27 @@ public class FeedbackService {
             Viaje viaje = reserva.getViaje();
             Usuario chofer = viaje.getConductor();
 
-            /*if(feedbackDAO.getByReserva(reserva).size() == 0){
-                Feedback feedback = new Feedback(viaje.getConductor(), reserva);
+            if(feedbackDAO.getByReserva(reserva) == null){
+
+                String token = generators.generarToken();
+                Feedback feedback = new Feedback(viaje.getConductor(), reserva,token);
                 feedbackDAO.add(feedback);
-                System.out.println(feedback);
-                enviarNotificacionesFeedback(viaje, pasajero, chofer);
-            }*/
-            enviarNotificacionesFeedback(viaje, pasajero, chofer);
+                reservaDAO.guardarToken(reserva.getIdReserva(), token);
+                enviarNotificacionesFeedback(viaje, pasajero, chofer, token);
+            }
         }
     }
 
-    private void enviarNotificacionesFeedback(Viaje viaje, Usuario pasajero, Usuario chofer) {
+    private void enviarNotificacionesFeedback(Viaje viaje, Usuario pasajero, Usuario chofer, String token) {
         try {
 
             String datosViaje = formatDatosViaje(viaje, chofer);
 
             mailService.notificarFeedback(
                     pasajero.getCorreo(),
-                    datosViaje
-            );
+                    datosViaje,
+                    token
+                    );
 
         } catch (MessagingException e) {
             System.err.println("Error enviando emails de feedback: " + e.getMessage());

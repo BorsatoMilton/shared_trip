@@ -25,7 +25,7 @@ public class CronFeedbackListener implements ServletContextListener {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }, 0, 2, TimeUnit.MINUTES); // CAMBIAR A 24HS
+        }, 0, 24, TimeUnit.HOURS);
     }
 
     @Override
