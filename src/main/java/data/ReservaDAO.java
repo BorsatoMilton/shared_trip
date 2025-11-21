@@ -150,7 +150,7 @@ public class ReservaDAO {
     public void add(Reserva reserva) {
 
         String query = "INSERT INTO reservas(fecha_reserva, cantidad_pasajeros_reservada, "
-                + "reserva_cancelada, id_viaje, id_pasajero_reserva, codigo_reserva) VALUES(?,?,?,?,?,?)";
+                + "reserva_cancelada, id_viaje, id_pasajero_reserva, codigo_reserva, estado) VALUES(?,?,?,?,?,?,?)";
 
         validateReserva(reserva);
 
@@ -307,6 +307,7 @@ public class ReservaDAO {
         stmt.setInt(4, r.getViaje().getIdViaje());
         stmt.setInt(5, r.getId_pasajero_reserva());
         stmt.setInt(6, r.getCodigo_reserva());
+        stmt.setString(7, r.getEstado());
     }
 
 

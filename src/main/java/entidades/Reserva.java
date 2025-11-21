@@ -76,15 +76,15 @@ public class Reserva {
 
 
     public Reserva(String fecha, int cantidad_pasajeros_reservada, boolean reserva_cancelada, Viaje viaje,
-                   int id_pasajero_reserva, String estado) {
+                   int id_pasajero_reserva, int codigo_reserva) {
         super();
         this.fecha_reserva = fecha;
         this.cantidad_pasajeros_reservada = cantidad_pasajeros_reservada;
         this.reserva_cancelada = reserva_cancelada;
         this.viaje = viaje;
         this.id_pasajero_reserva = id_pasajero_reserva;
-        this.estado = estado;
-        this.codigo_reserva = ((int) (Math.random() * 9000) + 1000);
+        this.estado = "EN PROCESO";
+        this.codigo_reserva = codigo_reserva;
     }
 
     public Reserva() {

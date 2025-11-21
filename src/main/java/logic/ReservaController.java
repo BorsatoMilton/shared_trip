@@ -51,7 +51,25 @@ public class ReservaController {
         Date fecha = new Date();
         String fechaString = sdf.format(fecha);
 
-        Reserva r = new Reserva(fechaString, cantPasajeros, false, viaje, idUsuario, "EN PROCESO");
+
+        LinkedList<Reserva> reservas = reservaDAO.getReservasByViaje(viajeId);
+
+        int codigo_verificacion;
+        boolean repetido;
+
+        do {
+            codigo_verificacion = (int) (Math.random() * 9000) + 1000;
+            repetido = false;
+
+            for (Reserva r : reservas) {
+                if (r.getCodigo_reserva() == codigo_verificacion) {
+                    repetido = true;
+                    break;
+                }
+            }
+        } while (repetido);
+
+        Reserva r = new Reserva(fechaString, cantPasajeros, false, viaje, idUsuario, codigo_verificacion);
 
         reservaDAO.add(r);
 

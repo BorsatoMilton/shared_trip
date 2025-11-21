@@ -18,12 +18,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.Date;
 import java.util.LinkedList;
 
 @WebServlet("/reservas")
 public class CRUDreservas extends HttpServlet {
     private static final long serialVersionUID = 1L;
     ReservaController reservaController = new ReservaController();
+    ViajeController viajeController = new ViajeController();
     MailService mailService = new MailService();
 
 
@@ -164,16 +166,40 @@ public class CRUDreservas extends HttpServlet {
         }
 
         int id = Integer.parseInt(idViaje);
+
+        Viaje viaje = viajeController.getOne(id);
+        if (viaje == null) {
+            throw new Exception("El viaje no existe");
+        }
+
+        if(viaje.getConductor().getIdUsuario() != ((Usuario) request.getSession().getAttribute("usuario")).getIdUsuario()) {
+            throw new Exception("No tienes permisos para validar reservas");
+        }
+
+        if(viaje.isCancelado()){
+            throw new Exception("El viaje esta cancelado");
+        }
+
         LinkedList<Reserva> reservas = reservaController.getReservasPorViaje(id);
 
         if (reservas.isEmpty()) {
             throw new Exception("No existen reservas para este viaje");
         }
 
+        Date ahora = new Date();
+        if (viaje.getFecha().before(ahora)) {
+            throw new Exception("El viaje ya se realizó.");
+        }
+
         boolean reservaEncontrada = false;
 
         for (Reserva reserva : reservas) {
             if (reserva.getCodigo_reserva() == codigoValidacion) {
+                if("CONFIRMADA".equalsIgnoreCase(reserva.getEstado())) {
+                    throw new Exception("Esta reserva ya esta confirmada");
+                }else if ("CANCELADA".equalsIgnoreCase(reserva.getEstado())) {
+                    throw new Exception("Esta reserva esta cancelada");
+                }
                 reservaEncontrada = true;
 
                 reserva.setEstado("CONFIRMADA");
