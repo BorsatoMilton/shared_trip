@@ -114,14 +114,15 @@ public class ReservaDAO {
     }
 
     public LinkedList<Reserva> getByUser(Usuario usuario) {
-
-        String query = "SELECT r.id_pasajero_reserva, r.idReserva, r.fecha_reserva, r.estado ,r.cantidad_pasajeros_reservada, r.reserva_cancelada, r.codigo_reserva, "
-                + "v.id_viaje, v.origen, v.destino, v.fecha, v.lugares_disponibles, v.precio_unitario, "
-                + "u.id_usuario, u.nombre, u.apellido, u.correo, u.telefono "
-                + "FROM reservas r "
-                + "INNER JOIN viajes v ON r.id_viaje = v.id_viaje "
-                + "INNER JOIN usuarios u ON u.id_usuario = v.id_conductor "
-                + "WHERE r.id_pasajero_reserva = ? AND r.reserva_cancelada = false";
+        String query = "SELECT r.id_pasajero_reserva, r.idReserva, r.fecha_reserva, r.estado, " +
+                       "r.cantidad_pasajeros_reservada, r.reserva_cancelada, r.codigo_reserva, " +
+                       "v.id_viaje, v.origen, v.destino, v.fecha, v.lugares_disponibles, v.precio_unitario, " +
+                       "v.id_vehiculo_viaje, " +
+                       "u.id_usuario, u.nombre, u.apellido, u.correo, u.telefono " +  // ← QUITÉ LA COMA EXTRA
+                       "FROM reservas r " +
+                       "INNER JOIN viajes v ON r.id_viaje = v.id_viaje " +
+                       "INNER JOIN usuarios u ON u.id_usuario = v.id_conductor " +
+                       "WHERE r.id_pasajero_reserva = ? AND r.reserva_cancelada = false";
 
 
         validateUsuario(usuario);
