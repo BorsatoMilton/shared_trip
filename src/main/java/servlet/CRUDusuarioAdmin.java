@@ -33,36 +33,50 @@ public class CRUDusuarioAdmin extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        HttpSession session = request.getSession(false);
+    	 HttpSession session = request.getSession(false);
 
-        if (session == null || session.getAttribute("usuario") == null) {
-            response.sendRedirect(request.getContextPath() + "/login.jsp");
-            return;
-        }
+    	    if (session == null || session.getAttribute("usuario") == null) {
+    	        response.sendRedirect(request.getContextPath() + "/login.jsp");
+    	        return;
+    	    }
 
-        Usuario usuario = (Usuario) session.getAttribute("usuario");
+    	    Usuario usuario = (Usuario) session.getAttribute("usuario");
 
-        Usuario usuarioActualizado = usuarioCtrl.getOneById(usuario.getIdUsuario());
-        request.getSession().setAttribute("usuario", usuarioActualizado);
+    	    if (usuario.getRol() == 1) { 
+    	        Usuario usuarioActualizado = usuarioCtrl.getOneById(usuario.getIdUsuario());
+    	        
+    	        if (usuarioActualizado != null) {
+    	            
+    	            if (usuarioActualizado.getNombreRol() == null) {
+    	                LinkedList<Rol> roles = rolCtrl.getAll();
+    	                for (Rol r : roles) {
+    	                    if (usuarioActualizado.getRol() == r.getIdRol()) {
+    	                        usuarioActualizado.setNombreRol(r.getNombre());
+    	                        break;
+    	                    }
+    	                }
+    	            }
+    	            session.setAttribute("usuario", usuarioActualizado);
+    	        }
 
-        if (usuarioActualizado.getRol() == 1) {
-            LinkedList<Usuario> usuarios = usuarioCtrl.getAll();
-            LinkedList<Rol> roles = rolCtrl.getAll();
+    	        LinkedList<Usuario> usuarios = usuarioCtrl.getAll();
+    	        LinkedList<Rol> roles = rolCtrl.getAll();
 
-            for (Usuario u : usuarios) {
-                for (Rol r : roles) {
-                    if (u.getRol() == r.getIdRol()) {
-                        u.setNombreRol(r.getNombre());
-                    }
-                }
-            }
+    	 
+    	        for (Usuario u : usuarios) {
+    	            for (Rol r : roles) {
+    	                if (u.getRol() == r.getIdRol()) {
+    	                    u.setNombreRol(r.getNombre());
+    	                }
+    	            }
+    	        }
 
-            request.setAttribute("usuarios", usuarios);
-            request.setAttribute("roles", roles);
-            request.getRequestDispatcher("usuarios.jsp").forward(request, response);
-        } else {
-            response.sendRedirect(request.getContextPath() + "/");
-        }
+    	        request.setAttribute("usuarios", usuarios);
+    	        request.setAttribute("roles", roles);
+    	        request.getRequestDispatcher("usuarios.jsp").forward(request, response);
+    	    } else {
+    	        response.sendRedirect(request.getContextPath() + "/");
+    	    }
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)

@@ -1,6 +1,8 @@
 package servlet;
 
 import java.io.IOException;
+import java.util.LinkedList;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -8,7 +10,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import entidades.Rol;
 import entidades.Usuario;
+import logic.RolController;
 import logic.UserController;
 import utils.InputValidator;
 
@@ -17,6 +21,7 @@ import utils.InputValidator;
 public class UpdatePerfil extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private final UserController usuarioCtrl = new UserController();
+    private final RolController rolCtrl = new RolController();
     private final InputValidator inputValidator = new InputValidator();
 
     public UpdatePerfil() {
@@ -32,37 +37,63 @@ public class UpdatePerfil extends HttpServlet {
         }
         Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
         int idUsuario = usuario.getIdUsuario();
-        request.getSession().removeAttribute("usuario");
+        
         Usuario usuarioNuevo = usuarioCtrl.getOneById(idUsuario);
+        
+        if (usuarioNuevo != null && usuarioNuevo.getNombreRol() == null) {
+            LinkedList<Rol> roles = rolCtrl.getAll();
+            for (Rol r : roles) {
+                if (usuarioNuevo.getRol() == r.getIdRol()) {
+                    usuarioNuevo.setNombreRol(r.getNombre());
+                    break;
+                }
+            }
+        }
+        
         request.getSession().setAttribute("usuario", usuarioNuevo);
-
         response.sendRedirect(request.getContextPath() + "/perfil.jsp");
     }
-
+    
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        HttpSession session = request.getSession();
-        String action = request.getParameter("action");
-        Usuario logueado = (Usuario) session.getAttribute("usuario");
-        try {
-            if ("profile".equals(action)) {
-                actualizarUsuario(request, logueado);
-                session.setAttribute("mensaje", "Usuario actualizado con éxito");
-            } else if ("password".equals(action)) {
-                actualizarClave(request, logueado);
-                session.setAttribute("mensaje", "Clave actualizada con éxito");
-            } else {
-                throw new Exception("No se especifico la acción");
-            }
+    	 HttpSession session = request.getSession();
+         String action = request.getParameter("action");
+         Usuario logueado = (Usuario) session.getAttribute("usuario");
+         
+         try {
+             if ("profile".equals(action)) {
+                 actualizarUsuario(request, logueado);
+                 session.setAttribute("mensaje", "Usuario actualizado con éxito");
+             } else if ("password".equals(action)) {
+                 actualizarClave(request, logueado);
+                 session.setAttribute("mensaje", "Clave actualizada con éxito");
+             } else {
+                 throw new Exception("No se especifico la acción");
+             }
 
-        } catch (Exception e) {
-            session.setAttribute("error", "Error: " + e.getMessage());
-            System.out.println("Error en editarUsuario: " + e.getMessage());
-        }
+             if (logueado != null) {
+                 Usuario usuarioActualizado = usuarioCtrl.getOneById(logueado.getIdUsuario());
+                 
+                 if (usuarioActualizado != null && usuarioActualizado.getNombreRol() == null) {
+                     LinkedList<Rol> roles = rolCtrl.getAll();
+                     for (Rol r : roles) {
+                         if (usuarioActualizado.getRol() == r.getIdRol()) {
+                             usuarioActualizado.setNombreRol(r.getNombre());
+                             break;
+                         }
+                     }
+                 }
+                 session.setAttribute("usuario", usuarioActualizado);
+             }
 
-        response.sendRedirect(request.getContextPath() + "/perfil");
-    }
+         } catch (Exception e) {
+             session.setAttribute("error", "Error: " + e.getMessage());
+             System.out.println("Error en editarUsuario: " + e.getMessage());
+         }
+
+         response.sendRedirect(request.getContextPath() + "/perfil");
+     }
 
 
     private void actualizarUsuario(HttpServletRequest request, Usuario logueado) throws Exception {

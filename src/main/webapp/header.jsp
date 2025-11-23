@@ -102,7 +102,7 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="<%= request.getContextPath() %>/vehiculos">
-                            <i class="bi bi-truck me-1"></i>Mis Vehículos
+                            <i class="bi bi-truck me-1"></i>Mis Vehiculos
                         </a>
                     </li>
 
@@ -149,7 +149,7 @@
                                 <form action="auth" method="POST">
                                     <input type="hidden" name="action" value="logout">
                                     <button type="submit" class="dropdown-item text-danger">
-                                        <i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesi�n
+                                        <i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesion
                                     </button>
                                 </form>
                             </li>
