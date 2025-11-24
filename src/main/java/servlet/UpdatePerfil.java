@@ -64,10 +64,10 @@ public class UpdatePerfil extends HttpServlet {
          try {
              if ("profile".equals(action)) {
                  actualizarUsuario(request, logueado);
-                 session.setAttribute("mensaje", "Usuario actualizado con éxito");
+                 request.setAttribute("mensaje", "Usuario actualizado con éxito");
              } else if ("password".equals(action)) {
                  actualizarClave(request, logueado);
-                 session.setAttribute("mensaje", "Clave actualizada con éxito");
+                 request.setAttribute("mensaje", "Clave actualizada con éxito");
              } else {
                  throw new Exception("No se especifico la acción");
              }
@@ -88,7 +88,7 @@ public class UpdatePerfil extends HttpServlet {
              }
 
          } catch (Exception e) {
-             session.setAttribute("error", "Error: " + e.getMessage());
+             request.setAttribute("error", "Error: " + e.getMessage());
              System.out.println("Error en editarUsuario: " + e.getMessage());
          }
 

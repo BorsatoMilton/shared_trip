@@ -50,7 +50,7 @@ public class CRUDvehiculos extends HttpServlet {
                 vehiculos = vehiculoCtrl.getVehiculosUsuario(usuario);
             } else {
                 vehiculos = new LinkedList<>();
-                session.setAttribute("error", "No tiene permisos para ver vehículos");
+                request.setAttribute("error", "No tiene permisos para ver vehículos");
             }
 
             request.setAttribute("vehiculos", vehiculos);
@@ -58,7 +58,7 @@ public class CRUDvehiculos extends HttpServlet {
 
         } catch (Exception e) {
             log.error("Error en doGet de vehiculos: ", e);
-            session.setAttribute("error", "Error al cargar los vehículos");
+            request.setAttribute("error", "Error al cargar los vehículos");
             response.sendRedirect(request.getContextPath() + "/");
         }
     }
@@ -79,22 +79,22 @@ public class CRUDvehiculos extends HttpServlet {
         try {
             if ("update".equals(action)) {
                 actualizarVehiculo(request, usuario);
-                session.setAttribute("mensaje", "Vehículo actualizado con éxito");
+                request.setAttribute("mensaje", "Vehículo actualizado con éxito");
 
             } else if ("delete".equals(action)) {
                 eliminarVehiculo(request, usuario);
-                session.setAttribute("mensaje", "Vehículo eliminado con éxito");
+                request.setAttribute("mensaje", "Vehículo eliminado con éxito");
 
             } else if ("add".equals(action)) {
                 crearVehiculo(request, usuario);
-                session.setAttribute("mensaje", "Vehículo creado con éxito");
+                request.setAttribute("mensaje", "Vehículo creado con éxito");
 
             } else {
                 throw new Exception("Acción no válida");
             }
 
         } catch (Exception e) {
-            session.setAttribute("error", e.getMessage());
+            request.setAttribute("error", e.getMessage());
             log.error("Error en {} vehiculo: ", action, e);
         }
 

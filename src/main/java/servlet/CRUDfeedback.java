@@ -19,9 +19,9 @@ public class CRUDfeedback extends HttpServlet {
     private ReservaDAO reservaDAO = new ReservaDAO();
     private FeedbackDAO feedbackDAO = new FeedbackDAO();
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
-        HttpSession session = request.getSession();
         String token = request.getParameter("t");
 
         if (token == null || token.trim().isEmpty()) {
@@ -35,7 +35,7 @@ public class CRUDfeedback extends HttpServlet {
             String validationError = validarReserva(reserva);
 
             if (validationError != null) {
-                session.setAttribute("error", validationError);
+                request.setAttribute("error", validationError);
                 request.getRequestDispatcher("/index.jsp").forward(request, response);
                 return;
             }
@@ -80,13 +80,13 @@ public class CRUDfeedback extends HttpServlet {
             String validationError = validarReserva(reserva);
 
             if (validationError != null) {
-                session.setAttribute("error", validationError);
+                request.setAttribute("error", validationError);
                 request.getRequestDispatcher("/index.jsp").forward(request, response);
                 return;
             }
 
             feedbackDAO.guardarFeedback(comentario, puntuacion, token);
-            session.setAttribute("mensaje", "Feedback otorgado exitosamente!");
+            request.setAttribute("mensaje", "Feedback otorgado exitosamente!");
             response.sendRedirect(request.getContextPath() + "/index.jsp");
 
         } catch (Exception e) {

@@ -68,16 +68,16 @@ public class CRUDreservas extends HttpServlet {
         try {
             if ("reserve".equals(action)) {
                 reservar(request, usuario);
-                session.setAttribute("mensaje", "Reserva realizada con éxito");
+                request.setAttribute("mensaje", "Reserva realizada con éxito");
             } else if ("cancelar".equals(action)) {
                 cancelarReserva(request, usuario);
-                session.setAttribute("mensaje", "Reserva cancelada con éxito");
+                request.setAttribute("mensaje", "Reserva cancelada con éxito");
             } else if ("validate".equals(action)) {
                 validarReserva(request);
-                session.setAttribute("mensaje", "Reserva validada");
+                request.setAttribute("mensaje", "Reserva validada");
             }
         } catch (Exception e) {
-            session.setAttribute("error", "Error: " + e.getMessage());
+            request.setAttribute("error", "Error: " + e.getMessage());
             System.out.println("Error en operación: " + e.getMessage());
         }
 

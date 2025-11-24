@@ -90,23 +90,23 @@ public class CRUDusuarioAdmin extends HttpServlet {
         try {
             if ("update".equals(action)) {
                 actualizarUsuario(request, logueado);
-                session.setAttribute("mensaje", "Usuario actualizado con éxito");
+                request.setAttribute("mensaje", "Usuario actualizado con éxito");
 
             } else if ("delete".equals(action)) {
                 eliminarUsuario(request, logueado);
-                session.setAttribute("mensaje", "Usuario eliminado con éxito");
+                request.setAttribute("mensaje", "Usuario eliminado con éxito");
 
             } else if ("add".equals(action)) {
                 crearUsuario(request, logueado);
-                session.setAttribute("mensaje", "Usuario creado con éxito");
+                request.setAttribute("mensaje", "Usuario creado con éxito");
 
             } else if ("register".equals(action)) {
                 registrarUsuario(request);
-                session.setAttribute("mensaje", "Usuario registrado con éxito");
+                request.setAttribute("mensaje", "Usuario registrado con éxito");
             }
 
         } catch (Exception e) {
-            session.setAttribute("error", e.getMessage());
+            request.setAttribute("error", e.getMessage());
             System.out.println("Error en operación: " + e.getMessage());
         }
 
