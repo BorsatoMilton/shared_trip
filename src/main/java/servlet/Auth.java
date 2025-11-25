@@ -1,10 +1,14 @@
 package servlet;
 
+import entidades.PasswordReset;
 import entidades.Rol;
 import entidades.Usuario;
 import jakarta.mail.MessagingException;
+import logic.PasswordResetController;
 import logic.RolController;
 import logic.UserController;
+import utils.Generators;
+import utils.InputValidator;
 import utils.MailService;
 
 import javax.servlet.ServletException;
@@ -14,17 +18,38 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.util.LinkedList;
 
 @WebServlet("/auth")
 public class Auth extends HttpServlet {
     private static final long serialVersionUID = 1L;
     UserController userController = new UserController();
     MailService mailService = new MailService();
+    Generators generators = new Generators();
+    PasswordResetController passwordResetController = new PasswordResetController();
+    InputValidator inputValidator = new InputValidator();
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        String token = request.getParameter("t");
+
+        if (token == null || token.trim().isEmpty()) {
+            request.setAttribute("error", "Token inválido");
+            request.getRequestDispatcher("/index.jsp").forward(request, response);
+            return;
+        }
+        try {
+            PasswordReset pr = passwordResetController.validarToken(token);
+            if (pr == null) {
+                request.setAttribute("error", "Token ya utilizado o inexistente");
+                request.getRequestDispatcher("/index.jsp").forward(request, response);
+            }
+            request.setAttribute("token", pr.getToken());
+            request.getRequestDispatcher("/resetearClave.jsp").forward(request, response);
+        } catch (Exception e) {
+            request.setAttribute("error", e.getMessage());
+            request.getRequestDispatcher("/index.jsp").forward(request, response);
+        }
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -32,23 +57,32 @@ public class Auth extends HttpServlet {
 
         String action = request.getParameter("action");
 
-        if ("login".equals(action)) {
-            login(request, response);
-        } else if ("logout".equals(action)) {
-            logout(request, response);
-        }else if("recover".equals(action)) {
-            try {
-                recoverPassword(request,response);
-            } catch (MessagingException e) {
-                throw new RuntimeException(e);
+
+        try {
+            if ("login".equals(action)) {
+                login(request, response);
+            } else if ("logout".equals(action)) {
+                logout(request, response);
+            } else if ("recover".equals(action)) {
+                recoverPasswordMail(request, response);
+            } else if ("newPassword".equals(action)) {
+                cambiarContrasena(request, response);
+            } else {
+                request.setAttribute("error", "Acción inválida");
+                request.getRequestDispatcher("/index.jsp").forward(request, response);
             }
-        }else {
-            throw new ServletException("Acción invalida");
+        }catch (Exception e) {
+            request.setAttribute("error", e.getMessage());
+            if("recover".equals(action)) {
+                request.getRequestDispatcher("/recuperarClave.jsp").forward(request, response);
+            }else if("newPassword".equals(action)) {
+                request.getRequestDispatcher("/resetearClave.jsp").forward(request, response);
+            }
         }
+
     }
 
-
-    // ---------------- LOGIN ----------------
+    // ---------------------- LOGIN ----------------------
     private void login(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
 
@@ -63,12 +97,10 @@ public class Auth extends HttpServlet {
             return;
         }
 
-        // Invalidar session anterior
         HttpSession old = request.getSession(false);
         if (old != null) old.invalidate();
 
         HttpSession session = request.getSession(true);
-
 
         Usuario u = new Usuario();
         u.setUsuario(usuario);
@@ -77,21 +109,21 @@ public class Auth extends HttpServlet {
         u = userController.login(u);
 
         if (u == null) {
-            session.setAttribute("errorMessage", "Credenciales incorrectas");
+            request.setAttribute("errorMessage", "Credenciales incorrectas");
             response.sendRedirect(request.getContextPath() + "/login.jsp");
             return;
         }
 
         Rol rol = new RolController().getOne(u.getRol());
 
+        u.setClave(null);
         session.setAttribute("usuario", u);
         session.setAttribute("rol", rol.getNombre());
 
         response.sendRedirect(request.getContextPath() + "/");
     }
 
-
-    // ---------------- LOGOUT ----------------
+    // ---------------------- LOGOUT ----------------------
     private void logout(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
 
@@ -102,12 +134,93 @@ public class Auth extends HttpServlet {
         response.sendRedirect(request.getContextPath() + "/");
     }
 
-    // ---------------------- RECUPERAR CLAVE ---------------------------
-    private void recoverPassword(HttpServletRequest request, HttpServletResponse response)
-            throws MessagingException {
+    // ---------------------- RECUPERAR CLAVE MAIL ----------------------
+    private void recoverPasswordMail(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+
         String email = request.getParameter("email");
 
-        mailService.enviarTexto(email, "Recuperar clave", "Prueba mail");
+        try {
+            Usuario u = userController.getOneByEmail(email);
+            if (u == null) {
+                throw new Exception("Usuario no existente");
+            }
 
+            String token = generators.generarToken();
+            passwordResetController.guardarToken(u.getIdUsuario(), token);
+            mailService.recuperarClave(u, token);
+
+            request.setAttribute("mensaje", "Se envio un mail a su casilla de correo para recuperar su cuenta");
+            request.getRequestDispatcher("/login.jsp").forward(request, response);
+
+        } catch (Exception e) {
+            request.getSession().setAttribute("errorMessage", e.getMessage());
+            response.sendRedirect(request.getContextPath() + "/recuperarClave.jsp");
+        }
+    }
+
+    // ---------------------- CAMBIAR CONTRASEÑA ----------------------
+    private void cambiarContrasena(HttpServletRequest request, HttpServletResponse response)
+            throws Exception {
+
+        String token = request.getParameter("token");
+        String nuevaPassword = request.getParameter("nuevaPassword");
+        String confirmacionPassword = request.getParameter("confirmarPassword");
+
+        if (token == null || token.trim().isEmpty()) {
+            request.setAttribute("error", "Token inexistente");
+            request.getRequestDispatcher("/index.jsp").forward(request, response);
+            return;
+        }
+
+        PasswordReset pr = passwordResetController.validarToken(token);
+        if (pr == null) {
+            request.setAttribute("error", "Token inválido");
+            request.getRequestDispatcher("/index.jsp").forward(request, response);
+            return;
+        }
+
+        if (nuevaPassword == null || nuevaPassword.trim().isEmpty()) {
+            request.setAttribute("error", "La clave no puede estar vacia");
+            request.setAttribute("token", token);
+            request.getRequestDispatcher("/resetearClave.jsp").forward(request, response);
+            return;
+        }
+
+        if (confirmacionPassword == null || confirmacionPassword.trim().isEmpty()) {
+            request.setAttribute("error", "La confirmación de clave no puede estar vacia");
+            request.setAttribute("token", token);
+            request.getRequestDispatcher("/resetearClave.jsp").forward(request, response);
+            return;
+        }
+
+        nuevaPassword = inputValidator.validarClave(nuevaPassword);
+        confirmacionPassword = inputValidator.validarClave(confirmacionPassword);
+
+        if (!nuevaPassword.equals(confirmacionPassword)) {
+            request.setAttribute("error", "Las claves no coinciden");
+            request.setAttribute("token", token);
+            request.getRequestDispatcher("/resetearClave.jsp").forward(request, response);
+            return;
+        }
+
+        if (pr.getUsuario() == null) {
+            request.setAttribute("error", "El token corresponde a un usuario no existente");
+            request.getRequestDispatcher("/index.jsp").forward(request, response);
+            return;
+        }
+
+        Usuario u = userController.getOneById(pr.getUsuario().getIdUsuario());
+        if (u == null) {
+            request.setAttribute("error", "Usuario no existente");
+            request.getRequestDispatcher("/index.jsp").forward(request, response);
+            return;
+        }
+
+        userController.updatePassword(pr.getUsuario().getIdUsuario(), nuevaPassword);
+        passwordResetController.marcarUtilizado(token);
+
+        request.setAttribute("mensaje", "Contraseña actualizada correctamente");
+        request.getRequestDispatcher("/login.jsp").forward(request, response);
     }
 }

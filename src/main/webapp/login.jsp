@@ -36,13 +36,23 @@
 <div class="container flex-grow-1">
     <div class="row justify-content-center mt-5">
         <div class="col-12 col-md-8 col-lg-6">
-            <% String mensaje = (String) session.getAttribute("errorMessage");
+            <% String mensaje = (String) request.getAttribute("mensaje");
                 if (mensaje != null) { %>
+            <div class="alert alert-info alert-dismissible fade show"
+                 role="alert">
+                <%=mensaje%>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"
+                        aria-label="Close"></button>
+            </div>
+            <% request.removeAttribute("mensaje");
+            } %>
+            <% String errorMensaje = (String) request.getAttribute("errorMessage");
+                if (errorMensaje != null) { %>
             <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                <%= mensaje %>
+                <%= errorMensaje %>
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
-            <% session.removeAttribute("errorMessage");
+            <% request.removeAttribute("errorMessage");
             } %>
 
             <div class="card shadow-lg border-0">

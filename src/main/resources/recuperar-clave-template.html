@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
+        .header { color: #2E86C1; border-bottom: 2px solid #2E86C1; padding-bottom: 10px; }
+        .content { background-color: #f4f4f4; padding: 15px; border-radius: 5px; margin: 15px 0; }
+        .footer { color: #7F8C8D; margin-top: 20px; font-size: 14px; }
+        .info { background-color: #e8f4fd; border: 1px solid #b3d9ff; padding: 10px; border-radius: 5px; margin: 10px 0; }
+        .warning { background-color: #fde8e8; border: 1px solid #ffb3b3; padding: 10px; border-radius: 5px; margin: 10px 0; }
+        .btn { display: inline-block; background-color: #2E86C1; color: white; padding: 10px 15px; text-decoration: none; border-radius: 5px; margin-top: 10px; }
+        .code-block { background-color: #f9f9f9; border-left: 4px solid #2E86C1; padding: 10px; margin: 10px 0; font-family: monospace; }
+    </style>
+</head>
+<body>
+<div class="header">
+    <h2>SharedTrip</h2>
+    <h3>Recuperar tu contraseña</h3>
+</div>
+
+<div class="content">
+    <p>Hola {{nombreUsuario}},</p>
+
+    <p>Recibimos una solicitud para recuperar la contraseña de tu cuenta en SharedTrip.</p>
+
+    <div class="warning">
+        <strong>Importante:</strong> Este enlace expira en <strong>24 horas</strong>. Si no lo utilizas en ese tiempo, deberás solicitar uno nuevo.
+    </div>
+
+    <p>Hacé clic en el botón de abajo para crear una nueva contraseña:</p>
+
+    <a class="btn" href="{{linkRecuperar}}" target="_blank">Recuperar Contraseña</a>
+
+    <p style="margin-top: 20px; color: #555;"><strong>Alternativamente,</strong> podés copiar y pegar este enlace en tu navegador:</p>
+    <div class="code-block">
+        {{linkRecuperar}}
+    </div>
+
+    <div class="info">
+        <strong>¿No solicitaste recuperar tu contraseña?</strong><br>
+        Si no fuiste vos, ignorá este email. Tu cuenta seguirá siendo segura. El enlace sólo funciona si lo usás dentro de 24 horas.
+    </div>
+
+    <p style="margin-top: 20px; color: #555; font-size: 13px;">
+        Por tu seguridad, nunca compartimos contraseñas en emails. SharedTrip nunca te pedirá que envíes tu contraseña actual.
+    </p>
+
+</div>
+
+<div class="footer">
+    <p>Saludos,<br>Equipo SharedTrip</p>
+</div>
+</body>
+</html>

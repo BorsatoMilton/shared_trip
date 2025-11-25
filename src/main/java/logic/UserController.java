@@ -26,6 +26,10 @@ public class UserController {
         return usuarioDAO.getById(id);
     }
 
+    public Usuario getOneByEmail(String email) {
+        return usuarioDAO.getOneUserByEmail(email);
+    }
+
     public LinkedList<Usuario> getAll() {
         return usuarioDAO.getAll();
     }

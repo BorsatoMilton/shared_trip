@@ -82,7 +82,7 @@ public class CRUDviajes extends HttpServlet {
             request.getRequestDispatcher("misViajes.jsp").forward(request, response);
 
         } catch (Exception e) {
-            session.setAttribute("error", "Error al cargar los viajes: " + e.getMessage());
+            request.setAttribute("error", "Error al cargar los viajes: " + e.getMessage());
             response.sendRedirect(request.getContextPath() + "/");
         }
 
@@ -104,23 +104,23 @@ public class CRUDviajes extends HttpServlet {
         try {
             if ("update".equals(action)) {
                 actualizarViaje(request, usuario);
-                session.setAttribute("mensaje", "Viaje actualizado con éxito");
+                request.setAttribute("mensaje", "Viaje actualizado con éxito");
 
             } else if ("delete".equals(action)) {
                 eliminarViaje(request, usuario);
-                session.setAttribute("mensaje", "Viaje eliminado con éxito");
+                request.setAttribute("mensaje", "Viaje eliminado con éxito");
 
             } else if ("add".equals(action)) {
                 crearViaje(request, usuario);
-                session.setAttribute("mensaje", "Viaje creado con éxito");
+                request.setAttribute("mensaje", "Viaje creado con éxito");
 
             } else if ("cancelarViaje".equals(action)) {
                 cancelarViaje(request, usuario);
-                session.setAttribute("mensaje", "Viaje cancelado con éxito");
+                request.setAttribute("mensaje", "Viaje cancelado con éxito");
             }
 
         } catch (Exception e) {
-            session.setAttribute("error", e.getMessage());
+            request.setAttribute("error", e.getMessage());
             System.out.println("Error en " + action + ": " + e.getMessage());
             e.printStackTrace();
         }

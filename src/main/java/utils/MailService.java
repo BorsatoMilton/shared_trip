@@ -148,6 +148,16 @@ public class MailService {
 
     }
 
+    public void recuperarClave(Usuario pasajero, String token) throws MessagingException {
+        Map<String, String> parametros = new HashMap<>();
+        String linkRecuperar = appUrl + "/auth?t=" + token;
+
+        parametros.put("nombrePasajero", pasajero.getNombre());
+        parametros.put("linkRecuperar", linkRecuperar);
+
+        String html = cargarTemplate("recuperar-clave-template", parametros);
+        enviarHtml(pasajero.getCorreo(), "Recuperación de clave - SharedTrip", html);
+    }
 
     public void enviarHtml(String to, String subject, String html) throws MessagingException {
         Message msg = new MimeMessage(session);

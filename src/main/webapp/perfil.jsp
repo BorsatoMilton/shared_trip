@@ -65,7 +65,7 @@
             }
         %>
         <%
-            String mensaje = (String) session.getAttribute("mensaje");
+            String mensaje = (String) request.getAttribute("mensaje");
             if (mensaje != null) {
         %>
         <div class="alert alert-info alert-dismissible fade show"
@@ -75,10 +75,10 @@
                     aria-label="Close"></button>
         </div>
         <%
-                session.removeAttribute("mensaje");
+                request.removeAttribute("mensaje");
             }
 
-            String error = (String) session.getAttribute("error");
+            String error = (String) request.getAttribute("error");
             if (error != null) {
         %>
         <div class="alert alert-danger alert-dismissible fade show"
@@ -88,7 +88,7 @@
                     aria-label="Close"></button>
         </div>
         <%
-                session.removeAttribute("error");
+                request.removeAttribute("error");
             }
         %>
         <div class="profile-container mx-auto">

@@ -15,21 +15,21 @@
 <div class="container-fluid  d-flex flex-column">
     <div class="row justify-content-center align-items-center flex-grow-1">
         <div class="col-12 col-lg-8 col-xl-6">
-            <% String mensaje = (String) session.getAttribute("mensaje");
+            <% String mensaje = (String) request.getAttribute("mensaje");
                 if (mensaje != null) { %>
             <div class="alert alert-info alert-dismissible fade show" role="alert">
                 <%= mensaje %>
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
-            <% session.removeAttribute("mensaje");
+            <% request.removeAttribute("mensaje");
             } %>
-            <% String error = (String) session.getAttribute("error");
+            <% String error = (String) request.getAttribute("error");
                 if (error != null) { %>
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
                 <%= error %>
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
-            <% session.removeAttribute("error");
+            <% request.removeAttribute("error");
             } %>
             <div class="card shadow-lg border-0 my-5">
                 <div class="card-body p-4 p-md-5">
