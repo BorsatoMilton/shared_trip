@@ -2,6 +2,7 @@ package logic;
 
 import java.security.SecureRandom;
 import java.util.Base64;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import data.PasswordResetDAO;
@@ -17,7 +18,7 @@ public class PasswordResetController {
         this.passwordResetDAO = new PasswordResetDAO();
     }
 
-    public PasswordReset validarToken(String token){
+    public PasswordReset validarToken(String token) {
 
         PasswordReset pr = passwordResetDAO.obtenerPorToken(token);
 
@@ -28,8 +29,8 @@ public class PasswordResetController {
         return pr;
     }
 
-    public void addPasswordReset(int id_usuario, String token) throws Exception {
-        if(token == null || token.trim().isEmpty()){
+    public void guardarToken(int id_usuario, String token) throws Exception {
+        if (token == null || token.trim().isEmpty()) {
             throw new Exception("Token no proporcionado");
         }
         passwordResetDAO.invalidarTokensPrevios(id_usuario);
@@ -38,7 +39,7 @@ public class PasswordResetController {
     }
 
     public void marcarUtilizado(String token) throws Exception {
-        if(token == null || token.trim().isEmpty()){
+        if (token == null || token.trim().isEmpty()) {
             throw new Exception("Token no proporcionado");
         }
         passwordResetDAO.marcarComoUtilizado(token);
