@@ -152,7 +152,7 @@ public class MailService {
         Map<String, String> parametros = new HashMap<>();
         String linkRecuperar = appUrl + "/auth?t=" + token;
 
-        parametros.put("nombrePasajero", pasajero.getNombre());
+        parametros.put("nombreUsuario", pasajero.getNombre());
         parametros.put("linkRecuperar", linkRecuperar);
 
         String html = cargarTemplate("recuperar-clave-template", parametros);

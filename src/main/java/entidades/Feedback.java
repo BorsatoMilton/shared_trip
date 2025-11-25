@@ -4,7 +4,6 @@ import java.sql.Date;
 
 public class Feedback {
     public int puntuacion;
-    public String observacion;
     public Date fecha_hora;
     public Usuario usuario_calificado;
     public Reserva reserva;
@@ -24,14 +23,6 @@ public class Feedback {
 
     public void setPuntuacion(int puntuacion) {
         this.puntuacion = puntuacion;
-    }
-
-    public String getObservacion() {
-        return observacion;
-    }
-
-    public void setObservacion(String observacion) {
-        this.observacion = observacion;
     }
 
     public Date getFecha_hora() {
@@ -55,10 +46,9 @@ public class Feedback {
     public void setToken(String token) {this.token = token;}
 
     //CHEQUEAR SI SE NECESITA ESTE CONSTRUCTOR
-    public Feedback(int puntuacion, String observacion, Date fecha_hora, Usuario usuario_calificado, Reserva reserva) {
+    public Feedback(int puntuacion, Date fecha_hora, Usuario usuario_calificado, Reserva reserva) {
         super();
         this.puntuacion = puntuacion;
-        this.observacion = observacion;
         this.fecha_hora = fecha_hora;
         this.usuario_calificado = usuario_calificado;
         this.reserva = reserva;

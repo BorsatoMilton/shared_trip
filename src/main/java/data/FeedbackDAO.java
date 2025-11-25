@@ -14,7 +14,7 @@ public class FeedbackDAO {
 
     public LinkedList<Feedback> getAll() {
         LinkedList<Feedback> feedbacks = new LinkedList<>();
-        String query = "SELECT fecha_hora_feedback, id_usuario_calificado, puntuacion, observacion, id_reserva, token FROM feedback";
+        String query = "SELECT fecha_hora_feedback, id_usuario_calificado, puntuacion, id_reserva, token FROM feedback";
 
         try (
                 Connection conn = ConnectionDB.getInstancia().getConn();
@@ -35,7 +35,7 @@ public class FeedbackDAO {
 
     public LinkedList<Feedback> getByUser(Usuario u) {
         LinkedList<Feedback> fs = new LinkedList<>();
-        String query = "SELECT fecha_hora_feedback, id_usuario_calificado, puntuacion, observacion, id_reserva, token FROM feedback WHERE id_usuario_calificado = ?";
+        String query = "SELECT fecha_hora_feedback, id_usuario_calificado, puntuacion, id_reserva, token FROM feedback WHERE id_usuario_calificado = ?";
         Connection conn = null;
 
         try {
@@ -59,7 +59,7 @@ public class FeedbackDAO {
 
 
     public Feedback getByReserva(Reserva r) {
-        String query = "SELECT fecha_hora_feedback, id_usuario_calificado, puntuacion, observacion, id_reserva, token FROM feedback WHERE id_reserva = ?";
+        String query = "SELECT fecha_hora_feedback, id_usuario_calificado, puntuacion, id_reserva, token FROM feedback WHERE id_reserva = ?";
         Connection conn = null;
         Feedback f = null;
         try {
@@ -80,8 +80,8 @@ public class FeedbackDAO {
         return f;
     }
 
-    public void guardarFeedback(String observacion, int puntuacion, String token) {
-        String query = "UPDATE feedback SET fecha_hora_feedback=?, puntuacion=?, observacion=? WHERE token=?";
+    public void guardarFeedback(int puntuacion, String token) {
+        String query = "UPDATE feedback SET fecha_hora_feedback=?, puntuacion=? WHERE token=?";
         Connection conn = null;
 
         try {
@@ -90,8 +90,7 @@ public class FeedbackDAO {
                 java.sql.Timestamp now = new java.sql.Timestamp(System.currentTimeMillis());
                 stmt.setTimestamp(1, now);
                 stmt.setInt(2, puntuacion);
-                stmt.setString(3, observacion);
-                stmt.setString(4, token);
+                stmt.setString(3, token);
 
                 int rowsAffected = stmt.executeUpdate();
                 if (rowsAffected > 0) {
@@ -134,7 +133,6 @@ public class FeedbackDAO {
     private Feedback mappingFeedback(ResultSet rs) throws SQLException { // CHEQUEAR Y CAMBIAR LOS QUERY A INNER JOIN
         Feedback f = new Feedback();
         f.setFecha_hora(rs.getDate("fecha_hora_feedback"));
-        f.setObservacion(rs.getString("observacion"));
         f.setPuntuacion(rs.getInt("puntuacion"));
         f.setToken(rs.getString("token"));
         f.setUsuario_calificado(userDAO.getById(rs.getInt("id_usuario_calificado")));

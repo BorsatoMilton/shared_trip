@@ -52,9 +52,7 @@ public class CRUDfeedback extends HttpServlet {
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession();
         String token = request.getParameter("t");
-        String comentario = request.getParameter("comentario");
         String puntuacionStr = request.getParameter("puntuacion");
 
         if (token == null || token.trim().isEmpty() || puntuacionStr == null || puntuacionStr.trim().isEmpty()) {
@@ -85,7 +83,7 @@ public class CRUDfeedback extends HttpServlet {
                 return;
             }
 
-            feedbackDAO.guardarFeedback(comentario, puntuacion, token);
+            feedbackDAO.guardarFeedback(puntuacion, token);
             request.setAttribute("mensaje", "Feedback otorgado exitosamente!");
             response.sendRedirect(request.getContextPath() + "/index.jsp");
 

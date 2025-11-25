@@ -58,9 +58,6 @@
             <label><input type="radio" name="puntuacion" value="5"> 5 - Excelente</label>
         </div>
 
-        <label for="comentario"><strong>Dejá un comentario (opcional)</strong></label>
-        <textarea id="comentario" name="comentario" rows="5" style="width:100%;"></textarea>
-
         <button type="submit" class="btn">Enviar feedback</button>
     </form>
 
