@@ -20,7 +20,6 @@ public class CronFeedbackListener implements ServletContextListener {
 
         scheduler.scheduleAtFixedRate(() -> {
             try {
-                System.out.println("Procesando feedback... desde cron");
                 feedbackService.procesarFeedbackPendiente();
             } catch (Exception e) {
                 e.printStackTrace();

@@ -4,7 +4,6 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.LinkedList;
-import java.util.List;
 
 import data.ReservaDAO;
 import entidades.Reserva;
@@ -18,6 +17,57 @@ public class ReservaController {
     public ReservaController() {
         this.reservaDAO = new ReservaDAO();
         this.viajeController = new ViajeController();
+    }
+
+    public Reserva getByToken(String token) {
+        return this.reservaDAO.getByToken(token);
+    }
+
+    public LinkedList<Reserva> getReservasUsuario(Usuario u) {
+        LinkedList<Reserva> reservas = this.reservaDAO.getByUser(u);
+        return reservas;
+    }
+
+    public Reserva cancelarReserva(int idReserva, int idUsuario) throws Exception {
+
+        Reserva reserva = reservaDAO.getByReserva(idReserva);
+        if (reserva == null) {
+            throw new Exception("La reserva no existe");
+        }
+
+        if (reserva.getPasajero().getIdUsuario() != idUsuario) {
+            throw new Exception("No tiene permisos para cancelar esta reserva");
+        }
+
+        if (reserva.isReserva_cancelada()) {
+            throw new Exception("La reserva ya está cancelada");
+        }
+
+        if ("CONFIRMADA".equals(reserva.getEstado())) {
+            throw new Exception("No se puede cancelar esta reserva, ya esta CONFIRMADA");
+        }
+
+        Viaje viaje = reserva.getViaje();
+        LocalDate fechaViaje = viaje.getFecha().toLocalDate();
+
+        if (fechaViaje.isBefore(LocalDate.now())) {
+            throw new Exception("No se puede cancelar una reserva de un viaje que ya pasó");
+        }
+
+        if (!reservaDAO.cancelarReserva(idReserva)) {
+            throw new Exception("Error al cancelar la reserva en la base de datos");
+        }
+
+        int cantidadPasajeros = reserva.getCantidad_pasajeros_reservada();
+        viajeController.actualizarCantidad(viaje.getIdViaje(), cantidadPasajeros * (-1));
+        return reserva;
+    }
+
+    public LinkedList<Reserva> getReservasPorViaje(int idViaje) throws Exception {
+        if (idViaje < 0) {
+            throw new Exception("ID de viaje inválido");
+        }
+        return reservaDAO.getReservasByViaje(idViaje);
     }
 
     public Reserva nuevaReserva(int viajeId, int cantPasajeros, Usuario usuario) throws Exception {
@@ -78,53 +128,6 @@ public class ReservaController {
         return r;
     }
 
-    public LinkedList<Reserva> getReservasUsuario(Usuario u) {
-        LinkedList<Reserva> reservas = this.reservaDAO.getByUser(u);
-        return reservas;
-    }
-
-    public Reserva cancelarReserva(int idReserva, int idUsuario) throws Exception {
-
-        Reserva reserva = reservaDAO.getByReserva(idReserva);
-        if (reserva == null) {
-            throw new Exception("La reserva no existe");
-        }
-
-        if (reserva.getPasajero().getIdUsuario() != idUsuario) {
-            throw new Exception("No tiene permisos para cancelar esta reserva");
-        }
-
-        if (reserva.isReserva_cancelada()) {
-            throw new Exception("La reserva ya está cancelada");
-        }
-
-        if ("CONFIRMADA".equals(reserva.getEstado())) {
-            throw new Exception("No se puede cancelar esta reserva, ya esta CONFIRMADA");
-        }
-
-        Viaje viaje = reserva.getViaje();
-        LocalDate fechaViaje = viaje.getFecha().toLocalDate();
-
-        if (fechaViaje.isBefore(LocalDate.now())) {
-            throw new Exception("No se puede cancelar una reserva de un viaje que ya pasó");
-        }
-
-        if (!reservaDAO.cancelarReserva(idReserva)) {
-            throw new Exception("Error al cancelar la reserva en la base de datos");
-        }
-
-        int cantidadPasajeros = reserva.getCantidad_pasajeros_reservada();
-        viajeController.actualizarCantidad(viaje.getIdViaje(), cantidadPasajeros * (-1));
-        return reserva;
-    }
-
-    public LinkedList<Reserva> getReservasPorViaje(int idViaje) throws Exception {
-        if (idViaje < 0) {
-            throw new Exception("ID de viaje inválido");
-        }
-        return reservaDAO.getReservasByViaje(idViaje);
-    }
-
     public void actualizarEstadoReserva(Reserva reserva) throws Exception {
         if (reserva == null) {
             throw new Exception("La reserva no existe");
@@ -134,10 +137,6 @@ public class ReservaController {
 
     public int obtenerCantidad(int idReserva) {
         return this.reservaDAO.obtenerCantidad(idReserva);
-    }
-
-    public Reserva getOne(int id) {
-        return this.reservaDAO.getByReserva(id);
     }
 
     public void actualizarEstado(int idReserva, String nuevoEstado) {

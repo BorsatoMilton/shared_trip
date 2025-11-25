@@ -1,17 +1,10 @@
 package logic;
 
-import java.security.SecureRandom;
-import java.util.Base64;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import data.PasswordResetDAO;
-import data.UserDAO;
 import entidades.PasswordReset;
-import entidades.Usuario;
+
 
 public class PasswordResetController {
-    private static final Logger logger = LoggerFactory.getLogger(PasswordResetController.class);
     private final PasswordResetDAO passwordResetDAO;
 
     public PasswordResetController() {
@@ -21,10 +14,6 @@ public class PasswordResetController {
     public PasswordReset validarToken(String token) {
 
         PasswordReset pr = passwordResetDAO.obtenerPorToken(token);
-
-        if (pr == null) {
-            logger.warn("Intento de validación con token inválido o expirado: {}", token);
-        }
 
         return pr;
     }
