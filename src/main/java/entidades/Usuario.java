@@ -10,6 +10,8 @@ public class Usuario {
     public String telefono;
     public int rol;
     public String nombreRol;
+    public double promedio_puntuacion;
+    public int cantidad_que_puntuaron;
 
     public String getNombreRol() {
         return nombreRol;
@@ -81,6 +83,22 @@ public class Usuario {
 
     public void setTelefono(String telefono) {
         this.telefono = telefono;
+    }
+
+    public double getPormedio_puntuacion() {
+        return promedio_puntuacion;
+    }
+
+    public void setPromedio_puntuacion(double promedio_puntuacion) {
+        this.promedio_puntuacion = promedio_puntuacion;
+    }
+
+    public int getCantidad_que_puntuaron() {
+        return cantidad_que_puntuaron;
+    }
+
+    public void setCantidad_que_puntuaron(int cantidad_que_puntuaron) {
+        this.cantidad_que_puntuaron = cantidad_que_puntuaron;
     }
 
     public Usuario() {

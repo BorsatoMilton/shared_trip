@@ -17,7 +17,6 @@ public class ViajeController {
     }
 
     public LinkedList<Viaje> getAll() {
-        LinkedList<Viaje> viajes = viajeDAO.getAll();
         return viajeDAO.getAll();
     }
 

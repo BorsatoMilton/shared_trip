@@ -3,6 +3,7 @@ package data;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.LinkedList;
+import java.util.Map;
 
 import entidades.Vehiculo;
 import org.slf4j.Logger;
@@ -12,6 +13,9 @@ import entidades.Usuario;
 import entidades.Viaje;
 
 public class ViajeDAO {
+    private VehiculoDAO vDAO = new VehiculoDAO();
+    private UserDAO usuarioDAO = new UserDAO();
+    private FeedbackDAO fDAO = new FeedbackDAO();
 
     private static final Logger logger = LoggerFactory.getLogger(ViajeDAO.class);
 
@@ -28,7 +32,7 @@ public class ViajeDAO {
                  ResultSet rs = stmt.executeQuery(query)) {
 
                 while (rs.next()) {
-                    viajes.add(mapViaje(rs));
+                    viajes.add(mapViaje(rs, true));
                 }
             }
         } catch (SQLException e) {
@@ -65,7 +69,7 @@ public class ViajeDAO {
 
                 try (ResultSet rs = stmt.executeQuery()) {
                     while (rs.next()) {
-                        viajes.add(mapViaje(rs));
+                        viajes.add(mapViaje(rs, true));
                     }
                 }
             }
@@ -89,7 +93,7 @@ public class ViajeDAO {
 
                 try (ResultSet rs = stmt.executeQuery()) {
                     if (rs.next()) {
-                        viaje = mapViaje(rs);
+                        viaje = mapViaje(rs, false);
                     }
                 }
             }
@@ -113,7 +117,7 @@ public class ViajeDAO {
 
                 try (ResultSet rs = stmt.executeQuery()) {
                     while (rs.next()) {
-                        viajes.add(mapViaje(rs));
+                        viajes.add(mapViaje(rs, false));
                     }
                 }
             }
@@ -124,30 +128,6 @@ public class ViajeDAO {
         }
         return viajes;
     }
-
-    /*public boolean existeViajeEnFecha(int idConductor, int idVehiculo, Date fecha){
-        String sql = "SELECT COUNT(*) AS total FROM viajes WHERE id_conductor = ? AND id_vehiculo_viaje = ? AND fecha = ? AND cancelado = 0";
-
-        try (PreparedStatement stmt = ConnectionDB.getInstancia().getConn().prepareStatement(sql)) {
-
-            stmt.setInt(1, idConductor);
-            stmt.setInt(2, idVehiculo);
-            stmt.setDate(3, fecha);
-
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getInt("total") > 0;
-                }
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            ConnectionDB.getInstancia().releaseConn();
-        }
-
-        return false;
-    }*/
 
 
     public void updateCantidad(int idViaje, int cantPasajeros) {
@@ -291,7 +271,7 @@ public class ViajeDAO {
         }
     }
 
-    private Viaje mapViaje(ResultSet rs) throws SQLException {
+    private Viaje mapViaje(ResultSet rs, boolean puntuar) throws SQLException {
         Viaje v = new Viaje();
         v.setIdViaje(rs.getInt("id_viaje"));
         v.setFecha(rs.getDate("fecha"));
@@ -302,14 +282,30 @@ public class ViajeDAO {
         v.setCancelado(rs.getBoolean("cancelado"));
         v.setLugar_salida(rs.getString("lugar_salida"));
 
-        VehiculoDAO vDAO = new VehiculoDAO();
         Vehiculo veh = vDAO.getById_vehiculo(rs.getInt("id_vehiculo_viaje"));
         v.setVehiculo(veh);
 
-        UserDAO usuarioDAO = new UserDAO();
         Usuario conductor = usuarioDAO.getById(rs.getInt("id_conductor"));
-        v.setConductor(conductor);
+        conductor.setClave(null);
 
+        if(puntuar){
+            Usuario conductorPuntuado = calcularPromedioPuntuacion(conductor);
+            v.setConductor(conductorPuntuado);
+            return v;
+        }
+
+        v.setConductor(conductor);
         return v;
+    }
+
+    private Usuario calcularPromedioPuntuacion (Usuario conductor){
+        Map<String, Object> puntuacion_cantidad = fDAO.getUserRating(conductor);
+
+        double promedio = (double) puntuacion_cantidad.get("promedio");
+        int cantidad = (int)puntuacion_cantidad.get("cantidad");
+
+        conductor.setPromedio_puntuacion(promedio);
+        conductor.setCantidad_que_puntuaron(cantidad);
+        return conductor;
     }
 }

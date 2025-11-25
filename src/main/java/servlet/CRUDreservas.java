@@ -82,11 +82,11 @@ public class CRUDreservas extends HttpServlet {
         }
 
         if ("reserve".equals(action)) {
-            response.sendRedirect(request.getContextPath() + "/");
+            request.getRequestDispatcher("/").forward(request, response);
         } else if ("cancelar".equals(action)) {
-            response.sendRedirect(request.getContextPath() + "/reservas");
+            request.getRequestDispatcher( "/reservas").forward(request, response);
         } else if ("validate".equals(action)) {
-            response.sendRedirect(request.getContextPath() + "/viajes");
+            request.getRequestDispatcher("/viajes").forward(request, response);
         }
 
     }

@@ -16,6 +16,7 @@ import logic.ViajeController;
 @WebServlet("/buscar")
 public class BuscadorViajes extends HttpServlet {
     private static final long serialVersionUID = 1L;
+    private ViajeController viajeController = new ViajeController();
 
     /**
      * @see HttpServlet#HttpServlet()
@@ -34,8 +35,6 @@ public class BuscadorViajes extends HttpServlet {
         String origen = request.getParameter("origen");
         String destino = request.getParameter("destino");
         String fecha = request.getParameter("fecha");
-
-        ViajeController viajeController = new ViajeController();
 
         LinkedList<Viaje> viajesResultado = viajeController.getAllBySearch(origen, destino, fecha);
         request.setAttribute("viajes", viajesResultado);

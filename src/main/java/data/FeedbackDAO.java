@@ -1,7 +1,10 @@
 package data;
 
 import java.sql.*;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import entidades.*;
@@ -31,28 +34,36 @@ public class FeedbackDAO {
         return feedbacks;
     }
 
-    public LinkedList<Feedback> getByUser(Usuario u) {
-        LinkedList<Feedback> fs = new LinkedList<>();
-        String query = "SELECT f.fecha_hora_feedback, f.id_usuario_calificado, f.puntuacion, f.id_reserva, f.token, u.id_usuario, u.nombre, u.apellido, r.id_reserva AS reserva_id, r.fecha_reserva, r.estado, r.id_viaje FROM feedback f INNER JOIN usuarios u ON f.id_usuario_calificado = u.id_usuario INNER JOIN reservas r ON f.id_reserva = r.id_reserva WHERE f.id_usuario_calificado = ?";
+    public Map<String, Object> getUserRating(Usuario u) {
+        String query = "SELECT AVG(f.puntuacion) AS promedio, COUNT(f.puntuacion) AS cantidad "
+                + "FROM feedback f WHERE f.id_usuario_calificado = ?";
         Connection conn = null;
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("promedio", 0.0);
+        result.put("cantidad", 0);
 
         try {
             conn = ConnectionDB.getInstancia().getConn();
             try (PreparedStatement stmt = conn.prepareStatement(query)) {
                 stmt.setInt(1, u.getIdUsuario());
                 try (ResultSet rs = stmt.executeQuery()) {
-                    while (rs.next()) {
-                        Feedback f = mappingFullFeedback(rs);
-                        fs.add(f);
+                    if (rs.next()) {
+                        double avg = rs.getDouble("promedio");
+                        int count = rs.getInt("cantidad");
+
+                        if (!rs.wasNull()) result.put("promedio", avg);
+                        result.put("cantidad", count);
                     }
                 }
             }
         } catch (SQLException e) {
-            logger.error("Error al obtener feedbacks para el usuario con ID {}", u.getIdUsuario(), e);
+            logger.error("Error al obtener rating para el usuario {}", u.getIdUsuario(), e);
         } finally {
             ConnectionDB.getInstancia().releaseConn();
         }
-        return fs;
+
+        return result;
     }
 
 
