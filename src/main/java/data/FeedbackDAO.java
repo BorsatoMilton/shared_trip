@@ -9,12 +9,10 @@ import entidades.*;
 public class FeedbackDAO {
 
     private static final Logger logger = LoggerFactory.getLogger(FeedbackDAO.class);
-    private UserDAO userDAO = new UserDAO();
-    private ReservaDAO reservaDAO = new ReservaDAO();
 
     public LinkedList<Feedback> getAll() {
         LinkedList<Feedback> feedbacks = new LinkedList<>();
-        String query = "SELECT fecha_hora_feedback, id_usuario_calificado, puntuacion, id_reserva, token FROM feedback";
+        String query = "SELECT f.fecha_hora_feedback, f.id_usuario_calificado, f.puntuacion, f.id_reserva, f.token, u.id_usuario, u.nombre, u.apellido, r.id_reserva AS reserva_id, r.fecha_reserva, r.estado, r.id_viaje FROM feedback f INNER JOIN usuarios u ON f.id_usuario_calificado = u.id_usuario INNER JOIN reservas r ON f.id_reserva = r.id_reserva";
 
         try (
                 Connection conn = ConnectionDB.getInstancia().getConn();
@@ -22,7 +20,7 @@ public class FeedbackDAO {
                 ResultSet rs = stmt.executeQuery(query)
         ) {
             while (rs.next()) {
-                Feedback f = mappingFeedback(rs);
+                Feedback f = mappingFullFeedback(rs);
                 feedbacks.add(f);
             }
         } catch (SQLException e) {
@@ -35,7 +33,7 @@ public class FeedbackDAO {
 
     public LinkedList<Feedback> getByUser(Usuario u) {
         LinkedList<Feedback> fs = new LinkedList<>();
-        String query = "SELECT fecha_hora_feedback, id_usuario_calificado, puntuacion, id_reserva, token FROM feedback WHERE id_usuario_calificado = ?";
+        String query = "SELECT f.fecha_hora_feedback, f.id_usuario_calificado, f.puntuacion, f.id_reserva, f.token, u.id_usuario, u.nombre, u.apellido, r.id_reserva AS reserva_id, r.fecha_reserva, r.estado, r.id_viaje FROM feedback f INNER JOIN usuarios u ON f.id_usuario_calificado = u.id_usuario INNER JOIN reservas r ON f.id_reserva = r.id_reserva WHERE f.id_usuario_calificado = ?";
         Connection conn = null;
 
         try {
@@ -44,7 +42,7 @@ public class FeedbackDAO {
                 stmt.setInt(1, u.getIdUsuario());
                 try (ResultSet rs = stmt.executeQuery()) {
                     while (rs.next()) {
-                        Feedback f = mappingFeedback(rs);
+                        Feedback f = mappingFullFeedback(rs);
                         fs.add(f);
                     }
                 }
@@ -68,7 +66,8 @@ public class FeedbackDAO {
                 stmt.setInt(1, r.getIdReserva());
                 try (ResultSet rs = stmt.executeQuery()) {
                     while (rs.next()) {
-                        f = mappingFeedback(rs);
+                        f = new Feedback();
+                        f = mappingFeedback(rs,f);
                     }
                 }
             }
@@ -130,13 +129,38 @@ public class FeedbackDAO {
         }
     }
 
-    private Feedback mappingFeedback(ResultSet rs) throws SQLException { // CHEQUEAR Y CAMBIAR LOS QUERY A INNER JOIN
-        Feedback f = new Feedback();
+
+    private Feedback mappingFeedback(ResultSet rs, Feedback f) throws SQLException {
         f.setFecha_hora(rs.getDate("fecha_hora_feedback"));
         f.setPuntuacion(rs.getInt("puntuacion"));
         f.setToken(rs.getString("token"));
-        f.setUsuario_calificado(userDAO.getById(rs.getInt("id_usuario_calificado")));
-        f.setReserva(reservaDAO.getByReserva(rs.getInt("id_reserva")));
+        return f;
+    }
+
+
+    private Feedback mappingUser(ResultSet rs, Feedback f) throws SQLException {
+        Usuario u = new Usuario();
+        u.setIdUsuario(rs.getInt("user_id"));
+        u.setNombre(rs.getString("user_nombre"));
+        u.setApellido(rs.getString("user_apellido"));
+        f.setUsuario_calificado(u);
+        return f;
+    }
+
+    private Feedback mappingBooking(ResultSet rs, Feedback f) throws SQLException {
+        Reserva r = new Reserva();
+        r.setIdReserva(rs.getInt("reserva_id"));
+        r.setFecha_reserva(rs.getDate("fecha_reserva").toString());
+        r.setEstado(rs.getString("estado"));
+        f.setReserva(r);
+        return f;
+    }
+
+    private Feedback mappingFullFeedback(ResultSet rs) throws SQLException {
+        Feedback f = new Feedback();
+        mappingFeedback(rs, f);
+        mappingUser(rs, f);
+        mappingBooking(rs,f);
         return f;
     }
 }
