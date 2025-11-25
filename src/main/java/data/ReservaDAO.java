@@ -43,7 +43,7 @@ public class ReservaDAO {
     public Reserva getByReserva(int id_reserva) {
         Reserva reserva = null;
         String query = "SELECT r.*, v.* FROM reservas r "
-                + "INNER JOIN viajes v ON r.id_viaje = v.id_viaje WHERE r.idReserva = ?";
+                + "INNER JOIN viajes v ON r.id_viaje = v.id_viaje WHERE r.id_reserva = ?";
         Connection conn = null;
 
         try {
@@ -92,7 +92,7 @@ public class ReservaDAO {
 
     public int obtenerCantidad(int idReserva) {
 
-        String query = "SELECT cantidad_pasajeros_reservada FROM reservas WHERE idReserva = ?";
+        String query = "SELECT cantidad_pasajeros_reservada FROM reservas WHERE id_reserva = ?";
 
 
         try (Connection conn = ConnectionDB.getInstancia().getConn();
@@ -114,7 +114,7 @@ public class ReservaDAO {
     }
 
     public LinkedList<Reserva> getByUser(Usuario usuario) {
-        String query = "SELECT r.id_pasajero_reserva, r.idReserva, r.fecha_reserva, r.estado, " +
+        String query = "SELECT r.id_pasajero_reserva, r.id_reserva, r.fecha_reserva, r.estado, " +
                        "r.cantidad_pasajeros_reservada, r.reserva_cancelada, r.codigo_reserva, " +
                        "v.id_viaje, v.origen, v.destino, v.fecha, v.lugares_disponibles, v.precio_unitario, " +
                        "v.id_vehiculo_viaje, " +
@@ -148,7 +148,7 @@ public class ReservaDAO {
     }
 
     public LinkedList<Reserva> getReservasByViaje(int idViaje) {
-        String query = "SELECT r.id_pasajero_reserva, r.idReserva, r.fecha_reserva, r.estado ,r.cantidad_pasajeros_reservada, r.reserva_cancelada, r.codigo_reserva, "
+        String query = "SELECT r.id_pasajero_reserva, r.id_reserva, r.fecha_reserva, r.estado ,r.cantidad_pasajeros_reservada, r.reserva_cancelada, r.codigo_reserva, "
                 + "v.id_viaje, v.origen, v.destino, v.fecha, v.lugares_disponibles, v.precio_unitario, " 
                 + "v.id_vehiculo_viaje, " 
                 + "u.id_usuario, u.nombre, u.apellido, u.correo, u.telefono "
@@ -238,7 +238,7 @@ public class ReservaDAO {
     }
 
     public void actualizarEstado(int idReserva, String nuevoEstado) {
-        String query = "UPDATE reservas SET estado = ? WHERE idReserva = ?";
+        String query = "UPDATE reservas SET estado = ? WHERE id_reserva = ?";
 
         try (Connection conn = ConnectionDB.getInstancia().getConn();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -259,7 +259,7 @@ public class ReservaDAO {
     public void update(Reserva reserva, int idReserva) {
 
         String query = "UPDATE reservas SET cantidad_pasajeros_reservada = ?, reserva_cancelada = ?, "
-                + "id_viaje = ?, id_pasajero_reserva = ? WHERE idReserva = ?";
+                + "id_viaje = ?, id_pasajero_reserva = ? WHERE id_reserva = ?";
 
         validateReserva(reserva);
 
@@ -280,7 +280,7 @@ public class ReservaDAO {
     }
 
     public void guardarToken(int idReserva, String token) throws SQLException {
-        String sql = "UPDATE reservas SET feedback_token = ? WHERE idReserva = ?";
+        String sql = "UPDATE reservas SET feedback_token = ? WHERE id_reserva = ?";
         try (Connection conn = ConnectionDB.getInstancia().getConn();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -303,7 +303,7 @@ public class ReservaDAO {
 
     public boolean cancelarReserva(int idReserva) {
 
-        String query = "UPDATE reservas SET reserva_cancelada = true, estado = 'CANCELADA' WHERE idReserva = ?";
+        String query = "UPDATE reservas SET reserva_cancelada = true, estado = 'CANCELADA' WHERE id_reserva = ?";
 
         try (Connection conn = ConnectionDB.getInstancia().getConn();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -327,7 +327,7 @@ public class ReservaDAO {
 
     public void delete(int idReserva) {
 
-        String query = "DELETE FROM reservas WHERE idReserva = ?";
+        String query = "DELETE FROM reservas WHERE id_reserva = ?";
 
 
         try (Connection conn = ConnectionDB.getInstancia().getConn();
@@ -349,7 +349,7 @@ public class ReservaDAO {
     // Métodos auxiliares
     private Reserva mapReserva(ResultSet rs) throws SQLException {
         Reserva reserva = new Reserva();
-        reserva.setIdReserva(rs.getInt("idReserva"));
+        reserva.setIdReserva(rs.getInt("id_reserva"));
         reserva.setFecha_reserva(rs.getString("fecha_reserva"));
         reserva.setCantidad_pasajeros_reservada(rs.getInt("cantidad_pasajeros_reservada"));
         reserva.setReserva_cancelada(rs.getBoolean("reserva_cancelada"));
