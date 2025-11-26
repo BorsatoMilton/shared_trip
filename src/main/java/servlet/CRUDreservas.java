@@ -3,6 +3,7 @@ package servlet;
 import entidades.Reserva;
 import entidades.Rol;
 import entidades.Usuario;
+import entidades.Vehiculo;
 import entidades.Viaje;
 import jakarta.mail.MessagingException;
 import logic.ReservaController;
@@ -232,11 +233,12 @@ public class CRUDreservas extends HttpServlet {
         try {
             Viaje viaje = reserva.getViaje();
             Usuario chofer = viaje.getConductor();
+            Vehiculo vehiculo = viaje.getVehiculo();
 
             int totalReservas = reserva.getCantidad_pasajeros_reservada();
             int cod_reserva = reserva.getCodigo_reserva();
             String datosViaje = formatters.formatDatosViaje(viaje);
-            String datosChofer = formatters.formatDatosChofer(chofer, viaje.getVehiculo() != null ? viaje.getVehiculo().getPatente() : null);
+            String datosChofer = formatters.formatDatosChofer(chofer, vehiculo);
             String datosPasajero = formatters.formatDatosPasajero(reserva.getPasajero(),reserva.getCantidad_pasajeros_reservada());
 
             mailService.notificarReservaRealizadaUsuario(
@@ -265,28 +267,12 @@ public class CRUDreservas extends HttpServlet {
         try {
             Viaje viaje = reserva.getViaje();
             Usuario chofer = viaje.getConductor();
-            if (chofer == null) {
-                logger.warn("Conductor es null en viaje ID: {}, obteniendo de la base de datos", viaje.getIdViaje());
-                
-                Viaje viajeCompleto = viajeController.getOne(viaje.getIdViaje());
-                if (viajeCompleto != null && viajeCompleto.getConductor() != null) {
-                    chofer = viajeCompleto.getConductor();
-                    viaje.setConductor(chofer); 
-                } else {
-                    logger.error("No se pudo obtener el conductor para viaje ID: {}", viaje.getIdViaje());
-                    return; 
-                }
-            }
-            
-            if (chofer == null || chofer.getCorreo() == null) {
-                logger.error("No se puede enviar notificación: conductor o correo es null para viaje ID: {}", viaje.getIdViaje());
-                return;
-            }
+            Vehiculo vehiculo = viaje.getVehiculo();
 
             int nuevoTotalReservas = reserva.getCantidad_pasajeros_reservada();
 
             String datosViaje = formatters.formatDatosViaje(viaje);
-            String datosChofer = formatters.formatDatosChofer(chofer, viaje.getVehiculo() != null ? viaje.getVehiculo().getPatente() : null);
+            String datosChofer = formatters.formatDatosChofer(chofer, vehiculo);
             String datosPasajero = formatters.formatDatosPasajero(reserva.getPasajero(),reserva.getCantidad_pasajeros_reservada());
 
 

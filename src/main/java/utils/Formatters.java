@@ -1,6 +1,7 @@
 package utils;
 
 import entidades.Usuario;
+import entidades.Vehiculo;
 import entidades.Viaje;
 
 public class Formatters {
@@ -33,7 +34,7 @@ public class Formatters {
     /**
      * Formatea los datos de un chofer para emails y notificaciones
      */
-    public String formatDatosChofer(Usuario chofer, String patente) {
+    public String formatDatosChofer(Usuario chofer,  Vehiculo vehiculo) {
         if (chofer == null) {
             return "Información del chofer no disponible";
         }
@@ -42,11 +43,17 @@ public class Formatters {
                 + (chofer.getApellido() != null ? " " + chofer.getApellido() : "");
         String telefono = chofer.getTelefono() != null ? chofer.getTelefono() : "No especificado";
         String correo = chofer.getCorreo() != null ? chofer.getCorreo() : "No especificado";
-        String vehiculo = patente != null ? patente : "No especificado";
+        String vehiculoInfo = "No especificado";
+        if (vehiculo != null && vehiculo.getPatente() != null) {
+            vehiculoInfo = vehiculo.getPatente();
+            if (vehiculo.getModelo() != null) {
+                vehiculoInfo += " (" + vehiculo.getModelo() + ")";
+            }
+        }
 
         return String.format(
                 "Nombre: %s<br>Teléfono: %s<br>Email: %s<br>Vehículo: %s",
-                nombreCompleto, telefono, correo, vehiculo
+                nombreCompleto, telefono, correo, vehiculoInfo
         );
     }
 
