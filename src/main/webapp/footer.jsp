@@ -1,11 +1,5 @@
-<div class="container-fluid p-0">
-    <footer class="bg-primary shadow-sm">
-        <div class="footer-container">
-            <p>&copy; 2024 SharedTrip. Todos los derechos reservados.</p>
-            <p><a href="#">Pol�tica de Privacidad</a> | <a href="#">T�rminos de Servicio</a></p>
-        </div>
-    </footer>
-</div>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+         pageEncoding="UTF-8" %>
 
 <style>
     footer {
@@ -39,3 +33,11 @@
         text-decoration: underline;
     }
 </style>
+
+<div class="container-fluid p-0">
+    <footer class="bg-primary shadow-sm">
+        <div class="footer-container">
+            <p>&copy; 2025 SharedTrip. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+</div>

@@ -1,3 +1,5 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+         pageEncoding="UTF-8" %>
 <%@ page import="entidades.Usuario, entidades.Rol" %>
 <head>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
@@ -85,7 +87,7 @@
 
                     <li class="nav-item">
                         <a class="nav-link" href="<%= request.getContextPath() %>/vehiculos">
-                            <i class="bi bi-car-front-fill me-1"></i>Vehiculos
+                            <i class="bi bi-car-front-fill me-1"></i>Vehículos
                         </a>
                     </li>
                     <% } else { %>
@@ -102,7 +104,7 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="<%= request.getContextPath() %>/vehiculos">
-                            <i class="bi bi-truck me-1"></i>Mis Vehiculos
+                            <i class="bi bi-truck me-1"></i>Mis Vehículos
                         </a>
                     </li>
 
@@ -149,7 +151,7 @@
                                 <form action="auth" method="POST">
                                     <input type="hidden" name="action" value="logout">
                                     <button type="submit" class="dropdown-item text-danger">
-                                        <i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesion
+                                        <i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesión
                                     </button>
                                 </form>
                             </li>

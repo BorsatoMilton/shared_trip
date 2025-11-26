@@ -21,6 +21,7 @@
             display: flex;
             flex-direction: column;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa !important;
         }
 
         .main-content {
@@ -281,12 +282,11 @@
                     <div class="col">
                         <div class="card h-100 shadow-sm">
                             <div class="card-body d-flex flex-column">
-                                <!-- Destino -->
+
                                 <h5 class="card-title">
                                     <i class="fas fa-map-marker-alt me-2"></i><%=viaje.getDestino()%>
                                 </h5>
 
-                                <!-- Información del viaje -->
                                 <div class="trip-info">
                                     <div class="info-item">
                                         <i class="fas fa-play-circle"></i>
@@ -348,7 +348,6 @@
                                     </div>
                                 </div>
 
-                                <!-- Lugares disponibles -->
                                 <div class="lugares-badge <%=badgeClass%>">
                                     <i class="fas fa-chair me-2"></i>
                                     <%=lugaresDisponibles%> lugar<%=lugaresDisponibles != 1 ? "es" : ""%> disponible<%=lugaresDisponibles != 1 ? "s" : ""%>
@@ -411,15 +410,15 @@
     </div>
 </div>
 
-<div class="row align-items-end" style="min-height: 10vh">
+<div class="row align-items-end">
     <div class="col">
         <jsp:include page="footer.jsp"></jsp:include>
     </div>
 </div>
 
-<script src="js/notificacionesTiempo.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
+<script src="<%= request.getContextPath() %>/js/notificacionesTiempo.js"></script>
 </body>
 </html>

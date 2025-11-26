@@ -1,9 +1,6 @@
-<%@page import="java.time.LocalDateTime" %>
-<%@page import="java.sql.Date" %>
+<%@page import="java.util.Date" %>
 <%@ page import="entidades.Reserva" %>
 <%@ page import="java.util.LinkedList" %>
-<%@ page import="entidades.Viaje" %>
-<%@ page import="entidades.Usuario" %>
 
 <%@ page language="java" contentType="text/html; charset=UTF-8"
          pageEncoding="UTF-8" %>
@@ -15,15 +12,20 @@
     <title>Mis Reservas</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <link
-            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-            rel="stylesheet">
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
     <style>
-        .text-black {
-            color: black !important;
+        .table-hover tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .action-buttons .btn {
+            padding: 0.375rem 0.75rem;
+        }
+
+        .scrollable-table {
+            overflow-x: auto;
         }
 
         .main-content {
@@ -37,27 +39,30 @@
             display: flex;
             flex-direction: column;
         }
+
+        .card-header {
+            background: linear-gradient(45deg, #3f51b5, #2196f3);
+            color: white;
+        }
     </style>
 </head>
 
 <body>
-<div class="container-fluid p-0"></div>
-<div class="row align-items-start" style="height: 10vh">
-    <div class="col">
-        <jsp:include page="header.jsp"></jsp:include>
+<div class="container-fluid p-0">
+    <div class="row align-items-start" style="height: 10vh">
+        <div class="col">
+            <jsp:include page="header.jsp"></jsp:include>
+        </div>
     </div>
 </div>
 
 <div class="main-content">
     <div class="container-fluid p-0">
-
-
         <main class="container mt-4">
             <div class="card shadow-lg">
-                <div
-                        class="card-header d-flex justify-content-between align-items-center">
+                <div class="card-header d-flex justify-content-between align-items-center">
                     <h3 class="mb-0">
-                        <i class="bi bi-people-fill me-2"></i>Administración de Reservas
+                        <i class="bi bi-bookmark-fill me-2"></i>Administración de Reservas
                     </h3>
                 </div>
 
@@ -66,8 +71,7 @@
                         String mensaje = (String) request.getAttribute("mensaje");
                         if (mensaje != null) {
                     %>
-                    <div class="alert alert-info alert-dismissible fade show"
-                         role="alert">
+                    <div class="alert alert-info alert-dismissible fade show" role="alert">
                         <%=mensaje%>
                         <button type="button" class="btn-close" data-bs-dismiss="alert"
                                 aria-label="Close"></button>
@@ -79,8 +83,7 @@
                         String error = (String) request.getAttribute("error");
                         if (error != null) {
                     %>
-                    <div class="alert alert-danger alert-dismissible fade show"
-                         role="alert">
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
                         <%=error%>
                         <button type="button" class="btn-close" data-bs-dismiss="alert"
                                 aria-label="Close"></button>
@@ -100,7 +103,7 @@
                                 <th scope="col">Total</th>
                                 <th scope="col">Estado</th>
                                 <th scope="col">Código Reserva</th>
-                                <th scope="col">Acciones</th>
+                                <th scope="col" class="text-end">Acciones</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -108,39 +111,31 @@
                                 LinkedList<Reserva> reservas = (LinkedList<Reserva>) request.getSession().getAttribute("misreservas");
                                 if (reservas != null && !reservas.isEmpty()) {
                                     for (Reserva reserva : reservas) {
-
+                                        Date hoy = new Date();
+                                        boolean deshabilitar = reserva.isReserva_cancelada()
+                                                || "CONFIRMADA".equals(reserva.getEstado())
+                                                || reserva.getViaje().getFecha().before(hoy);
                             %>
                             <tr class="align-middle">
-                                <td><%= reserva.getViaje().getOrigen() %>
-                                </td>
-                                <td><%= reserva.getViaje().getDestino() %>
-                                </td>
-                                <td><%= reserva.getViaje().getFecha() %>
-                                </td>
-                                <td><%= reserva.getCantidad_pasajeros_reservada()%>
-                                </td>
+                                <td><%= reserva.getViaje().getOrigen() %></td>
+                                <td><%= reserva.getViaje().getDestino() %></td>
+                                <td><%= reserva.getViaje().getFecha() %></td>
+                                <td><%= reserva.getCantidad_pasajeros_reservada()%></td>
                                 <td>
                                     $<%= reserva.getViaje().getPrecio_unitario() * reserva.getCantidad_pasajeros_reservada()%>
                                 </td>
-                                <td><%= reserva.getEstado() %>
-                                </td>
-                                <td><%= reserva.getCodigo_reserva()%>
-                                </td>
+                                <td><%= reserva.getEstado() %></td>
+                                <td><%= reserva.getCodigo_reserva()%></td>
                                 <td class="text-end action-buttons">
-                                    <form action="reservas" method="POST">
+                                    <form action="reservas" method="POST" class="d-inline">
                                         <input type="hidden" name="action" value="cancelar">
-                                        <input type="hidden" name="reservaId"
-                                               value="<%= reserva.getIdReserva() %>">
-
-                                        <input type="hidden" name="viajeId"
-                                               value="<%= reserva.getViaje().getIdViaje() %>">
-                                        <button type="submit" class="btn btn-danger"
-                                                <% if (reserva.isReserva_cancelada() || "CONFIRMADA".equals(reserva.getEstado())) { %>
-                                                disabled <% } %>><i class="bi bi-x-circle-fill"></i>
+                                        <input type="hidden" name="reservaId" value="<%= reserva.getIdReserva() %>">
+                                        <input type="hidden" name="viajeId" value="<%= reserva.getViaje().getIdViaje() %>">
+                                        <button type="submit" class="btn btn-danger btn-sm" <%= deshabilitar ? "disabled" : "" %>>
+                                            <i class="bi bi-x-circle-fill"></i>
                                         </button>
                                     </form>
                                 </td>
-
                             </tr>
                             <%
                                 }
@@ -161,15 +156,6 @@
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-        crossorigin="anonymous"></script>
-</body>
-
-<script
-        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="js/notificacionesTiempo.js"></script>
-
 <footer>
     <div class="row align-items-end" style="height: 10vh">
         <div class="col">
@@ -177,4 +163,10 @@
         </div>
     </div>
 </footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+<script src="<%= request.getContextPath() %>/js/notificacionesTiempo.js"></script>
+</body>
 </html>

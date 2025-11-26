@@ -255,7 +255,7 @@
                            class="form-control"
                            id="origen"
                            name="origen"
-                           placeholder="¿De donde sales?"
+                           placeholder="¿Desde donde?"
                            required
                            autocomplete="off"
                            aria-autocomplete="list"
@@ -276,7 +276,7 @@
                            class="form-control"
                            id="destino"
                            name="destino"
-                           placeholder="¿A donde vas?"
+                           placeholder="¿Hasta donde?"
                            required
                            autocomplete="off"
                            aria-autocomplete="list"
@@ -311,10 +311,5 @@
         </div>
     </form>
 </div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-        crossorigin="anonymous">
-</script>
 
 <script src="<%= request.getContextPath() %>/js/buscadorMunicipios.js"></script>
