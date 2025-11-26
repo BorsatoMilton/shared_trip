@@ -12,6 +12,11 @@ import logic.ViajeController;
 import utils.Formatters;
 import utils.MailService;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import data.ViajeDAO;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -29,6 +34,9 @@ public class CRUDreservas extends HttpServlet {
     ViajeController viajeController = new ViajeController();
     MailService mailService = new MailService();
     private final Formatters formatters = new Formatters();
+    private static final Logger logger = LoggerFactory.getLogger(ViajeDAO.class);
+
+    
 
 
     public CRUDreservas() {
@@ -257,6 +265,23 @@ public class CRUDreservas extends HttpServlet {
         try {
             Viaje viaje = reserva.getViaje();
             Usuario chofer = viaje.getConductor();
+            if (chofer == null) {
+                logger.warn("Conductor es null en viaje ID: {}, obteniendo de la base de datos", viaje.getIdViaje());
+                
+                Viaje viajeCompleto = viajeController.getOne(viaje.getIdViaje());
+                if (viajeCompleto != null && viajeCompleto.getConductor() != null) {
+                    chofer = viajeCompleto.getConductor();
+                    viaje.setConductor(chofer); 
+                } else {
+                    logger.error("No se pudo obtener el conductor para viaje ID: {}", viaje.getIdViaje());
+                    return; 
+                }
+            }
+            
+            if (chofer == null || chofer.getCorreo() == null) {
+                logger.error("No se puede enviar notificación: conductor o correo es null para viaje ID: {}", viaje.getIdViaje());
+                return;
+            }
 
             int nuevoTotalReservas = reserva.getCantidad_pasajeros_reservada();
 
@@ -285,55 +310,5 @@ public class CRUDreservas extends HttpServlet {
             System.err.println("Error preparando notificaciones de cancelación: " + e.getMessage());
         }
     }
-
-//    private String formatDatosViaje(Viaje viaje) {
-//        if (viaje == null) {
-//            return "Información del viaje no disponible";
-//        }
-//
-//        String origen = viaje.getOrigen() != null ? viaje.getOrigen() : "No especificado";
-//        String destino = viaje.getDestino() != null ? viaje.getDestino() : "No especificado";
-//        String fecha = viaje.getFecha() != null ? viaje.getFecha().toString() : "No especificado";
-//        String precio = viaje.getPrecio_unitario() != null ? String.valueOf(viaje.getPrecio_unitario()) : "No especificado";
-//        String lugar_salida = viaje.getLugar_salida() != null ? viaje.getLugar_salida() : "No especificado";
-//
-//        return String.format(
-//                "Origen: %s<br>Destino: %s<br>Lugar de Salida: %s<br>Fecha: %s<br>Precio por asiento: $%s",
-//                origen, destino, lugar_salida, fecha, precio
-//        );
-//    }
-
-//    private String formatDatosChofer(Usuario chofer, String patente) {
-//        if (chofer == null) {
-//            return "Información del chofer no disponible";
-//        }
-//
-//        String nombreCompleto = (chofer.getNombre() != null ? chofer.getNombre() : "No especificado")
-//                + (chofer.getApellido() != null ? " " + chofer.getApellido() : "");
-//        String telefono = chofer.getTelefono() != null ? chofer.getTelefono() : "No especificado";
-//        String correo = chofer.getCorreo() != null ? chofer.getCorreo() : "No especificado";
-//        String vehiculo = patente != null ? patente : "No especificado";
-//
-//        return String.format(
-//                "Nombre: %s<br>Teléfono: %s<br>Email: %s<br>Vehículo: %s",
-//                nombreCompleto, telefono, correo, vehiculo
-//        );
-//    }
-
-//    private String formatDatosPasajero(Usuario pasajero, int cantPasajeros) {
-//        if (pasajero == null) {
-//            return String.format("Asientos reservados: %d", cantPasajeros);
-//        }
-//
-//        String nombre = pasajero.getNombre() != null ? pasajero.getNombre() : "No especificado";
-//        String apellido = pasajero.getApellido() != null ? pasajero.getApellido() : "";
-//        String telefono = pasajero.getTelefono() != null ? pasajero.getTelefono() : "No especificado";
-//        String correo = pasajero.getCorreo() != null ? pasajero.getCorreo() : "No especificado";
-//
-//        return String.format(
-//                "Nombre: %s %s<br>Teléfono: %s<br>Email: %s<br>Asientos reservados: %d",
-//                nombre, apellido, telefono, correo, cantPasajeros
-//        );
-//    }
 
 }

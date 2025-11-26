@@ -12,7 +12,6 @@ public class ReservaDAO {
     private static final Logger logger = LoggerFactory.getLogger(ReservaDAO.class);
 
     public ReservaDAO() {
-        // Constructor vacío
     }
 
     public LinkedList<Reserva> getAll() {
@@ -47,18 +46,24 @@ public class ReservaDAO {
         logger.debug("Buscando reserva con ID: {}", id_reserva);
         Reserva reserva = null;
         
+        String query = "SELECT r.*, v.id_viaje, v.fecha, v.origen, v.destino " +
+                       "FROM reservas r " +
+                       "INNER JOIN viajes v ON r.id_viaje = v.id_viaje " +
+                       "INNER JOIN usuarios u ON u.id_usuario = r.id_pasajero_reserva " +
+                       "WHERE r.id_reserva = ?";
+        
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
         
         try {
             conn = ConnectionDB.getInstancia().getConn();
-            stmt = conn.prepareStatement("SELECT * FROM reservas WHERE id_reserva = ?");
+            stmt = conn.prepareStatement(query);
             stmt.setInt(1, id_reserva);
 
             rs = stmt.executeQuery();
             if (rs.next()) {
-                reserva = mapReserva(rs);
+                reserva = mapReservaWithViaje(rs); 
                 logger.debug("Reserva encontrada: ID {}", id_reserva);
             } else {
                 logger.warn("Reserva no encontrada: ID {}", id_reserva);
@@ -78,18 +83,24 @@ public class ReservaDAO {
         logger.debug("Buscando reserva con token: {}", token);
         Reserva reserva = null;
         
+        String query = "SELECT r.*, v.id_viaje, v.fecha, v.origen, v.destino " +
+                       "FROM reservas r " +
+                       "INNER JOIN viajes v ON r.id_viaje = v.id_viaje " +
+                       "INNER JOIN usuarios u ON u.id_usuario = r.id_pasajero_reserva " +
+                       "WHERE r.feedback_token = ?";
+        
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
         
         try {
             conn = ConnectionDB.getInstancia().getConn();
-            stmt = conn.prepareStatement("SELECT * FROM reservas WHERE feedback_token = ?");
+            stmt = conn.prepareStatement(query);
             stmt.setString(1, token);
 
             rs = stmt.executeQuery();
             if (rs.next()) {
-                reserva = mapReserva(rs);
+                reserva = mapReservaWithViaje(rs);
                 logger.debug("Reserva encontrada con token: {}", token);
             } else {
                 logger.warn("Reserva no encontrada con token: {}", token);
@@ -104,6 +115,7 @@ public class ReservaDAO {
         }
         return reserva;
     }
+
 
     public int obtenerCantidad(int idReserva) {
         logger.debug("Obteniendo cantidad de pasajeros para reserva ID: {}", idReserva);
@@ -245,8 +257,10 @@ public class ReservaDAO {
         try {
             conn = ConnectionDB.getInstancia().getConn();
             stmt = conn.prepareStatement(
-                "SELECT r.* FROM reservas r " +
+                "SELECT r.*, v.id_viaje, v.fecha, v.origen, v.destino " +
+                "FROM reservas r " +
                 "INNER JOIN viajes v ON r.id_viaje = v.id_viaje " +
+                "INNER JOIN usuarios u ON u.id_usuario = r.id_pasajero_reserva " +
                 "WHERE v.fecha = ? " +
                 "AND r.estado = 'CONFIRMADA' " +
                 "AND r.reserva_cancelada = false");
@@ -256,7 +270,7 @@ public class ReservaDAO {
 
             rs = stmt.executeQuery();
             while (rs.next()) {
-                reservas.add(mapReserva(rs));
+                reservas.add(mapReservaWithViaje(rs)); 
             }
             logger.info("Obtenidas {} reservas para feedback", reservas.size());
 
@@ -456,7 +470,6 @@ public class ReservaDAO {
     private Reserva mapFullReservaFromJoin(ResultSet rs) throws SQLException {
         Reserva reserva = new Reserva();
         
-        // Datos básicos de la reserva
         reserva.setIdReserva(rs.getInt("id_reserva"));
         reserva.setFecha_reserva(rs.getString("fecha_reserva"));
         reserva.setCantidad_pasajeros_reservada(rs.getInt("cantidad_pasajeros_reservada"));
@@ -465,7 +478,6 @@ public class ReservaDAO {
         reserva.setCodigo_reserva(rs.getInt("codigo_reserva"));
         reserva.setFeedback_token(rs.getString("feedback_token"));
         
-        // Viaje COMPLETO desde el JOIN
         Viaje viaje = new Viaje();
         viaje.setIdViaje(rs.getInt("id_viaje"));
         viaje.setFecha(rs.getDate("fecha"));
@@ -476,12 +488,10 @@ public class ReservaDAO {
         viaje.setCancelado(rs.getBoolean("cancelado"));
         viaje.setLugar_salida(rs.getString("lugar_salida"));
         
-        // Vehículo básico (solo ID para evitar llamadas a DAO)
         Vehiculo vehiculo = new Vehiculo();
         vehiculo.setId_vehiculo(rs.getInt("id_vehiculo_viaje"));
         viaje.setVehiculo(vehiculo);
         
-        // Conductor COMPLETO desde el JOIN
         Usuario conductor = new Usuario();
         conductor.setIdUsuario(rs.getInt("conductor_id"));
         conductor.setNombre(rs.getString("conductor_nombre"));
@@ -490,7 +500,6 @@ public class ReservaDAO {
         conductor.setTelefono(rs.getString("conductor_telefono"));
         viaje.setConductor(conductor);
         
-        // Pasajero COMPLETO desde el JOIN
         Usuario pasajero = new Usuario();
         pasajero.setIdUsuario(rs.getInt("pasajero_id"));
         pasajero.setNombre(rs.getString("pasajero_nombre"));
@@ -513,7 +522,53 @@ public class ReservaDAO {
         reserva.setEstado(rs.getString("estado"));
         reserva.setCodigo_reserva(rs.getInt("codigo_reserva"));
         reserva.setFeedback_token(rs.getString("feedback_token"));
+        
+        Usuario pasajero = new Usuario();
+        pasajero.setIdUsuario(rs.getInt("id_pasajero_reserva"));
+        reserva.setPasajero(pasajero);
+        
+        Viaje viaje = new Viaje();
+        viaje.setIdViaje(rs.getInt("id_viaje"));
+        reserva.setViaje(viaje);
+        
         return reserva;
+    }
+    
+    /**
+     * Mapeo para reservas que necesitan datos básicos del viaje
+     */
+    private Reserva mapReservaWithViaje(ResultSet rs) throws SQLException {
+        Reserva reserva = new Reserva();
+        reserva.setIdReserva(rs.getInt("id_reserva"));
+        reserva.setFecha_reserva(rs.getString("fecha_reserva"));
+        reserva.setCantidad_pasajeros_reservada(rs.getInt("cantidad_pasajeros_reservada"));
+        reserva.setReserva_cancelada(rs.getBoolean("reserva_cancelada"));
+        reserva.setEstado(rs.getString("estado"));
+        reserva.setCodigo_reserva(rs.getInt("codigo_reserva"));
+        reserva.setFeedback_token(rs.getString("feedback_token"));
+        
+        Usuario pasajero = new Usuario();
+        pasajero.setIdUsuario(rs.getInt("id_pasajero_reserva"));
+        reserva.setPasajero(pasajero);
+        
+        Viaje viaje = new Viaje();
+        viaje.setIdViaje(rs.getInt("id_viaje"));
+        viaje.setFecha(rs.getDate("fecha"));
+        viaje.setOrigen(rs.getString("origen"));
+        viaje.setDestino(rs.getString("destino"));
+        reserva.setViaje(viaje);
+        
+        return reserva;
+    }
+
+    // Método auxiliar para verificar si una columna existe en el ResultSet
+    private boolean hasColumn(ResultSet rs, String columnName) {
+        try {
+            rs.findColumn(columnName);
+            return true;
+        } catch (SQLException e) {
+            return false;
+        }
     }
 
     // ========== MÉTODOS AUXILIARES ==========
