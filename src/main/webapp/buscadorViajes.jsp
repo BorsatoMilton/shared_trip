@@ -1,3 +1,5 @@
+﻿<%@ page language="java" contentType="text/html; charset=UTF-8"
+         pageEncoding="UTF-8" %>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
       rel="stylesheet"
       integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
@@ -17,7 +19,7 @@
         margin: 1rem auto;
         border-radius: 20px;
         max-width: 1200px;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        box-shadow: 5px 10px 5px rgba(0, 0, 0, 0.4);
     }
 
     .busqueda-container h3 {
@@ -244,7 +246,6 @@
 
     <form action="buscar" method="get" id="formBusqueda">
         <div class="row g-4">
-            <!-- Origen -->
             <div class="col-12 col-md-4">
                 <label for="origen" class="form-label">
                     <i class="fas fa-play-circle"></i>Origen
@@ -266,7 +267,6 @@
                 </div>
             </div>
 
-            <!-- Destino -->
             <div class="col-12 col-md-4">
                 <label for="destino" class="form-label">
                     <i class="fas fa-map-marker-alt"></i>Destino
@@ -288,7 +288,7 @@
                 </div>
             </div>
 
-            <!-- Fecha -->
+
             <div class="col-12 col-md-4">
                 <label for="fecha" class="form-label">
                     <i class="fas fa-calendar-alt"></i>Fecha de Viaje
@@ -300,7 +300,7 @@
             </div>
         </div>
 
-        <!-- Botones -->
+
         <div class="botones-grupo">
             <a href="<%= request.getContextPath() %>/" class="btn-buscar-limpiar btn-limpiar">
                 <i class="fas fa-redo-alt"></i>Limpiar

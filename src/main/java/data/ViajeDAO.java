@@ -45,42 +45,76 @@ public class ViajeDAO {
 
     public LinkedList<Viaje> getAllBySearch(String origen, String destino, String fecha) {
         LinkedList<Viaje> viajes = new LinkedList<>();
-        String query = "SELECT * FROM viajes WHERE origen = ? AND destino = ? AND fecha = ?";
+
+        if (origen == null || origen.trim().isEmpty() ||
+                destino == null || destino.trim().isEmpty()) {
+            logger.warn("Parámetros de búsqueda incompletos");
+            return viajes;
+        }
+
+        String query;
+
+        java.sql.Date fechaSql = null;
+        boolean tieneFecha = false;
+
+        if (fecha != null && !fecha.trim().isEmpty()) {
+            try {
+                fechaSql = java.sql.Date.valueOf(fecha.trim());
+                tieneFecha = true;
+            } catch (IllegalArgumentException e) {
+                logger.warn("Formato de fecha inválido: {}. Se ignorará el filtro de fecha.", fecha);
+            }
+        }
+
+        if (tieneFecha && fechaSql != null) {
+            query = "SELECT v.* FROM viajes v " +
+                    "INNER JOIN usuarios u ON u.id_usuario = v.id_conductor " +
+                    "WHERE v.origen COLLATE utf8mb4_general_ci LIKE ? " +
+                    "AND v.destino COLLATE utf8mb4_general_ci LIKE ? " +
+                    "AND v.fecha = ? " +
+                    "AND v.cancelado = 0 " +
+                    "AND u.fecha_baja IS NULL " +
+                    "ORDER BY v.fecha ASC, v.lugares_disponibles DESC";
+        } else {
+            query = "SELECT v.* FROM viajes v " +
+                    "INNER JOIN usuarios u ON u.id_usuario = v.id_conductor " +
+                    "WHERE v.origen COLLATE utf8mb4_general_ci LIKE ? " +
+                    "AND v.destino COLLATE utf8mb4_general_ci LIKE ? " +
+                    "AND v.fecha >= CURRENT_DATE " +
+                    "AND v.cancelado = 0 " +
+                    "AND u.fecha_baja IS NULL " +
+                    "ORDER BY v.fecha ASC, v.lugares_disponibles DESC";
+        }
+
         Connection conn = null;
 
         try {
             conn = ConnectionDB.getInstancia().getConn();
             try (PreparedStatement stmt = conn.prepareStatement(query)) {
-                stmt.setString(1, origen);
-                stmt.setString(2, destino);
+                stmt.setString(1, origen.trim());
+                stmt.setString(2, destino.trim());
 
-                java.sql.Date fechaSql;
-                if (fecha != null && !fecha.isEmpty()) {
-                    try {
-                        fechaSql = java.sql.Date.valueOf(fecha);
-                    } catch (IllegalArgumentException e) {
-                        logger.error("Formato de fecha inválido: {}. Usando fecha actual.", fecha, e);
-                        fechaSql = java.sql.Date.valueOf(LocalDate.now());
-                    }
-                } else {
-                    fechaSql = java.sql.Date.valueOf(LocalDate.now());
+                if (tieneFecha && fechaSql != null) {
+                    stmt.setDate(3, fechaSql);
                 }
-                stmt.setDate(3, fechaSql);
 
                 try (ResultSet rs = stmt.executeQuery()) {
                     while (rs.next()) {
                         viajes.add(mapViaje(rs, true));
                     }
                 }
+                logger.info("Búsqueda realizada - origen: {}, destino: {}, fecha: {}. Resultados encontrados: {}",
+                        origen, destino, fecha, viajes.size());
             }
         } catch (SQLException e) {
-            logger.error("Error al buscar viajes por origen: {}, destino: {}, fecha: {}", origen, destino, fecha, e);
+            logger.error("Error al buscar viajes - origen: {}, destino: {}, fecha: {}",
+                    origen, destino, fecha, e);
         } finally {
             ConnectionDB.getInstancia().releaseConn();
         }
+
         return viajes;
     }
-
     public Viaje getByViaje(int id_viaje) {
         Viaje viaje = null;
         String query = "SELECT * FROM viajes WHERE id_viaje = ?";

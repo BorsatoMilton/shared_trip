@@ -1,7 +1,7 @@
 <%@ page import="entidades.Viaje" %>
 <%@ page import="java.util.LinkedList" %>
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-         pageEncoding="ISO-8859-1" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+         pageEncoding="UTF-8" %>
 
 <!DOCTYPE html>
 <html lang="es">
@@ -17,7 +17,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body {
-            background-color: #F8F9FA;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -57,13 +56,13 @@
             margin-top: 2.5rem;
             margin-bottom: 2rem;
             text-align: center;
-            color: white;
+            color: #0A58CA;
         }
 
         .section-header h2 {
             font-size: 2.5rem;
             font-weight: 700;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            text-shadow: 0 8px 12px rgba(0, 0, 0, 0.4);
         }
 
         .trip-info {
@@ -174,14 +173,29 @@
 
         .no-viajes {
             text-align: center;
-            padding: 3rem 1rem;
-            color: white;
+            padding: 4rem 2rem;
+            background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(248,249,250,0.95) 100%);
+            border-radius: 16px;
+            margin: 2rem auto;
+            max-width: 500px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         }
 
         .no-viajes i {
             font-size: 4rem;
             margin-bottom: 1rem;
-            opacity: 0.7;
+            color: #667eea;
+        }
+
+        .no-viajes h4 {
+            color: #212529;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .no-viajes p {
+            color: #666;
+            margin: 0;
         }
 
         .alert {
@@ -197,6 +211,11 @@
 
             .section-header h2 {
                 font-size: 1.8rem;
+            }
+
+            .no-viajes {
+                margin: 1rem;
+                padding: 2rem 1rem;
             }
         }
     </style>
@@ -267,7 +286,7 @@
                                     <i class="fas fa-map-marker-alt me-2"></i><%=viaje.getDestino()%>
                                 </h5>
 
-                                <!-- Información del viaje -->
+                                <!-- InformaciÃ³n del viaje -->
                                 <div class="trip-info">
                                     <div class="info-item">
                                         <i class="fas fa-play-circle"></i>
@@ -299,7 +318,6 @@
                                     </div>
                                 </div>
 
-                                <!-- Información del conductor -->
                                 <div class="conductor-section">
                                     <div class="conductor-name">
                                         <i class="fas fa-user-circle me-2" style="color: #667eea;"></i>
@@ -308,7 +326,7 @@
                                     <div class="rating-container">
                                         <span class="stars">
                                             <%
-                                                double promedio = viaje.getConductor().getPormedio_puntuacion();
+                                                double promedio = viaje.getConductor().getPromedio_puntuacion();
                                                 int estrellas = (int) Math.round(promedio);
                                                 for (int i = 0; i < 5; i++) {
                                                     if (i < estrellas) {
@@ -325,7 +343,7 @@
                                         </span>
                                         <span class="rating-text">
                                             <%=String.format("%.1f", promedio)%>
-                                            (<%=viaje.getConductor().getCantidad_que_puntuaron()%> reseñas)
+                                            (<%=viaje.getConductor().getCantidad_que_puntuaron()%> reseÃ±as)
                                         </span>
                                     </div>
                                 </div>
@@ -336,7 +354,6 @@
                                     <%=lugaresDisponibles%> lugar<%=lugaresDisponibles != 1 ? "es" : ""%> disponible<%=lugaresDisponibles != 1 ? "s" : ""%>
                                 </div>
 
-                                <!-- Botón de reserva -->
                                 <div class="mt-auto">
                                     <%
                                         if (lugaresDisponibles > 0) {
@@ -378,11 +395,11 @@
                         }
                     } else {
                     %>
-                    <div class="col-12">
+                    <div class="col-12 d-flex justify-content-center">
                         <div class="no-viajes">
                             <i class="fas fa-search"></i>
                             <h4>No hay viajes disponibles</h4>
-                            <p>Intenta ajustar tus criterios de búsqueda</p>
+                            <p>Intenta ajustar tus criterios de bÃºsqueda</p>
                         </div>
                     </div>
                     <%

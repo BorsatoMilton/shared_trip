@@ -85,7 +85,7 @@ public class Usuario {
         this.telefono = telefono;
     }
 
-    public double getPormedio_puntuacion() {
+    public double getPromedio_puntuacion() {
         return promedio_puntuacion;
     }
 
