@@ -24,6 +24,7 @@ import logic.ReservaController;
 import logic.UserController;
 import logic.VehiculoController;
 import logic.ViajeController;
+import utils.Formatters;
 import utils.MailService;
 
 @WebServlet("/viajes")
@@ -34,6 +35,7 @@ public class CRUDviajes extends HttpServlet {
     private final VehiculoController vehiculoCtrl = new VehiculoController();
     private final ReservaController reservaCtrl = new ReservaController();
     private final MailService mailService = new MailService();
+    private final Formatters formatters = new Formatters();
 
     public CRUDviajes() {
         super();
@@ -406,8 +408,9 @@ public class CRUDviajes extends HttpServlet {
 
             LinkedList<Reserva> reservas = reservaCtrl.getReservasPorViaje(viaje.getIdViaje());
 
-            String datosViaje = formatDatosViaje(viaje);
-            String datosChofer = formatDatosChofer(chofer, viaje.getVehiculo().getPatente());
+            String datosViaje = formatters.formatDatosViaje(viaje);
+            String datosChofer = formatters.formatDatosChofer(chofer, 
+                    viaje.getVehiculo() != null ? viaje.getVehiculo().getPatente() : null);
 
             int totalPasajeros = reservas.stream()
                     .mapToInt(Reserva::getCantidad_pasajeros_reservada)
@@ -440,39 +443,39 @@ public class CRUDviajes extends HttpServlet {
         }
     }
 
-    private String formatDatosViaje(Viaje viaje) {
-        if (viaje == null) {
-            return "Información del viaje no disponible";
-        }
+//    private String formatDatosViaje(Viaje viaje) {
+//        if (viaje == null) {
+//            return "Información del viaje no disponible";
+//        }
+//
+//        String origen = viaje.getOrigen() != null ? viaje.getOrigen() : "No especificado";
+//        String destino = viaje.getDestino() != null ? viaje.getDestino() : "No especificado";
+//        String fecha = viaje.getFecha() != null ? viaje.getFecha().toString() : "No especificado";
+//        String precio = viaje.getPrecio_unitario() != null ? String.valueOf(viaje.getPrecio_unitario()) : "No especificado";
+//        String lugar_salida = viaje.getLugar_salida() != null ? viaje.getLugar_salida() : "No especificado";
+//
+//        return String.format(
+//                "Origen: %s<br>Destino: %s<br>Lugar de Salida: %s<br>Fecha: %s<br>Precio por asiento: $%s",
+//                origen, destino, lugar_salida, fecha, precio
+//        );
+//    }
 
-        String origen = viaje.getOrigen() != null ? viaje.getOrigen() : "No especificado";
-        String destino = viaje.getDestino() != null ? viaje.getDestino() : "No especificado";
-        String fecha = viaje.getFecha() != null ? viaje.getFecha().toString() : "No especificado";
-        String precio = viaje.getPrecio_unitario() != null ? String.valueOf(viaje.getPrecio_unitario()) : "No especificado";
-        String lugar_salida = viaje.getLugar_salida() != null ? viaje.getLugar_salida() : "No especificado";
-
-        return String.format(
-                "Origen: %s<br>Destino: %s<br>Lugar de Salida: %s<br>Fecha: %s<br>Precio por asiento: $%s",
-                origen, destino, lugar_salida, fecha, precio
-        );
-    }
-
-    private String formatDatosChofer(Usuario chofer, String patente) {
-        if (chofer == null) {
-            return "Información del chofer no disponible";
-        }
-
-        String nombreCompleto = (chofer.getNombre() != null ? chofer.getNombre() : "No especificado")
-                + (chofer.getApellido() != null ? " " + chofer.getApellido() : "");
-        String telefono = chofer.getTelefono() != null ? chofer.getTelefono() : "No especificado";
-        String correo = chofer.getCorreo() != null ? chofer.getCorreo() : "No especificado";
-        String vehiculo = patente != null ? patente : "No especificado";
-
-        return String.format(
-                "Nombre: %s<br>Teléfono: %s<br>Email: %s<br>Vehículo: %s",
-                nombreCompleto, telefono, correo, vehiculo
-        );
-    }
+//    private String formatDatosChofer(Usuario chofer, String patente) {
+//        if (chofer == null) {
+//            return "Información del chofer no disponible";
+//        }
+//
+//        String nombreCompleto = (chofer.getNombre() != null ? chofer.getNombre() : "No especificado")
+//                + (chofer.getApellido() != null ? " " + chofer.getApellido() : "");
+//        String telefono = chofer.getTelefono() != null ? chofer.getTelefono() : "No especificado";
+//        String correo = chofer.getCorreo() != null ? chofer.getCorreo() : "No especificado";
+//        String vehiculo = patente != null ? patente : "No especificado";
+//
+//        return String.format(
+//                "Nombre: %s<br>Teléfono: %s<br>Email: %s<br>Vehículo: %s",
+//                nombreCompleto, telefono, correo, vehiculo
+//        );
+//    }
 
 
 
