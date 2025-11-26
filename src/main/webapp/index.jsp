@@ -321,7 +321,7 @@
                                 <div class="conductor-section">
                                     <div class="conductor-name">
                                         <i class="fas fa-user-circle me-2" style="color: #667eea;"></i>
-                                        <%=viaje.getConductor().getNombre()%>
+                                        <%=viaje.getConductor().getNombre() + " " + viaje.getConductor().getApellido()%>
                                     </div>
                                     <div class="rating-container">
                                         <span class="stars">

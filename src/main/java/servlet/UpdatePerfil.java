@@ -92,7 +92,7 @@ public class UpdatePerfil extends HttpServlet {
              System.out.println("Error en editarUsuario: " + e.getMessage());
          }
 
-         response.sendRedirect(request.getContextPath() + "/perfil");
+         request.getRequestDispatcher("perfil.jsp").forward(request, response);
      }
 
 
