@@ -3,7 +3,6 @@ package data;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.LinkedList;
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,413 +10,513 @@ import entidades.*;
 
 public class ReservaDAO {
     private static final Logger logger = LoggerFactory.getLogger(ReservaDAO.class);
-    private final ViajeDAO viajeDAO;
-    private final UserDAO usuarioDAO;
-    private final VehiculoDAO vehiculoDAO;
 
     public ReservaDAO() {
-        this.viajeDAO = new ViajeDAO();
-        this.usuarioDAO = new UserDAO();
-        this.vehiculoDAO = new VehiculoDAO();
+        // Constructor vacío
     }
 
     public LinkedList<Reserva> getAll() {
+        logger.debug("Obteniendo todas las reservas");
         LinkedList<Reserva> reservas = new LinkedList<>();
-        String query = "SELECT r.*, v.*, u.* FROM reservas r "
-                + "INNER JOIN viajes v ON r.id_viaje = v.id_viaje "
-                + "INNER JOIN usuarios u ON v.id_conductor = u.id_usuario";
-        try (Connection conn = ConnectionDB.getInstancia().getConn();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(query)) {
+        
+        Connection conn = null;
+        Statement stmt = null;
+        ResultSet rs = null;
+        
+        try {
+            conn = ConnectionDB.getInstancia().getConn();
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery("SELECT * FROM reservas");
 
             while (rs.next()) {
-                reservas.add(mapFullReserva(rs));
+                reservas.add(mapReserva(rs));
             }
-            logger.debug("Obtenidas {} reservas", reservas.size());
+            logger.info("Obtenidas {} reservas", reservas.size());
+            
         } catch (SQLException e) {
-            handleSQLException("Error al obtener reservas", e);
+            logger.error("Error al obtener todas las reservas - Estado: {} - Código: {}", 
+                        e.getSQLState(), e.getErrorCode(), e);
+        } finally {
+            closeResources(rs, stmt);
+            ConnectionDB.getInstancia().releaseConn();
         }
         return reservas;
     }
 
     public Reserva getByReserva(int id_reserva) {
+        logger.debug("Buscando reserva con ID: {}", id_reserva);
         Reserva reserva = null;
-        String query = "SELECT r.*, v.* FROM reservas r "
-                + "INNER JOIN viajes v ON r.id_viaje = v.id_viaje WHERE r.id_reserva = ?";
+        
         Connection conn = null;
-
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        
         try {
             conn = ConnectionDB.getInstancia().getConn();
-            try (PreparedStatement stmt = conn.prepareStatement(query)) {
-                stmt.setInt(1, id_reserva);
+            stmt = conn.prepareStatement("SELECT * FROM reservas WHERE id_reserva = ?");
+            stmt.setInt(1, id_reserva);
 
-                try (ResultSet rs = stmt.executeQuery()) {
-                    if (rs.next()) {
-                        reserva = mapReserva(rs);
-                    }
-                }
+            rs = stmt.executeQuery();
+            if (rs.next()) {
+                reserva = mapReserva(rs);
+                logger.debug("Reserva encontrada: ID {}", id_reserva);
+            } else {
+                logger.warn("Reserva no encontrada: ID {}", id_reserva);
             }
+            
         } catch (SQLException e) {
-            logger.error("Error al obtener Reserva con ID: {}", id_reserva, e);
+            logger.error("Error al obtener reserva ID {} - Estado: {} - Código: {}", 
+                        id_reserva, e.getSQLState(), e.getErrorCode(), e);
         } finally {
+            closeResources(rs, stmt);
             ConnectionDB.getInstancia().releaseConn();
         }
         return reserva;
     }
 
-
     public Reserva getByToken(String token) {
+        logger.debug("Buscando reserva con token: {}", token);
         Reserva reserva = null;
-        String query = "SELECT r.* FROM reservas r WHERE r.feedback_token = ?";
+        
         Connection conn = null;
-
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        
         try {
             conn = ConnectionDB.getInstancia().getConn();
-            try (PreparedStatement stmt = conn.prepareStatement(query)) {
-                stmt.setString(1, token);
+            stmt = conn.prepareStatement("SELECT * FROM reservas WHERE feedback_token = ?");
+            stmt.setString(1, token);
 
-                try (ResultSet rs = stmt.executeQuery()) {
-                    if (rs.next()) {
-                        reserva = mapReserva(rs);
-                    }
-                }
+            rs = stmt.executeQuery();
+            if (rs.next()) {
+                reserva = mapReserva(rs);
+                logger.debug("Reserva encontrada con token: {}", token);
+            } else {
+                logger.warn("Reserva no encontrada con token: {}", token);
             }
+            
         } catch (SQLException e) {
-            logger.error("Error al obtener Reserva con token: {}", token, e);
+            logger.error("Error al obtener reserva con token {} - Estado: {} - Código: {}", 
+                        token, e.getSQLState(), e.getErrorCode(), e);
         } finally {
+            closeResources(rs, stmt);
             ConnectionDB.getInstancia().releaseConn();
         }
         return reserva;
     }
 
     public int obtenerCantidad(int idReserva) {
-
-        String query = "SELECT cantidad_pasajeros_reservada FROM reservas WHERE id_reserva = ?";
-
-
-        try (Connection conn = ConnectionDB.getInstancia().getConn();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
-
+        logger.debug("Obteniendo cantidad de pasajeros para reserva ID: {}", idReserva);
+        
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        
+        try {
+            conn = ConnectionDB.getInstancia().getConn();
+            stmt = conn.prepareStatement("SELECT cantidad_pasajeros_reservada FROM reservas WHERE id_reserva = ?");
             stmt.setInt(1, idReserva);
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getInt("cantidad_pasajeros_reservada");
-                }
+
+            rs = stmt.executeQuery();
+            if (rs.next()) {
+                int cantidad = rs.getInt("cantidad_pasajeros_reservada");
+                logger.debug("Cantidad obtenida: {} para reserva ID: {}", cantidad, idReserva);
+                return cantidad;
+            } else {
+                logger.warn("Reserva no encontrada: ID {}", idReserva);
                 throw new DAOException("Reserva no encontrada con ID: " + idReserva);
             }
-
+            
         } catch (SQLException e) {
-            return handleSQLException("Error al obtener cantidad para reserva " + idReserva, e);
+            logger.error("Error al obtener cantidad para reserva ID {} - Estado: {} - Código: {}", 
+                        idReserva, e.getSQLState(), e.getErrorCode(), e);
+            throw new DAOException("Error al obtener cantidad para reserva", e);
         } finally {
+            closeResources(rs, stmt);
             ConnectionDB.getInstancia().releaseConn();
         }
     }
 
     public LinkedList<Reserva> getByUser(Usuario usuario) {
-        String query = "SELECT r.id_pasajero_reserva, r.id_reserva, r.fecha_reserva, r.estado, " +
-                       "r.cantidad_pasajeros_reservada, r.reserva_cancelada, r.codigo_reserva, " +
-                       "v.id_viaje, v.origen, v.destino, v.fecha, v.lugares_disponibles, v.precio_unitario, " +
-                       "v.id_vehiculo_viaje, " +
-                       "u.id_usuario, u.nombre, u.apellido, u.correo, u.telefono " +  
+        logger.debug("Obteniendo reservas para usuario ID: {}", usuario.getIdUsuario());
+        
+        String query = "SELECT " +
+                       "r.id_reserva, r.fecha_reserva, r.estado, r.cantidad_pasajeros_reservada, " +
+                       "r.reserva_cancelada, r.codigo_reserva, r.feedback_token, " +
+                       "v.id_viaje, v.fecha, v.lugares_disponibles, v.origen, v.destino, " +
+                       "v.precio_unitario, v.cancelado, v.lugar_salida, v.id_vehiculo_viaje, " +
+                       "u_conductor.id_usuario as conductor_id, u_conductor.nombre as conductor_nombre, " +
+                       "u_conductor.apellido as conductor_apellido, u_conductor.correo as conductor_correo, " +
+                       "u_conductor.telefono as conductor_telefono, " +
+                       "u_pasajero.id_usuario as pasajero_id, u_pasajero.nombre as pasajero_nombre, " +
+                       "u_pasajero.apellido as pasajero_apellido, u_pasajero.correo as pasajero_correo, " +
+                       "u_pasajero.telefono as pasajero_telefono " +
                        "FROM reservas r " +
                        "INNER JOIN viajes v ON r.id_viaje = v.id_viaje " +
-                       "INNER JOIN usuarios u ON u.id_usuario = v.id_conductor " +
+                       "INNER JOIN usuarios u_conductor ON u_conductor.id_usuario = v.id_conductor " +
+                       "INNER JOIN usuarios u_pasajero ON u_pasajero.id_usuario = r.id_pasajero_reserva " +
                        "WHERE r.id_pasajero_reserva = ? AND r.reserva_cancelada = false";
-
 
         validateUsuario(usuario);
         LinkedList<Reserva> reservas = new LinkedList<>();
 
-        try (Connection conn = ConnectionDB.getInstancia().getConn();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
 
+        try {
+            conn = ConnectionDB.getInstancia().getConn();
+            stmt = conn.prepareStatement(query);
             stmt.setInt(1, usuario.getIdUsuario());
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    reservas.add(mapFullReserva(rs));
-                }
+            rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                reservas.add(mapFullReservaFromJoin(rs));
             }
-            logger.debug("Encontradas {} reservas para usuario {}", reservas.size(), usuario.getIdUsuario());
+            logger.info("Encontradas {} reservas para usuario ID: {}", reservas.size(), usuario.getIdUsuario());
 
         } catch (SQLException e) {
-            handleSQLException("Error al obtener reservas por usuario", e);
+            logger.error("Error al obtener reservas por usuario ID {} - Estado: {} - Código: {}", 
+                        usuario.getIdUsuario(), e.getSQLState(), e.getErrorCode(), e);
+            throw new DAOException("Error al obtener reservas por usuario", e);
         } finally {
+            closeResources(rs, stmt);
             ConnectionDB.getInstancia().releaseConn();
         }
         return reservas;
     }
 
     public LinkedList<Reserva> getReservasByViaje(int idViaje) {
-        String query = "SELECT r.id_pasajero_reserva, r.id_reserva, r.fecha_reserva, r.estado ,r.cantidad_pasajeros_reservada, r.reserva_cancelada, r.codigo_reserva, "
-                + "v.id_viaje, v.origen, v.destino, v.fecha, v.lugares_disponibles, v.precio_unitario, " 
-                + "v.id_vehiculo_viaje, " 
-                + "u.id_usuario, u.nombre, u.apellido, u.correo, u.telefono "
-                + "FROM reservas r "
-                + "INNER JOIN viajes v ON r.id_viaje = v.id_viaje "
-                + "INNER JOIN usuarios u ON u.id_usuario = v.id_conductor "
-                + "WHERE r.id_viaje = ? AND r.reserva_cancelada = false";
-
+        logger.debug("Obteniendo reservas para viaje ID: {}", idViaje);
+        
+        String query = "SELECT " +
+                       "r.id_reserva, r.fecha_reserva, r.estado, r.cantidad_pasajeros_reservada, " +
+                       "r.reserva_cancelada, r.codigo_reserva, r.feedback_token, " +
+                       "v.id_viaje, v.fecha, v.lugares_disponibles, v.origen, v.destino, " +
+                       "v.precio_unitario, v.cancelado, v.lugar_salida, v.id_vehiculo_viaje, " +
+                       "u_conductor.id_usuario as conductor_id, u_conductor.nombre as conductor_nombre, " +
+                       "u_conductor.apellido as conductor_apellido, u_conductor.correo as conductor_correo, " +
+                       "u_conductor.telefono as conductor_telefono, " +
+                       "u_pasajero.id_usuario as pasajero_id, u_pasajero.nombre as pasajero_nombre, " +
+                       "u_pasajero.apellido as pasajero_apellido, u_pasajero.correo as pasajero_correo, " +
+                       "u_pasajero.telefono as pasajero_telefono " +
+                       "FROM reservas r " +
+                       "INNER JOIN viajes v ON r.id_viaje = v.id_viaje " +
+                       "INNER JOIN usuarios u_conductor ON u_conductor.id_usuario = v.id_conductor " +
+                       "INNER JOIN usuarios u_pasajero ON u_pasajero.id_usuario = r.id_pasajero_reserva " +
+                       "WHERE r.id_viaje = ? AND r.reserva_cancelada = false";
 
         LinkedList<Reserva> reservas = new LinkedList<>();
 
-        try (Connection conn = ConnectionDB.getInstancia().getConn();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
 
+        try {
+            conn = ConnectionDB.getInstancia().getConn();
+            stmt = conn.prepareStatement(query);
             stmt.setInt(1, idViaje);
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    reservas.add(mapFullReserva(rs));
-                }
+            rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                reservas.add(mapFullReservaFromJoin(rs));
             }
-            logger.debug("Encontradas {} reservas el viaje {}", reservas.size(), idViaje);
+            logger.info("Encontradas {} reservas para viaje ID: {}", reservas.size(), idViaje);
 
         } catch (SQLException e) {
-            handleSQLException("Error al obtener reservas por viaje", e);
+            logger.error("Error al obtener reservas por viaje ID {} - Estado: {} - Código: {}", 
+                        idViaje, e.getSQLState(), e.getErrorCode(), e);
+            throw new DAOException("Error al obtener reservas por viaje", e);
         } finally {
+            closeResources(rs, stmt);
             ConnectionDB.getInstancia().releaseConn();
         }
         return reservas;
     }
 
     public LinkedList<Reserva> getReservasForFeedback() {
-
+        logger.debug("Obteniendo reservas para feedback");
+        
         LinkedList<Reserva> reservas = new LinkedList<>();
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
 
-        String query = "SELECT r.*, v.*, u.* FROM reservas r "
-                + "INNER JOIN viajes v ON r.id_viaje = v.id_viaje "
-                + "INNER JOIN usuarios u ON v.id_conductor = u.id_usuario "
-                + "WHERE v.fecha = ? "
-                + "AND r.estado = 'CONFIRMADA' "
-                + "AND r.reserva_cancelada = false";
-
-        try (Connection conn = ConnectionDB.getInstancia().getConn();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
+        try {
+            conn = ConnectionDB.getInstancia().getConn();
+            stmt = conn.prepareStatement(
+                "SELECT r.* FROM reservas r " +
+                "INNER JOIN viajes v ON r.id_viaje = v.id_viaje " +
+                "WHERE v.fecha = ? " +
+                "AND r.estado = 'CONFIRMADA' " +
+                "AND r.reserva_cancelada = false");
 
             LocalDate ayer = LocalDate.now().minusDays(1);
-            java.sql.Date ayerSQL = java.sql.Date.valueOf(ayer);
+            stmt.setDate(1, java.sql.Date.valueOf(ayer));
 
-            stmt.setDate(1, ayerSQL);
-
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    reservas.add(mapFullReserva(rs));
-                }
+            rs = stmt.executeQuery();
+            while (rs.next()) {
+                reservas.add(mapReserva(rs));
             }
-
-            logger.debug("Obtenidas {} reservas para feedback", reservas.size());
+            logger.info("Obtenidas {} reservas para feedback", reservas.size());
 
         } catch (SQLException e) {
-            handleSQLException("Error al obtener reservas para feedback", e);
+            logger.error("Error al obtener reservas para feedback - Estado: {} - Código: {}", 
+                        e.getSQLState(), e.getErrorCode(), e);
+        } finally {
+            closeResources(rs, stmt);
+            ConnectionDB.getInstancia().releaseConn();
         }
-
         return reservas;
     }
 
-
     public void add(Reserva reserva) {
+        logger.info("Creando nueva reserva para usuario ID: {}", reserva.getPasajero().getIdUsuario());
+        
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet keys = null;
+        
+        try {
+            conn = ConnectionDB.getInstancia().getConn();
+            stmt = conn.prepareStatement(
+                "INSERT INTO reservas(fecha_reserva, cantidad_pasajeros_reservada, " +
+                "reserva_cancelada, id_viaje, id_pasajero_reserva, codigo_reserva, estado) " +
+                "VALUES(?,?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
+            
+            stmt.setString(1, reserva.getFecha_reserva());
+            stmt.setInt(2, reserva.getCantidad_pasajeros_reservada());
+            stmt.setBoolean(3, reserva.isReserva_cancelada());
+            stmt.setInt(4, reserva.getViaje().getIdViaje());
+            stmt.setInt(5, reserva.getPasajero().getIdUsuario());
+            stmt.setInt(6, reserva.getCodigo_reserva());
+            stmt.setString(7, reserva.getEstado());
 
-        String query = "INSERT INTO reservas(fecha_reserva, cantidad_pasajeros_reservada, "
-                + "reserva_cancelada, id_viaje, id_pasajero_reserva, codigo_reserva, estado) VALUES(?,?,?,?,?,?,?)";
-
-        validateReserva(reserva);
-
-        try (Connection conn = ConnectionDB.getInstancia().getConn();
-             PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
-
-            setInsertParameters(stmt, reserva);
-            stmt.executeUpdate();
-            setGeneratedId(stmt, reserva);
-
-            logger.info("Reserva agregada ID: {}", reserva.getIdReserva());
+            int affectedRows = stmt.executeUpdate();
+            
+            if (affectedRows > 0) {
+                keys = stmt.getGeneratedKeys();
+                if (keys.next()) {
+                    reserva.setIdReserva(keys.getInt(1));
+                    logger.info("Reserva creada exitosamente: ID {}", reserva.getIdReserva());
+                }
+            } else {
+                logger.error("No se pudo crear la reserva");
+            }
 
         } catch (SQLException e) {
-            handleSQLException("Error al agregar reserva", e);
+            logger.error("Error al crear reserva - Estado: {} - Código: {}", 
+                        e.getSQLState(), e.getErrorCode(), e);
+            throw new DAOException("Error al agregar reserva", e);
         } finally {
+            closeResources(keys, stmt);
             ConnectionDB.getInstancia().releaseConn();
         }
     }
 
     public void actualizarEstado(int idReserva, String nuevoEstado) {
-        String query = "UPDATE reservas SET estado = ? WHERE id_reserva = ?";
-
-        try (Connection conn = ConnectionDB.getInstancia().getConn();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
-
+        logger.info("Actualizando estado de reserva ID: {} a {}", idReserva, nuevoEstado);
+        
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        
+        try {
+            conn = ConnectionDB.getInstancia().getConn();
+            stmt = conn.prepareStatement("UPDATE reservas SET estado = ? WHERE id_reserva = ?");
             stmt.setString(1, nuevoEstado);
             stmt.setInt(2, idReserva);
 
             int affected = stmt.executeUpdate();
             checkAffectedRows(affected, "actualizar estado");
+            logger.info("Estado de reserva ID {} actualizado a {}", idReserva, nuevoEstado);
 
         } catch (SQLException e) {
-            handleSQLException("Error al actualizar estado de reserva " + idReserva, e);
+            logger.error("Error al actualizar estado de reserva ID {} - Estado: {} - Código: {}", 
+                        idReserva, e.getSQLState(), e.getErrorCode(), e);
+            throw new DAOException("Error al actualizar estado de reserva", e);
         } finally {
+            closeResources(null, stmt);
             ConnectionDB.getInstancia().releaseConn();
         }
     }
 
     public void update(Reserva reserva, int idReserva) {
+        logger.info("Actualizando reserva ID: {}", idReserva);
+        
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        
+        try {
+            conn = ConnectionDB.getInstancia().getConn();
+            stmt = conn.prepareStatement(
+                "UPDATE reservas SET cantidad_pasajeros_reservada = ?, reserva_cancelada = ?, " +
+                "id_viaje = ?, id_pasajero_reserva = ? WHERE id_reserva = ?");
 
-        String query = "UPDATE reservas SET cantidad_pasajeros_reservada = ?, reserva_cancelada = ?, "
-                + "id_viaje = ?, id_pasajero_reserva = ? WHERE id_reserva = ?";
+            stmt.setInt(1, reserva.getCantidad_pasajeros_reservada());
+            stmt.setBoolean(2, reserva.isReserva_cancelada());
+            stmt.setInt(3, reserva.getViaje().getIdViaje());
+            stmt.setInt(4, reserva.getPasajero().getIdUsuario());
+            stmt.setInt(5, idReserva);
 
-        validateReserva(reserva);
-
-        try (Connection conn = ConnectionDB.getInstancia().getConn();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
-
-            setUpdateParameters(stmt, reserva, idReserva);
             int affected = stmt.executeUpdate();
             checkAffectedRows(affected, "actualizar");
-
-            logger.info("Reserva actualizada ID: {}", idReserva);
+            logger.info("Reserva actualizada exitosamente: ID {}", idReserva);
 
         } catch (SQLException e) {
-            handleSQLException("Error al actualizar reserva " + idReserva, e);
+            logger.error("Error al actualizar reserva ID {} - Estado: {} - Código: {}", 
+                        idReserva, e.getSQLState(), e.getErrorCode(), e);
+            throw new DAOException("Error al actualizar reserva", e);
         } finally {
+            closeResources(null, stmt);
             ConnectionDB.getInstancia().releaseConn();
         }
     }
 
-    public void guardarToken(int idReserva, String token) throws SQLException {
-        String sql = "UPDATE reservas SET feedback_token = ? WHERE id_reserva = ?";
-        try (Connection conn = ConnectionDB.getInstancia().getConn();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
+    public void guardarToken(int idReserva, String token) {
+        logger.info("Guardando token para reserva ID: {}", idReserva);
+        
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        
+        try {
+            conn = ConnectionDB.getInstancia().getConn();
+            stmt = conn.prepareStatement("UPDATE reservas SET feedback_token = ? WHERE id_reserva = ?");
             stmt.setString(1, token);
             stmt.setInt(2, idReserva);
-            stmt.executeUpdate();
 
             int affected = stmt.executeUpdate();
-            checkAffectedRows(affected, "actualizar");
+            checkAffectedRows(affected, "guardar token");
+            logger.info("Token guardado para reserva ID: {}", idReserva);
 
-            logger.info("Reserva actualizada ID: {}", idReserva);
         } catch (SQLException e) {
-        handleSQLException("Error al guardar el token en la reserva " + idReserva, e);
+            logger.error("Error al guardar token para reserva ID {} - Estado: {} - Código: {}", 
+                        idReserva, e.getSQLState(), e.getErrorCode(), e);
+            throw new DAOException("Error al guardar token en la reserva", e);
         } finally {
+            closeResources(null, stmt);
             ConnectionDB.getInstancia().releaseConn();
         }
-
     }
 
-
     public boolean cancelarReserva(int idReserva) {
-
-        String query = "UPDATE reservas SET reserva_cancelada = true, estado = 'CANCELADA' WHERE id_reserva = ?";
-
-        try (Connection conn = ConnectionDB.getInstancia().getConn();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
-
+        logger.info("Cancelando reserva ID: {}", idReserva);
+        
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        
+        try {
+            conn = ConnectionDB.getInstancia().getConn();
+            stmt = conn.prepareStatement(
+                "UPDATE reservas SET reserva_cancelada = true, estado = 'CANCELADA' WHERE id_reserva = ?");
             stmt.setInt(1, idReserva);
+
             int affected = stmt.executeUpdate();
             checkAffectedRows(affected, "cancelar");
-            if (affected == 0) {
-                return false;
-            }
-            logger.info("Reserva cancelada ID: {}", idReserva);
+            
+            logger.info("Reserva cancelada exitosamente: ID {}", idReserva);
             return true;
 
         } catch (SQLException e) {
-            handleSQLException("Error al cancelar reserva " + idReserva, e);
+            logger.error("Error al cancelar reserva ID {} - Estado: {} - Código: {}", 
+                        idReserva, e.getSQLState(), e.getErrorCode(), e);
             return false;
         } finally {
+            closeResources(null, stmt);
             ConnectionDB.getInstancia().releaseConn();
         }
     }
 
     public void delete(int idReserva) {
-
-        String query = "DELETE FROM reservas WHERE id_reserva = ?";
-
-
-        try (Connection conn = ConnectionDB.getInstancia().getConn();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
-
+        logger.info("Eliminando reserva ID: {}", idReserva);
+        
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        
+        try {
+            conn = ConnectionDB.getInstancia().getConn();
+            stmt = conn.prepareStatement("DELETE FROM reservas WHERE id_reserva = ?");
             stmt.setInt(1, idReserva);
+
             int affected = stmt.executeUpdate();
             checkAffectedRows(affected, "eliminar");
-
-            logger.info("Reserva eliminada ID: {}", idReserva);
+            logger.info("Reserva eliminada exitosamente: ID {}", idReserva);
 
         } catch (SQLException e) {
-            handleSQLException("Error al eliminar reserva " + idReserva, e);
+            logger.error("Error al eliminar reserva ID {} - Estado: {} - Código: {}", 
+                        idReserva, e.getSQLState(), e.getErrorCode(), e);
+            throw new DAOException("Error al eliminar reserva", e);
         } finally {
+            closeResources(null, stmt);
             ConnectionDB.getInstancia().releaseConn();
         }
     }
 
-    // Métodos auxiliares
+    // ========== MÉTODOS DE MAPEO ==========
+
+    private Reserva mapFullReservaFromJoin(ResultSet rs) throws SQLException {
+        Reserva reserva = new Reserva();
+        
+        // Datos básicos de la reserva
+        reserva.setIdReserva(rs.getInt("id_reserva"));
+        reserva.setFecha_reserva(rs.getString("fecha_reserva"));
+        reserva.setCantidad_pasajeros_reservada(rs.getInt("cantidad_pasajeros_reservada"));
+        reserva.setReserva_cancelada(rs.getBoolean("reserva_cancelada"));
+        reserva.setEstado(rs.getString("estado"));
+        reserva.setCodigo_reserva(rs.getInt("codigo_reserva"));
+        reserva.setFeedback_token(rs.getString("feedback_token"));
+        
+        // Viaje COMPLETO desde el JOIN
+        Viaje viaje = new Viaje();
+        viaje.setIdViaje(rs.getInt("id_viaje"));
+        viaje.setFecha(rs.getDate("fecha"));
+        viaje.setLugares_disponibles(rs.getInt("lugares_disponibles"));
+        viaje.setOrigen(rs.getString("origen"));
+        viaje.setDestino(rs.getString("destino"));
+        viaje.setPrecio_unitario(rs.getDouble("precio_unitario"));
+        viaje.setCancelado(rs.getBoolean("cancelado"));
+        viaje.setLugar_salida(rs.getString("lugar_salida"));
+        
+        // Vehículo básico (solo ID para evitar llamadas a DAO)
+        Vehiculo vehiculo = new Vehiculo();
+        vehiculo.setId_vehiculo(rs.getInt("id_vehiculo_viaje"));
+        viaje.setVehiculo(vehiculo);
+        
+        // Conductor COMPLETO desde el JOIN
+        Usuario conductor = new Usuario();
+        conductor.setIdUsuario(rs.getInt("conductor_id"));
+        conductor.setNombre(rs.getString("conductor_nombre"));
+        conductor.setApellido(rs.getString("conductor_apellido"));
+        conductor.setCorreo(rs.getString("conductor_correo"));
+        conductor.setTelefono(rs.getString("conductor_telefono"));
+        viaje.setConductor(conductor);
+        
+        // Pasajero COMPLETO desde el JOIN
+        Usuario pasajero = new Usuario();
+        pasajero.setIdUsuario(rs.getInt("pasajero_id"));
+        pasajero.setNombre(rs.getString("pasajero_nombre"));
+        pasajero.setApellido(rs.getString("pasajero_apellido"));
+        pasajero.setCorreo(rs.getString("pasajero_correo"));
+        pasajero.setTelefono(rs.getString("pasajero_telefono"));
+        
+        reserva.setViaje(viaje);
+        reserva.setPasajero(pasajero);
+        
+        return reserva;
+    }
+
     private Reserva mapReserva(ResultSet rs) throws SQLException {
         Reserva reserva = new Reserva();
         reserva.setIdReserva(rs.getInt("id_reserva"));
         reserva.setFecha_reserva(rs.getString("fecha_reserva"));
         reserva.setCantidad_pasajeros_reservada(rs.getInt("cantidad_pasajeros_reservada"));
         reserva.setReserva_cancelada(rs.getBoolean("reserva_cancelada"));
-        reserva.setPasajero(usuarioDAO.getById(rs.getInt("id_pasajero_reserva")));
-        reserva.setViaje(viajeDAO.getByViaje(rs.getInt("id_viaje")));
         reserva.setEstado(rs.getString("estado"));
         reserva.setCodigo_reserva(rs.getInt("codigo_reserva"));
-
+        reserva.setFeedback_token(rs.getString("feedback_token"));
         return reserva;
     }
 
-    private Reserva mapFullReserva(ResultSet rs) throws SQLException {
-        Reserva reserva = mapReserva(rs);
-        reserva.setViaje(mapViaje(rs));
-        return reserva;
-    }
-
-    private Viaje mapViaje(ResultSet rs) throws SQLException {
-        Viaje viaje = new Viaje();
-        viaje.setIdViaje(rs.getInt("id_viaje"));
-        viaje.setOrigen(rs.getString("origen"));
-        viaje.setDestino(rs.getString("destino"));
-        viaje.setFecha(rs.getDate("fecha"));
-        viaje.setLugares_disponibles(rs.getInt("lugares_disponibles"));
-        viaje.setPrecio_unitario(rs.getDouble("precio_unitario"));
-        viaje.setVehiculo(vehiculoDAO.getById_vehiculo(rs.getInt("id_vehiculo_viaje")));
-        viaje.setConductor(mapConductor(rs));
-        return viaje;
-    }
-
-    private Usuario mapConductor(ResultSet rs) throws SQLException {
-        Usuario conductor = new Usuario();
-        conductor.setIdUsuario(rs.getInt("id_usuario"));
-        conductor.setNombre(rs.getString("nombre"));
-        conductor.setApellido(rs.getString("apellido"));
-        conductor.setCorreo(rs.getString("correo"));
-        conductor.setTelefono(rs.getString("telefono"));
-        return conductor;
-    }
-
-    private void setInsertParameters(PreparedStatement stmt, Reserva r) throws SQLException {
-        stmt.setString(1, r.getFecha_reserva());
-        stmt.setInt(2, r.getCantidad_pasajeros_reservada());
-        stmt.setBoolean(3, r.isReserva_cancelada());
-        stmt.setInt(4, r.getViaje().getIdViaje());
-        stmt.setInt(5, r.getPasajero().getIdUsuario());
-        stmt.setInt(6, r.getCodigo_reserva());
-        stmt.setString(7, r.getEstado());
-    }
-
-
-    private void setUpdateParameters(PreparedStatement stmt, Reserva r, int id_reserva) throws SQLException {
-        stmt.setInt(1, r.getCantidad_pasajeros_reservada());
-        stmt.setBoolean(2, r.isReserva_cancelada());
-        stmt.setInt(3, r.getViaje().getIdViaje());
-        stmt.setInt(4, r.getPasajero().getIdUsuario());
-        stmt.setInt(5, id_reserva);
-    }
-
-    private void setGeneratedId(PreparedStatement stmt, Reserva r) throws SQLException {
-        try (ResultSet keys = stmt.getGeneratedKeys()) {
-            if (keys.next()) {
-                r.setIdReserva(keys.getInt(1));
-            }
-        }
-    }
-
-    // Validaciones
+    // ========== MÉTODOS AUXILIARES ==========
 
     private void validateUsuario(Usuario usuario) {
         if (usuario == null) {
@@ -437,13 +536,17 @@ public class ReservaDAO {
         }
     }
 
-    // Manejo de excepciones
-    private int handleSQLException(String message, SQLException e) throws DAOException {
-        logger.error("{} - Error Code: {} - SQL State: {}", message, e.getErrorCode(), e.getSQLState(), e);
-        throw new DAOException(message, e);
+    private void closeResources(ResultSet rs, Statement stmt) {
+        try {
+            if (rs != null) rs.close();
+            if (stmt != null) stmt.close();
+        } catch (SQLException e) {
+            logger.error("Error cerrando recursos", e);
+        }
     }
 
-    // Excepción personalizada
+    // ========== EXCEPCIÓN PERSONALIZADA ==========
+
     public static class DAOException extends RuntimeException {
         public DAOException(String message) {
             super(message);
