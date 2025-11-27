@@ -8,6 +8,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import entidades.Viaje;
 
@@ -33,6 +34,8 @@ public class BuscadorViajes extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        HttpSession session = request.getSession();
+
         try {
             String origen = request.getParameter("origen");
             String destino = request.getParameter("destino");
@@ -45,7 +48,7 @@ public class BuscadorViajes extends HttpServlet {
 
         } catch (Exception e) {
             e.printStackTrace();
-            request.setAttribute("error", "Ocurrió un error al buscar los viajes. Intente más tarde.");
+            session.setAttribute("error", "Ocurrió un error al buscar los viajes. Intente más tarde.");
             request.getRequestDispatcher("index.jsp").forward(request, response);
         }
     }
