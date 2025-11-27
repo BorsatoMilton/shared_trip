@@ -15,7 +15,6 @@ public class VehiculoController {
 
     public LinkedList<Vehiculo> getAll() {
         LinkedList<Vehiculo> vehiculos = vehiculoDAO.getAll();
-        System.out.println(vehiculos.size());
         return vehiculoDAO.getAll();
 
     }

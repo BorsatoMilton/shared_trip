@@ -56,12 +56,10 @@ public class UpdatePerfil extends HttpServlet {
             }
 
             session.setAttribute("usuario", usuarioNuevo);
-
             response.sendRedirect(request.getContextPath() + "/perfil.jsp");
 
         } catch (Exception e) {
             session.setAttribute("error", "Error al cargar el perfil. Intente de nuevo más tarde.");
-
             response.sendRedirect(request.getContextPath() + "/");
         }
     }
@@ -69,42 +67,42 @@ public class UpdatePerfil extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-    	 HttpSession session = request.getSession();
-         String action = request.getParameter("action");
-         Usuario logueado = (Usuario) session.getAttribute("usuario");
-         
-         try {
-             if ("profile".equals(action)) {
-                 actualizarUsuario(request, logueado);
-                 session.setAttribute("mensaje", "Usuario actualizado con éxito");
-             } else if ("password".equals(action)) {
-                 actualizarClave(request, logueado);
-                 session.setAttribute("mensaje", "Clave actualizada con éxito");
-             } else {
-                 throw new Exception("No se especifico la acción");
-             }
+        HttpSession session = request.getSession();
+        String action = request.getParameter("action");
+        Usuario logueado = (Usuario) session.getAttribute("usuario");
 
-             if (logueado != null) {
-                 Usuario usuarioActualizado = usuarioCtrl.getOneById(logueado.getIdUsuario());
-                 
-                 if (usuarioActualizado != null && usuarioActualizado.getNombreRol() == null) {
-                     LinkedList<Rol> roles = rolCtrl.getAll();
-                     for (Rol r : roles) {
-                         if (usuarioActualizado.getRol() == r.getIdRol()) {
-                             usuarioActualizado.setNombreRol(r.getNombre());
-                             break;
-                         }
-                     }
-                 }
-                 session.setAttribute("usuario", usuarioActualizado);
-             }
+        try {
+            if ("profile".equals(action)) {
+                actualizarUsuario(request, logueado);
+                session.setAttribute("mensaje", "Usuario actualizado con éxito");
+            } else if ("password".equals(action)) {
+                actualizarClave(request, logueado);
+                session.setAttribute("mensaje", "Clave actualizada con éxito");
+            } else {
+                throw new Exception("No se especifico la acción");
+            }
 
-         } catch (Exception e) {
-             session.setAttribute("error", "Error: " + e.getMessage());
-         }
+            if (logueado != null) {
+                Usuario usuarioActualizado = usuarioCtrl.getOneById(logueado.getIdUsuario());
 
-         request.getRequestDispatcher("perfil.jsp").forward(request, response);
-     }
+                if (usuarioActualizado != null && usuarioActualizado.getNombreRol() == null) {
+                    LinkedList<Rol> roles = rolCtrl.getAll();
+                    for (Rol r : roles) {
+                        if (usuarioActualizado.getRol() == r.getIdRol()) {
+                            usuarioActualizado.setNombreRol(r.getNombre());
+                            break;
+                        }
+                    }
+                }
+                session.setAttribute("usuario", usuarioActualizado);
+            }
+
+        } catch (Exception e) {
+            session.setAttribute("error", "Error: " + e.getMessage());
+        }
+
+        request.getRequestDispatcher("perfil.jsp").forward(request, response);
+    }
 
 
     private void actualizarUsuario(HttpServletRequest request, Usuario logueado) throws Exception {

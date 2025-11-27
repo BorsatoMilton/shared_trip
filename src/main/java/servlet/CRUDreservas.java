@@ -1,5 +1,6 @@
 package servlet;
 
+import data.FeedbackDAO;
 import data.exceptions.DataAccessException;
 import entidades.Reserva;
 import entidades.Usuario;
@@ -8,6 +9,8 @@ import entidades.Viaje;
 import jakarta.mail.MessagingException;
 import logic.ReservaController;
 import logic.ViajeController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import utils.Formatters;
 import services.MailService;
 
@@ -28,6 +31,7 @@ public class CRUDreservas extends HttpServlet {
     ViajeController viajeController = new ViajeController();
     MailService mailService = MailService.getInstance();
     private final Formatters formatters = new Formatters();
+    private static final Logger logger = LoggerFactory.getLogger(CRUDreservas.class);
 
 
     public CRUDreservas() {
@@ -60,8 +64,6 @@ public class CRUDreservas extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
-        System.out.println("POST recibido en /reservas, action=" + request.getParameter("action"));
 
         HttpSession session = request.getSession();
 
@@ -128,12 +130,8 @@ public class CRUDreservas extends HttpServlet {
             throw new Exception("La cantidad de pasajeros debe ser mayor a 0");
         }
 
-        try {
-            Reserva reserva = reservaController.nuevaReserva(viajeId, cantPasajeros, usuario);
-            enviarNotificacionesReserva(reserva, usuario);
-        } catch (Exception e) {
-            throw new Exception(e.getMessage());
-        }
+        Reserva reserva = reservaController.nuevaReserva(viajeId, cantPasajeros, usuario);
+        enviarNotificacionesReserva(reserva, usuario);
     }
 
     private void cancelarReserva(HttpServletRequest request, Usuario usuario) throws Exception {
@@ -151,12 +149,8 @@ public class CRUDreservas extends HttpServlet {
             throw new Exception("Formato de número inválido");
         }
 
-        try {
-            Reserva reserva = reservaController.cancelarReserva(idReserva, usuario.getIdUsuario());
-            enviarNotificacionesCancelacionReserva(reserva, usuario);
-        }catch (Exception e) {
-            throw new Exception(e.getMessage());
-        }
+        Reserva reserva = reservaController.cancelarReserva(idReserva, usuario.getIdUsuario());
+        enviarNotificacionesCancelacionReserva(reserva, usuario);
 
     }
 
@@ -264,7 +258,7 @@ public class CRUDreservas extends HttpServlet {
             );
 
         }catch (Exception e) {
-            System.err.println("Error preparando notificaciones: " + e.getMessage());
+            logger.error("Error al enviar las notificaciones de reserva: {}", e.getMessage());
         }
     }
 
@@ -296,7 +290,7 @@ public class CRUDreservas extends HttpServlet {
             );
 
         } catch (Exception e) {
-            System.err.println("Error preparando notificaciones de cancelación: " + e.getMessage());
+            logger.error("Error al enviar las notificaciones de cancelación de reserva: {}", e.getMessage());
         }
     }
 

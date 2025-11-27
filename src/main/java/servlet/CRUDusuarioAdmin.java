@@ -14,6 +14,8 @@ import entidades.Rol;
 import entidades.Usuario;
 import logic.RolController;
 import logic.UserController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import utils.InputValidator;
 
 @WebServlet("/usuarios")
@@ -22,6 +24,7 @@ public class CRUDusuarioAdmin extends HttpServlet {
     private final UserController usuarioCtrl = new UserController();
     private final RolController rolCtrl = new RolController();
     private final InputValidator inputValidator = new InputValidator();
+    private static final Logger logger = LoggerFactory.getLogger(CRUDusuarioAdmin.class);
 
 
     public CRUDusuarioAdmin() {
@@ -82,7 +85,7 @@ public class CRUDusuarioAdmin extends HttpServlet {
             request.getRequestDispatcher("usuarios.jsp").forward(request, response);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Error al obtener los usuarios: {}", e.getMessage());
             session.setAttribute("error", "Error cargando usuarios.");
             response.sendRedirect(request.getContextPath() + "/");
         }
@@ -94,26 +97,26 @@ public class CRUDusuarioAdmin extends HttpServlet {
         String action = request.getParameter("action");
         Usuario logueado = (Usuario) session.getAttribute("usuario");
         String rol = (logueado == null ? null : session.getAttribute("rol").toString());
-
+        String redirectPage = "/";
 
         try {
             if ("update".equals(action)) {
                 actualizarUsuario(request, logueado);
                 session.setAttribute("mensaje", "Usuario actualizado con éxito");
-
+                redirectPage = "/usuarios";
             } else if ("delete".equals(action)) {
                 eliminarUsuario(request, logueado);
                 session.setAttribute("mensaje", "Usuario eliminado con éxito");
-
+                redirectPage = "/usuarios";
             } else if ("add".equals(action)) {
                 crearUsuario(request, logueado);
                 session.setAttribute("mensaje", "Usuario creado con éxito");
-
+                redirectPage = "/usuarios";
             } else if ("register".equals(action)) {
                 registrarUsuario(request);
                 limpiarDatosFormulario(session);
                 session.setAttribute("mensaje", "Usuario registrado con éxito");
-                response.sendRedirect(request.getContextPath() + "login.jsp");
+                redirectPage = "/login.jsp";
             }
 
         } catch (Exception e) {
@@ -143,27 +146,18 @@ public class CRUDusuarioAdmin extends HttpServlet {
                         session.setAttribute("error", e.getMessage());
                 }
 
+                if ("register".equals(action)) {
+                    redirectPage = "/register.jsp";
+                }else if (logueado == null) {
+                    redirectPage = "/login.jsp";
+                }else if ("admin".equals(rol)) {
+                    redirectPage = "/usuarios.jsp";
+                }else {
+                    redirectPage = "/";
+                }
 
-
-                response.sendRedirect(request.getContextPath() + "/register.jsp");
-                return;
         }
-
-
-        if ("register".equals(action)) {
-            response.sendRedirect(request.getContextPath() + "/register.jsp");
-            return;
-        }
-
-        if (logueado == null) {
-            response.sendRedirect(request.getContextPath() + "/login.jsp");
-            return;
-        }
-
-        if ("admin".equals(rol)) {
-            response.sendRedirect(request.getContextPath() + "/usuarios");
-        }
-
+        response.sendRedirect(request.getContextPath() + redirectPage);
     }
 
 

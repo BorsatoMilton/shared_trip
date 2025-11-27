@@ -1,6 +1,9 @@
 package servlet.listeners;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import services.FeedbackService;
+import servlet.BuscadorViajes;
 
 import javax.servlet.ServletContextListener;
 import javax.servlet.ServletContextEvent;
@@ -13,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 public class CronFeedbackListener implements ServletContextListener {
     private ScheduledExecutorService scheduler;
     private final FeedbackService feedbackService = new FeedbackService();
+    private static final Logger logger = LoggerFactory.getLogger(CronFeedbackListener.class);
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
@@ -22,7 +26,7 @@ public class CronFeedbackListener implements ServletContextListener {
             try {
                 feedbackService.procesarFeedbackPendiente();
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error("Error al procesar el feedback pendiente: {}", e.getMessage());
             }
         }, 0, 24, TimeUnit.HOURS);
     }

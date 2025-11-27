@@ -6,14 +6,10 @@ import entidades.Viaje;
 
 public class Formatters {
     
-    // Constructor vacío
-    public Formatters() {
-        // Constructor por defecto
-    }
+
+    public Formatters() {}
     
-    /**
-     * Formatea los datos de un viaje para emails y notificaciones
-     */
+
     public String formatDatosViaje(Viaje viaje) {
         if (viaje == null) {
             return "Información del viaje no disponible";
@@ -31,9 +27,6 @@ public class Formatters {
         );
     }
 
-    /**
-     * Formatea los datos de un chofer para emails y notificaciones
-     */
     public String formatDatosChofer(Usuario chofer,  Vehiculo vehiculo) {
         if (chofer == null) {
             return "Información del chofer no disponible";
@@ -57,9 +50,6 @@ public class Formatters {
         );
     }
 
-    /**
-     * Formatea los datos de un pasajero para emails y notificaciones
-     */
     public String formatDatosPasajero(Usuario pasajero, int cantPasajeros) {
         if (pasajero == null) {
             return String.format("Asientos reservados: %d", cantPasajeros);

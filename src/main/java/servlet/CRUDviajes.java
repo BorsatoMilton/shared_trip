@@ -23,6 +23,8 @@ import logic.ReservaController;
 import logic.UserController;
 import logic.VehiculoController;
 import logic.ViajeController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import utils.Formatters;
 import services.MailService;
 
@@ -35,6 +37,7 @@ public class CRUDviajes extends HttpServlet {
     private final ReservaController reservaCtrl = new ReservaController();
     private final MailService mailService = MailService.getInstance();
     private final Formatters formatters = new Formatters();
+    private static final Logger logger = LoggerFactory.getLogger(CRUDviajes.class);
 
     public CRUDviajes() {
         super();
@@ -122,8 +125,7 @@ public class CRUDviajes extends HttpServlet {
 
         } catch (Exception e) {
             session.setAttribute("error", e.getMessage());
-            System.out.println("Error en " + action + ": " + e.getMessage());
-            e.printStackTrace();
+            logger.error("Error al cargar los viajes: {}", e.getMessage());
         }
 
         response.sendRedirect(request.getContextPath() + "/viajes");
@@ -399,7 +401,7 @@ public class CRUDviajes extends HttpServlet {
 
         Viaje viaje = viajeCtrl.cancelarViaje(id, u);
 
-        //enviarNotificacionesCancelacionViaje(viaje, u);
+        enviarNotificacionesCancelacionViaje(viaje, u);
     }
 
     private void enviarNotificacionesCancelacionViaje(Viaje viaje, Usuario chofer) {
@@ -436,9 +438,9 @@ public class CRUDviajes extends HttpServlet {
             }
 
         } catch (MessagingException e) {
-            System.err.println("Error enviando emails de cancelación de viaje: " + e.getMessage());
+            logger.error("Error al enviar notificacion de cancelacion de viaje: {}", e.getMessage());
         } catch (Exception e) {
-            System.err.println("Error preparando notificaciones de cancelación de viaje: " + e.getMessage());
+            logger.error("Error al preparar notificacion de cancelacion de viaje: {}", e.getMessage());
         }
     }
 

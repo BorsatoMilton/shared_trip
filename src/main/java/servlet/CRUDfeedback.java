@@ -4,6 +4,8 @@ import entidades.Feedback;
 import entidades.Reserva;
 import logic.FeedbackController;
 import logic.ReservaController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -18,6 +20,7 @@ public class CRUDfeedback extends HttpServlet {
 
     private final ReservaController reservaController = new ReservaController();
     private final FeedbackController feedbackController = new FeedbackController();
+    private static final Logger logger = LoggerFactory.getLogger(CRUDfeedback.class);
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -46,7 +49,7 @@ public class CRUDfeedback extends HttpServlet {
             request.getRequestDispatcher("feedback.jsp").forward(request, response);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Error al obtener los feedback del usuario: {}", e.getMessage());
             session.setAttribute("error", "Error al buscar la reserva");
             request.getRequestDispatcher("/index.jsp").forward(request, response);
         }
@@ -90,7 +93,7 @@ public class CRUDfeedback extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/index.jsp");
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Error al guardar el feedback: {}", e.getMessage());
             session.setAttribute("error", "Error al guardar el feedback");
             request.setAttribute("token", token);
             request.getRequestDispatcher("/feedback.jsp").forward(request, response);

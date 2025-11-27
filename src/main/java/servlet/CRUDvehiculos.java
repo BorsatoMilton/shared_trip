@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 @WebServlet("/vehiculos")
 public class CRUDvehiculos extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private static final Logger log = LoggerFactory.getLogger(CRUDvehiculos.class);
+    private static final Logger logger = LoggerFactory.getLogger(CRUDvehiculos.class);
     private final VehiculoController vehiculoCtrl = new VehiculoController();
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -54,7 +54,7 @@ public class CRUDvehiculos extends HttpServlet {
             request.getRequestDispatcher("misVehiculos.jsp").forward(request, response);
 
         } catch (Exception e) {
-            log.error("Error en doGet de vehiculos: ", e);
+            logger.error("Error en doGet de vehiculos: ", e);
             session.setAttribute("error", "Error al cargar los vehículos");
             response.sendRedirect(request.getContextPath() + "/");
         }
@@ -92,7 +92,7 @@ public class CRUDvehiculos extends HttpServlet {
 
         } catch (Exception e) {
             session.setAttribute("error", e.getMessage());
-            log.error("Error en {} vehiculo: ", action, e);
+            logger.error("Error en {} vehiculo: ", action, e);
         }
 
         response.sendRedirect(request.getContextPath() + "/vehiculos");

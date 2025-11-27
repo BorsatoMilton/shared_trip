@@ -13,11 +13,14 @@ import javax.servlet.http.HttpSession;
 import entidades.Viaje;
 
 import logic.ViajeController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @WebServlet("/buscar")
 public class BuscadorViajes extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private final ViajeController viajeController = new ViajeController();
+    private static final Logger logger = LoggerFactory.getLogger(BuscadorViajes.class);
 
     /**
      * @see HttpServlet#HttpServlet()
@@ -43,7 +46,7 @@ public class BuscadorViajes extends HttpServlet {
             request.getRequestDispatcher("index.jsp").forward(request, response);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Error al obtener la lista de viajes: {}", e.getMessage());
             session.setAttribute("error", "Ocurrió un error al buscar los viajes. Intente más tarde.");
             request.getRequestDispatcher("index.jsp").forward(request, response);
         }

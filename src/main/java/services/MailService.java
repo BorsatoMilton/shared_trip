@@ -13,10 +13,13 @@ import java.util.concurrent.*;
 
 import io.github.cdimascio.dotenv.Dotenv;
 import entidades.Usuario;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class MailService {
 
     private static final MailService INSTANCE = new MailService();
+    private static final Logger logger = LoggerFactory.getLogger(MailService.class);
 
     private final Dotenv dotenv = Dotenv.load();
     private final String host = "smtp.gmail.com";
@@ -65,8 +68,7 @@ public final class MailService {
             try {
                 enviarHtmlSync(emailUsuario, "Reserva confirmada - SharedTrip", html);
             } catch (Exception e) {
-                System.err.println("[MailService] Error enviando mail usuario: " + e.getMessage());
-                e.printStackTrace();
+                logger.error("[MailService] Error enviando mail usuario: {}", e.getMessage(), e);
             }
         });
     }
@@ -83,8 +85,7 @@ public final class MailService {
             try {
                 enviarHtmlSync(emailChofer, "Nueva reserva en tu viaje - SharedTrip", html);
             } catch (Exception e) {
-                System.err.println("[MailService] Error enviando mail chofer: " + e.getMessage());
-                e.printStackTrace();
+                logger.error("[MailService] Error enviando mail chofer: {}", e.getMessage(), e);
             }
         });
     }
@@ -100,8 +101,7 @@ public final class MailService {
             try {
                 enviarHtmlSync(emailUsuario, "Reserva cancelada - SharedTrip", html);
             } catch (Exception e) {
-                System.err.println("[MailService] Error enviando mail cancelación usuario: " + e.getMessage());
-                e.printStackTrace();
+                logger.error("[MailService] Error enviando mail cancelación usuario: {}", e.getMessage(), e);
             }
         });
     }
@@ -119,13 +119,12 @@ public final class MailService {
             try {
                 enviarHtmlSync(emailChofer, "Cancelación de reserva - SharedTrip", html);
             } catch (Exception e) {
-                System.err.println("[MailService] Error enviando mail cancelación chofer: " + e.getMessage());
-                e.printStackTrace();
+                logger.error("[MailService] Error enviando mail cancelación chofer: {}", e.getMessage(), e);
             }
         });
     }
 
-    public void notificarCancelacionViajeUsuarios(String emailUsuario, String datosViaje, String datosChofer) {
+    public void notificarCancelacionViajeUsuarios(String emailUsuario, String datosViaje, String datosChofer) throws MessagingException {
         Map<String, String> parametros = new HashMap<>();
         parametros.put("datosViaje", datosViaje);
         parametros.put("datosChofer", datosChofer);
@@ -136,8 +135,7 @@ public final class MailService {
             try {
                 enviarHtmlSync(emailUsuario, "Viaje cancelado - SharedTrip", html);
             } catch (Exception e) {
-                System.err.println("[MailService] Error enviando mail viaje cancelado usuario: " + e.getMessage());
-                e.printStackTrace();
+                logger.error("[MailService] Error enviando mail viaje cancelado usuario: {}", e.getMessage(), e);
             }
         });
     }
@@ -154,8 +152,7 @@ public final class MailService {
             try {
                 enviarHtmlSync(emailChofer, "Viaje cancelado - SharedTrip", html);
             } catch (Exception e) {
-                System.err.println("[MailService] Error enviando mail viaje cancelado chofer: " + e.getMessage());
-                e.printStackTrace();
+                logger.error("[MailService] Error enviando mail viaje cancelado chofer: {}", e.getMessage(), e);
             }
         });
     }
@@ -174,8 +171,7 @@ public final class MailService {
             try {
                 enviarHtmlSync(pasajero.getCorreo(), "Nos interesa conocer tu opinión - SharedTrip", html);
             } catch (Exception e) {
-                System.err.println("[MailService] Error enviando mail feedback: " + e.getMessage());
-                e.printStackTrace();
+                logger.error("[MailService] Error enviando mail feedback: {}", e.getMessage(), e);
             }
         });
     }
@@ -193,8 +189,7 @@ public final class MailService {
             try {
                 enviarHtmlSync(pasajero.getCorreo(), "Recuperación de clave - SharedTrip", html);
             } catch (Exception e) {
-                System.err.println("[MailService] Error enviando mail recuperar clave: " + e.getMessage());
-                e.printStackTrace();
+                logger.error("[MailService] Error enviando mail recuperar clave: {}", e.getMessage(), e);
             }
         });
     }
@@ -203,7 +198,7 @@ public final class MailService {
         try {
             CompletableFuture.runAsync(task, executor);
         } catch (RejectedExecutionException ree) {
-            System.err.println("[MailService] Tarea de envío rechazada: " + ree.getMessage());
+            logger.warn("[MailService] Tarea de envío rechazada: {}", ree.getMessage(), ree);
         }
     }
 
@@ -226,7 +221,7 @@ public final class MailService {
             template = template.replaceAll("\\{\\{.*?\\}\\}", "");
             return template;
         } catch (IOException e) {
-            System.err.println("[MailService] Error cargando template " + nombreTemplate + ": " + e.getMessage());
+            logger.error("[MailService] Error cargando template {}: {}", nombreTemplate, e.getMessage(), e);
             return "";
         }
     }
@@ -248,12 +243,13 @@ public final class MailService {
             if (!executor.awaitTermination(30, TimeUnit.SECONDS)) {
                 executor.shutdownNow();
                 if (!executor.awaitTermination(30, TimeUnit.SECONDS)) {
-                    System.err.println("[MailService] El executor no terminó.");
+                    logger.error("[MailService] El executor no terminó.");
                 }
             }
         } catch (InterruptedException ie) {
             executor.shutdownNow();
             Thread.currentThread().interrupt();
+            logger.error("[MailService] Shutdown interrumpido: {}", ie.getMessage(), ie);
         }
     }
 }
