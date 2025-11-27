@@ -27,7 +27,7 @@
             background-color: #f4f4f4;
             padding: 15px;
             border-radius: 5px;
-            margin: 15px 0;
+            margin: 15px auto;
             max-width: 700px;
         }
 
