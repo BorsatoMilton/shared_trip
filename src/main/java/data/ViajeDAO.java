@@ -32,10 +32,8 @@ public class ViajeDAO {
                 "INNER JOIN vehiculos veh ON veh.id_vehiculo = v.id_vehiculo_viaje " +
                 "WHERE v.fecha >= CURRENT_DATE AND u.fecha_baja IS NULL AND v.cancelado = 0";
 
-        Connection conn = null;
-
         try {
-            conn = ConnectionDB.getInstancia().getConn();
+            Connection conn = ConnectionDB.getInstancia().getConn();
             try (PreparedStatement stmt = conn.prepareStatement(query);
                  ResultSet rs = stmt.executeQuery()) {
 
@@ -107,28 +105,22 @@ public class ViajeDAO {
                     "ORDER BY v.fecha ASC, v.lugares_disponibles DESC";
         }
 
-        Connection conn = null;
-
         try {
-            conn = ConnectionDB.getInstancia().getConn();
+            Connection conn = ConnectionDB.getInstancia().getConn();
             try (PreparedStatement stmt = conn.prepareStatement(query)) {
                 stmt.setString(1, origen.trim());
                 stmt.setString(2, destino.trim());
 
                 if (tieneFecha && fechaSql != null) {
                     stmt.setDate(3, fechaSql);
-                    try (ResultSet rs = stmt.executeQuery()) {
-                        while (rs.next()) {
-                            viajes.add(mapViajeFromJoin(rs, true));
-                        }
-                    }
-                } else {
-                    try (ResultSet rs = stmt.executeQuery()) {
-                        while (rs.next()) {
-                            viajes.add(mapViajeFromJoin(rs, true));
-                        }
+                }
+
+                try (ResultSet rs = stmt.executeQuery()) {
+                    while (rs.next()) {
+                        viajes.add(mapViajeFromJoin(rs, true));
                     }
                 }
+
                 logger.info("Búsqueda completada - origen: {}, destino: {}, fecha: {}. Resultados: {}",
                         origen, destino, fecha, viajes.size());
             }
@@ -156,10 +148,8 @@ public class ViajeDAO {
                 "INNER JOIN vehiculos veh ON veh.id_vehiculo = v.id_vehiculo_viaje " +
                 "WHERE v.id_viaje = ?";
 
-        Connection conn = null;
-
         try {
-            conn = ConnectionDB.getInstancia().getConn();
+            Connection conn = ConnectionDB.getInstancia().getConn();
             try (PreparedStatement stmt = conn.prepareStatement(query)) {
                 stmt.setInt(1, id_viaje);
                 try (ResultSet rs = stmt.executeQuery()) {
@@ -194,10 +184,8 @@ public class ViajeDAO {
                 "INNER JOIN vehiculos veh ON veh.id_vehiculo = v.id_vehiculo_viaje " +
                 "WHERE v.id_conductor = ?";
 
-        Connection conn = null;
-
         try {
-            conn = ConnectionDB.getInstancia().getConn();
+            Connection conn = ConnectionDB.getInstancia().getConn();
             try (PreparedStatement stmt = conn.prepareStatement(query)) {
                 stmt.setInt(1, u.getIdUsuario());
                 try (ResultSet rs = stmt.executeQuery()) {
@@ -220,10 +208,9 @@ public class ViajeDAO {
         logger.info("Actualizando lugares disponibles para viaje ID: {} - Nueva cantidad: {}", idViaje, cantPasajeros);
 
         String sql = "UPDATE viajes SET lugares_disponibles = ? WHERE id_viaje = ?";
-        Connection conn = null;
 
         try {
-            conn = ConnectionDB.getInstancia().getConn();
+            Connection conn = ConnectionDB.getInstancia().getConn();
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {
                 stmt.setInt(1, cantPasajeros);
                 stmt.setInt(2, idViaje);
@@ -247,10 +234,9 @@ public class ViajeDAO {
         logger.info("Cancelando viaje ID: {}", id_viaje);
 
         String sql = "UPDATE viajes SET cancelado = true WHERE id_viaje = ?";
-        Connection conn = null;
 
         try {
-            conn = ConnectionDB.getInstancia().getConn();
+            Connection conn = ConnectionDB.getInstancia().getConn();
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {
                 stmt.setInt(1, id_viaje);
 
@@ -277,10 +263,9 @@ public class ViajeDAO {
 
         String sql = "UPDATE viajes SET fecha=?, lugares_disponibles=?, origen=?, destino=?, " +
                 "precio_unitario=?, cancelado=?, id_conductor=?, lugar_salida=?, id_vehiculo_viaje=? WHERE id_viaje=?";
-        Connection conn = null;
 
         try {
-            conn = ConnectionDB.getInstancia().getConn();
+            Connection conn = ConnectionDB.getInstancia().getConn();
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {
                 stmt.setDate(1, v.getFecha());
                 stmt.setInt(2, v.getLugares_disponibles());
@@ -313,10 +298,9 @@ public class ViajeDAO {
 
         String sql = "INSERT INTO viajes(fecha, lugares_disponibles, origen, destino, precio_unitario, " +
                 "cancelado, id_conductor, lugar_salida, id_vehiculo_viaje) VALUES (?,?,?,?,?,?,?,?,?)";
-        Connection conn = null;
 
         try {
-            conn = ConnectionDB.getInstancia().getConn();
+            Connection conn = ConnectionDB.getInstancia().getConn();
             try (PreparedStatement stmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
                 stmt.setDate(1, v.getFecha());
                 stmt.setInt(2, v.getLugares_disponibles());
@@ -353,10 +337,9 @@ public class ViajeDAO {
         logger.info("Eliminando viaje ID: {}", v.getIdViaje());
 
         String sql = "DELETE FROM viajes WHERE id_viaje = ?";
-        Connection conn = null;
 
         try {
-            conn = ConnectionDB.getInstancia().getConn();
+            Connection conn = ConnectionDB.getInstancia().getConn();
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {
                 stmt.setInt(1, v.getIdViaje());
 
@@ -387,14 +370,12 @@ public class ViajeDAO {
         v.setCancelado(rs.getBoolean("cancelado"));
         v.setLugar_salida(rs.getString("lugar_salida"));
 
-
         Vehiculo vehiculo = new Vehiculo();
         vehiculo.setId_vehiculo(rs.getInt("id_vehiculo"));
         vehiculo.setPatente(rs.getString("patente"));
         vehiculo.setModelo(rs.getString("modelo"));
         vehiculo.setAnio(rs.getInt("anio"));
         v.setVehiculo(vehiculo);
-
 
         Usuario conductor = new Usuario();
         conductor.setIdUsuario(rs.getInt("conductor_id"));
