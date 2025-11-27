@@ -118,7 +118,6 @@ public class ReservaController {
                 }
             }
         } while (repetido);
-
         Reserva r = new Reserva(fechaString, cantPasajeros, false, viaje, usuario, codigo_verificacion);
 
         reservaDAO.add(r);

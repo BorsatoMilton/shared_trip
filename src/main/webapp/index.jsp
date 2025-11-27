@@ -357,7 +357,7 @@
                                     <%
                                         if (lugaresDisponibles > 0) {
                                     %>
-                                    <form action="reservas" method="post">
+                                    <form action="reservas" method="POST">
                                         <input type="hidden" name="action" value="reserve">
                                         <input type="hidden" name="viajeId" value="<%=viaje.getIdViaje()%>">
                                         <div class="input-group mb-3">

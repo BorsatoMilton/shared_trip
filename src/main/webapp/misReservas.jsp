@@ -114,6 +114,7 @@
                                         Date hoy = new Date();
                                         boolean deshabilitar = reserva.isReserva_cancelada()
                                                 || "CONFIRMADA".equals(reserva.getEstado())
+                                                || "CANCELADA".equals(reserva.getEstado())
                                                 || reserva.getViaje().getFecha().before(hoy);
                             %>
                             <tr class="align-middle">

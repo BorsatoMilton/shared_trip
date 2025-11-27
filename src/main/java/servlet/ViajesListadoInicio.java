@@ -18,13 +18,11 @@ import logic.ViajeController;
 @WebServlet(urlPatterns = {"", "/ViajesListado"})
 public class ViajesListadoInicio extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private ViajeController viajeController;
+    private final ViajeController viajeController = new ViajeController();
 
 
     @Override
-    public void init() throws ServletException {
-        viajeController = new ViajeController();
-    }
+    public void init() throws ServletException {}
 
     public ViajesListadoInicio() {
         super();

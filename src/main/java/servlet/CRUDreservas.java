@@ -1,5 +1,6 @@
 package servlet;
 
+import data.exceptions.DataAccessException;
 import entidades.Reserva;
 import entidades.Usuario;
 import entidades.Vehiculo;
@@ -25,7 +26,7 @@ public class CRUDreservas extends HttpServlet {
     private static final long serialVersionUID = 1L;
     ReservaController reservaController = new ReservaController();
     ViajeController viajeController = new ViajeController();
-    MailService mailService = new MailService();
+    MailService mailService = MailService.getInstance();
     private final Formatters formatters = new Formatters();
 
 
@@ -51,7 +52,6 @@ public class CRUDreservas extends HttpServlet {
             LinkedList<Reserva> reservas = reservaController.getReservasUsuario(usuario);
             session.setAttribute("misreservas", reservas);
         } catch (Exception e) {
-            e.printStackTrace();
             session.setAttribute("error", "Ocurrió un error al obtener las reservas.");
         }
         request.getRequestDispatcher("misReservas.jsp").forward(request, response);
@@ -61,38 +61,44 @@ public class CRUDreservas extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        System.out.println("POST recibido en /reservas, action=" + request.getParameter("action"));
+
         HttpSession session = request.getSession();
 
         if (session == null || session.getAttribute("usuario") == null) {
             response.sendRedirect(request.getContextPath() + "/login.jsp");
             return;
         }
+
         Usuario usuario = (Usuario) session.getAttribute("usuario");
         String action = request.getParameter("action");
+        String redirectPage = "/";
 
         try {
             if ("reserve".equals(action)) {
                 reservar(request, usuario);
                 session.setAttribute("mensaje", "Reserva realizada con éxito");
+                redirectPage = "/";
             } else if ("cancelar".equals(action)) {
                 cancelarReserva(request, usuario);
                 session.setAttribute("mensaje", "Reserva cancelada con éxito");
+                redirectPage = "/reservas";
             } else if ("validate".equals(action)) {
                 validarReserva(request);
                 session.setAttribute("mensaje", "Reserva validada");
+                redirectPage = "/viajes";
             }
         } catch (Exception e) {
             session.setAttribute("error", "Error: " + e.getMessage());
+            if ("reserve".equals(action)) {
+                redirectPage = "/";
+            } else if ("cancelar".equals(action)) {
+                redirectPage = "/misReservas.jsp";
+            } else if ("validate".equals(action)) {
+                redirectPage = "/misViajes.jsp";
+            }
         }
-
-        if ("reserve".equals(action)) {
-            request.getRequestDispatcher("/").forward(request, response);
-        } else if ("cancelar".equals(action)) {
-            request.getRequestDispatcher("misReservas.jsp").forward(request, response);
-        } else if ("validate".equals(action)) {
-            request.getRequestDispatcher("misViajes.jsp").forward(request, response);
-        }
-
+        response.sendRedirect(request.getContextPath() + redirectPage);
     }
 
     private void reservar(HttpServletRequest request, Usuario usuario) throws Exception {
@@ -122,9 +128,12 @@ public class CRUDreservas extends HttpServlet {
             throw new Exception("La cantidad de pasajeros debe ser mayor a 0");
         }
 
-        Reserva reserva = reservaController.nuevaReserva(viajeId, cantPasajeros, usuario);
-
-        enviarNotificacionesReserva(reserva, usuario);
+        try {
+            Reserva reserva = reservaController.nuevaReserva(viajeId, cantPasajeros, usuario);
+            enviarNotificacionesReserva(reserva, usuario);
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
+        }
     }
 
     private void cancelarReserva(HttpServletRequest request, Usuario usuario) throws Exception {
@@ -142,8 +151,13 @@ public class CRUDreservas extends HttpServlet {
             throw new Exception("Formato de número inválido");
         }
 
-        Reserva reserva = reservaController.cancelarReserva(idReserva, usuario.getIdUsuario());
-        enviarNotificacionesCancelacionReserva(reserva, usuario);
+        try {
+            Reserva reserva = reservaController.cancelarReserva(idReserva, usuario.getIdUsuario());
+            enviarNotificacionesCancelacionReserva(reserva, usuario);
+        }catch (Exception e) {
+            throw new Exception(e.getMessage());
+        }
+
     }
 
     private void validarReserva(HttpServletRequest request) throws Exception {
@@ -249,9 +263,7 @@ public class CRUDreservas extends HttpServlet {
                     totalReservas
             );
 
-        } catch (MessagingException e) {
-            System.err.println("Error enviando emails de notificación: " + e.getMessage());
-        } catch (Exception e) {
+        }catch (Exception e) {
             System.err.println("Error preparando notificaciones: " + e.getMessage());
         }
     }
@@ -283,8 +295,6 @@ public class CRUDreservas extends HttpServlet {
                     nuevoTotalReservas
             );
 
-        } catch (MessagingException e) {
-            System.err.println("Error enviando emails de cancelación: " + e.getMessage());
         } catch (Exception e) {
             System.err.println("Error preparando notificaciones de cancelación: " + e.getMessage());
         }

@@ -7,12 +7,10 @@ import entidades.Feedback;
 import entidades.Reserva;
 import entidades.Viaje;
 import entidades.Usuario;
-import jakarta.mail.MessagingException;
-
 import java.util.LinkedList;
 
 public class FeedbackService {
-    private MailService mailService = new MailService();
+    MailService mailService = MailService.getInstance();
     private FeedbackDAO feedbackDAO = new FeedbackDAO();
     private Generators generators = new Generators();
 
@@ -49,8 +47,6 @@ public class FeedbackService {
                     token
                     );
 
-        } catch (MessagingException e) {
-            System.err.println("Error enviando emails de feedback: " + e.getMessage());
         } catch (Exception e) {
             System.err.println("Error preparando notificaciones de feedback: " + e.getMessage());
         }

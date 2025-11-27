@@ -16,8 +16,8 @@ import java.io.IOException;
 @WebServlet("/feedback")
 public class CRUDfeedback extends HttpServlet {
 
-    private ReservaController reservaController = new ReservaController();
-    private FeedbackController feedbackController = new FeedbackController();
+    private final ReservaController reservaController = new ReservaController();
+    private final FeedbackController feedbackController = new FeedbackController();
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {

@@ -22,7 +22,7 @@ import java.io.IOException;
 public class Auth extends HttpServlet {
     private static final long serialVersionUID = 1L;
     UserController userController = new UserController();
-    MailService mailService = new MailService();
+    MailService mailService = MailService.getInstance();
     Generators generators = new Generators();
     PasswordResetController passwordResetController = new PasswordResetController();
     InputValidator inputValidator = new InputValidator();

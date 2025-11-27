@@ -33,7 +33,7 @@ public class CRUDviajes extends HttpServlet {
     private final UserController usuarioCtrl = new UserController();
     private final VehiculoController vehiculoCtrl = new VehiculoController();
     private final ReservaController reservaCtrl = new ReservaController();
-    private final MailService mailService = new MailService();
+    private final MailService mailService = MailService.getInstance();
     private final Formatters formatters = new Formatters();
 
     public CRUDviajes() {

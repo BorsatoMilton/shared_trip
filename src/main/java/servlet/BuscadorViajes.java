@@ -17,7 +17,7 @@ import logic.ViajeController;
 @WebServlet("/buscar")
 public class BuscadorViajes extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private ViajeController viajeController = new ViajeController();
+    private final ViajeController viajeController = new ViajeController();
 
     /**
      * @see HttpServlet#HttpServlet()
@@ -27,10 +27,6 @@ public class BuscadorViajes extends HttpServlet {
         // TODO Auto-generated constructor stub
     }
 
-    /**
-     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
-     * response)
-     */
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
@@ -53,11 +49,5 @@ public class BuscadorViajes extends HttpServlet {
         }
     }
 
-
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        // TODO Auto-generated method stub
-        doGet(request, response);
-    }
 
 }

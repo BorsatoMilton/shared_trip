@@ -1,4 +1,4 @@
-package services.listeners;
+package servlet.listeners;
 
 import services.FeedbackService;
 
@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 @WebListener
 public class CronFeedbackListener implements ServletContextListener {
     private ScheduledExecutorService scheduler;
-    private FeedbackService feedbackService = new FeedbackService();
+    private final FeedbackService feedbackService = new FeedbackService();
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
