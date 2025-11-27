@@ -1,22 +1,14 @@
 package servlet;
 
 import entidades.Reserva;
-import entidades.Rol;
 import entidades.Usuario;
 import entidades.Vehiculo;
 import entidades.Viaje;
 import jakarta.mail.MessagingException;
 import logic.ReservaController;
-import logic.RolController;
-import logic.UserController;
 import logic.ViajeController;
 import utils.Formatters;
 import utils.MailService;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import data.ViajeDAO;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -35,9 +27,6 @@ public class CRUDreservas extends HttpServlet {
     ViajeController viajeController = new ViajeController();
     MailService mailService = new MailService();
     private final Formatters formatters = new Formatters();
-    private static final Logger logger = LoggerFactory.getLogger(ViajeDAO.class);
-
-    
 
 
     public CRUDreservas() {
@@ -58,16 +47,21 @@ public class CRUDreservas extends HttpServlet {
 
         Usuario usuario = (Usuario) session.getAttribute("usuario");
 
-        LinkedList<Reserva> reservas = reservaController.getReservasUsuario(usuario);
-
-        request.getSession().setAttribute("misreservas", reservas);
+        try {
+            LinkedList<Reserva> reservas = reservaController.getReservasUsuario(usuario);
+            session.setAttribute("misreservas", reservas);
+        } catch (Exception e) {
+            e.printStackTrace();
+            session.setAttribute("error", "Ocurrió un error al obtener las reservas.");
+        }
         request.getRequestDispatcher("misReservas.jsp").forward(request, response);
     }
+
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        HttpSession session = request.getSession(false);
+        HttpSession session = request.getSession();
 
         if (session == null || session.getAttribute("usuario") == null) {
             response.sendRedirect(request.getContextPath() + "/login.jsp");
@@ -79,23 +73,22 @@ public class CRUDreservas extends HttpServlet {
         try {
             if ("reserve".equals(action)) {
                 reservar(request, usuario);
-                request.setAttribute("mensaje", "Reserva realizada con éxito");
+                session.setAttribute("mensaje", "Reserva realizada con éxito");
             } else if ("cancelar".equals(action)) {
                 cancelarReserva(request, usuario);
-                request.setAttribute("mensaje", "Reserva cancelada con éxito");
+                session.setAttribute("mensaje", "Reserva cancelada con éxito");
             } else if ("validate".equals(action)) {
                 validarReserva(request);
-                request.setAttribute("mensaje", "Reserva validada");
+                session.setAttribute("mensaje", "Reserva validada");
             }
         } catch (Exception e) {
-            request.setAttribute("error", "Error: " + e.getMessage());
-            System.out.println("Error en operación: " + e.getMessage());
+            session.setAttribute("error", "Error: " + e.getMessage());
         }
 
         if ("reserve".equals(action)) {
             request.getRequestDispatcher("/").forward(request, response);
         } else if ("cancelar".equals(action)) {
-            request.getRequestDispatcher( "misReservas.jsp").forward(request, response);
+            request.getRequestDispatcher("misReservas.jsp").forward(request, response);
         } else if ("validate".equals(action)) {
             request.getRequestDispatcher("misViajes.jsp").forward(request, response);
         }
@@ -183,11 +176,11 @@ public class CRUDreservas extends HttpServlet {
             throw new Exception("El viaje no existe");
         }
 
-        if(viaje.getConductor().getIdUsuario() != ((Usuario) request.getSession().getAttribute("usuario")).getIdUsuario()) {
+        if (viaje.getConductor().getIdUsuario() != ((Usuario) request.getSession().getAttribute("usuario")).getIdUsuario()) {
             throw new Exception("No tienes permisos para validar reservas");
         }
 
-        if(viaje.isCancelado()){
+        if (viaje.isCancelado()) {
             throw new Exception("El viaje esta cancelado");
         }
 
@@ -206,9 +199,9 @@ public class CRUDreservas extends HttpServlet {
 
         for (Reserva reserva : reservas) {
             if (reserva.getCodigo_reserva() == codigoValidacion) {
-                if("CONFIRMADA".equalsIgnoreCase(reserva.getEstado())) {
+                if ("CONFIRMADA".equalsIgnoreCase(reserva.getEstado())) {
                     throw new Exception("Esta reserva ya esta confirmada");
-                }else if ("CANCELADA".equalsIgnoreCase(reserva.getEstado())) {
+                } else if ("CANCELADA".equalsIgnoreCase(reserva.getEstado())) {
                     throw new Exception("Esta reserva esta cancelada");
                 }
                 reservaEncontrada = true;
@@ -239,7 +232,7 @@ public class CRUDreservas extends HttpServlet {
             int cod_reserva = reserva.getCodigo_reserva();
             String datosViaje = formatters.formatDatosViaje(viaje);
             String datosChofer = formatters.formatDatosChofer(chofer, vehiculo);
-            String datosPasajero = formatters.formatDatosPasajero(reserva.getPasajero(),reserva.getCantidad_pasajeros_reservada());
+            String datosPasajero = formatters.formatDatosPasajero(reserva.getPasajero(), reserva.getCantidad_pasajeros_reservada());
 
             mailService.notificarReservaRealizadaUsuario(
                     usuario.getCorreo(),
@@ -273,7 +266,7 @@ public class CRUDreservas extends HttpServlet {
 
             String datosViaje = formatters.formatDatosViaje(viaje);
             String datosChofer = formatters.formatDatosChofer(chofer, vehiculo);
-            String datosPasajero = formatters.formatDatosPasajero(reserva.getPasajero(),reserva.getCantidad_pasajeros_reservada());
+            String datosPasajero = formatters.formatDatosPasajero(reserva.getPasajero(), reserva.getCantidad_pasajeros_reservada());
 
 
             mailService.notificarCancelacionReservaUsuario(

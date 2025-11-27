@@ -75,7 +75,7 @@
 
                 <div class="card-body">
                     <%
-                        String mensaje = (String) request.getAttribute("mensaje");
+                        String mensaje = (String) session.getAttribute("mensaje");
                         if (mensaje != null) {
                     %>
                     <div class="alert alert-info alert-dismissible fade show" role="alert">
@@ -84,10 +84,10 @@
                                 aria-label="Close"></button>
                     </div>
                     <%
-                            request.removeAttribute("mensaje");
+                            session.removeAttribute("mensaje");
                         }
 
-                        String error = (String) request.getAttribute("error");
+                        String error = (String) session.getAttribute("error");
                         if (error != null) {
                     %>
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -96,18 +96,16 @@
                                 aria-label="Close"></button>
                     </div>
                     <%
-                            request.removeAttribute("error");
+                            session.removeAttribute("error");
                         }
                     %>
                     <div class="scrollable-table">
                         <table class="table table-hover table-borderless">
                             <thead class="table-light">
                             <tr>
-                                <th scope="col">ID Vehículo</th>
                                 <th scope="col">Patente</th>
                                 <th scope="col">Modelo</th>
                                 <th scope="col">Año</th>
-                                <th scope="col">Id Usuario Dueño</th>
                                 <th scope="col" class="text-end">Acciones</th>
                             </tr>
                             </thead>
@@ -118,11 +116,9 @@
                                     for (Vehiculo vehiculo : vehiculos) {
                             %>
                             <tr class="align-middle">
-                                <td><%= vehiculo.getId_vehiculo() %></td>
                                 <td><%= vehiculo.getPatente() %></td>
                                 <td><%= vehiculo.getModelo() %></td>
                                 <td><%= vehiculo.getAnio() %></td>
-                                <td><%= vehiculo.getUsuario_duenio_id() %></td>
                                 <td class="text-end action-buttons">
                                     <button type="button"
                                             class="btn btn-sm btn-warning btn-editar"

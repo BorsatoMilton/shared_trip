@@ -33,50 +33,59 @@ public class CRUDusuarioAdmin extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-    	 HttpSession session = request.getSession(false);
+        HttpSession session = request.getSession(false);
 
-    	    if (session == null || session.getAttribute("usuario") == null) {
-    	        response.sendRedirect(request.getContextPath() + "/login.jsp");
-    	        return;
-    	    }
+        if (session == null || session.getAttribute("usuario") == null) {
+            response.sendRedirect(request.getContextPath() + "/login.jsp");
+            return;
+        }
 
-    	    Usuario usuario = (Usuario) session.getAttribute("usuario");
+        Usuario usuario = (Usuario) session.getAttribute("usuario");
 
-    	    if (usuario.getRol() == 1) { 
-    	        Usuario usuarioActualizado = usuarioCtrl.getOneById(usuario.getIdUsuario());
-    	        
-    	        if (usuarioActualizado != null) {
-    	            
-    	            if (usuarioActualizado.getNombreRol() == null) {
-    	                LinkedList<Rol> roles = rolCtrl.getAll();
-    	                for (Rol r : roles) {
-    	                    if (usuarioActualizado.getRol() == r.getIdRol()) {
-    	                        usuarioActualizado.setNombreRol(r.getNombre());
-    	                        break;
-    	                    }
-    	                }
-    	            }
-    	            session.setAttribute("usuario", usuarioActualizado);
-    	        }
+        if (usuario.getRol() != 1) {
+            response.sendRedirect(request.getContextPath() + "/");
+            return;
+        }
 
-    	        LinkedList<Usuario> usuarios = usuarioCtrl.getAll();
-    	        LinkedList<Rol> roles = rolCtrl.getAll();
+        try {
 
-    	 
-    	        for (Usuario u : usuarios) {
-    	            for (Rol r : roles) {
-    	                if (u.getRol() == r.getIdRol()) {
-    	                    u.setNombreRol(r.getNombre());
-    	                }
-    	            }
-    	        }
+            Usuario usuarioActualizado = usuarioCtrl.getOneById(usuario.getIdUsuario());
 
-    	        request.setAttribute("usuarios", usuarios);
-    	        request.setAttribute("roles", roles);
-    	        request.getRequestDispatcher("usuarios.jsp").forward(request, response);
-    	    } else {
-    	        response.sendRedirect(request.getContextPath() + "/");
-    	    }
+            if (usuarioActualizado != null) {
+
+                if (usuarioActualizado.getNombreRol() == null) {
+                    LinkedList<Rol> roles = rolCtrl.getAll();
+                    for (Rol r : roles) {
+                        if (usuarioActualizado.getRol() == r.getIdRol()) {
+                            usuarioActualizado.setNombreRol(r.getNombre());
+                            break;
+                        }
+                    }
+                }
+
+                session.setAttribute("usuario", usuarioActualizado);
+            }
+
+            LinkedList<Usuario> usuarios = usuarioCtrl.getAll();
+            LinkedList<Rol> roles = rolCtrl.getAll();
+
+            for (Usuario u : usuarios) {
+                for (Rol r : roles) {
+                    if (u.getRol() == r.getIdRol()) {
+                        u.setNombreRol(r.getNombre());
+                    }
+                }
+            }
+
+            request.setAttribute("usuarios", usuarios);
+            request.setAttribute("roles", roles);
+            request.getRequestDispatcher("usuarios.jsp").forward(request, response);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            session.setAttribute("error", "Error cargando usuarios.");
+            response.sendRedirect(request.getContextPath() + "/");
+        }
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -90,28 +99,29 @@ public class CRUDusuarioAdmin extends HttpServlet {
         try {
             if ("update".equals(action)) {
                 actualizarUsuario(request, logueado);
-                request.setAttribute("mensaje", "Usuario actualizado con éxito");
+                session.setAttribute("mensaje", "Usuario actualizado con éxito");
 
             } else if ("delete".equals(action)) {
                 eliminarUsuario(request, logueado);
-                request.setAttribute("mensaje", "Usuario eliminado con éxito");
+                session.setAttribute("mensaje", "Usuario eliminado con éxito");
 
             } else if ("add".equals(action)) {
                 crearUsuario(request, logueado);
-                request.setAttribute("mensaje", "Usuario creado con éxito");
+                session.setAttribute("mensaje", "Usuario creado con éxito");
 
             } else if ("register".equals(action)) {
                 registrarUsuario(request);
-                request.setAttribute("mensaje", "Usuario registrado con éxito");
+                session.setAttribute("mensaje", "Usuario registrado con éxito");
+                response.sendRedirect(request.getContextPath() + "login.jsp");
             }
 
         } catch (Exception e) {
-            request.setAttribute("error", e.getMessage());
+            session.setAttribute("error", e.getMessage());
             System.out.println("Error en operación: " + e.getMessage());
+            preservarDatosFormulario(request, session);
         }
 
         if ("register".equals(action)) {
-            preservarDatosFormulario(request, session);
             response.sendRedirect(request.getContextPath() + "/register.jsp");
             return;
         }

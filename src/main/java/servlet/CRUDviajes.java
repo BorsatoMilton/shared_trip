@@ -84,7 +84,7 @@ public class CRUDviajes extends HttpServlet {
             request.getRequestDispatcher("misViajes.jsp").forward(request, response);
 
         } catch (Exception e) {
-            request.setAttribute("error", "Error al cargar los viajes: " + e.getMessage());
+            session.setAttribute("error", "Error al cargar los viajes: " + e.getMessage());
             response.sendRedirect(request.getContextPath() + "/");
         }
 
@@ -106,23 +106,23 @@ public class CRUDviajes extends HttpServlet {
         try {
             if ("update".equals(action)) {
                 actualizarViaje(request, usuario);
-                request.setAttribute("mensaje", "Viaje actualizado con éxito");
+                session.setAttribute("mensaje", "Viaje actualizado con éxito");
 
             } else if ("delete".equals(action)) {
                 eliminarViaje(request, usuario);
-                request.setAttribute("mensaje", "Viaje eliminado con éxito");
+                session.setAttribute("mensaje", "Viaje eliminado con éxito");
 
             } else if ("add".equals(action)) {
                 crearViaje(request, usuario);
-                request.setAttribute("mensaje", "Viaje creado con éxito");
+                session.setAttribute("mensaje", "Viaje creado con éxito");
 
             } else if ("cancelarViaje".equals(action)) {
                 cancelarViaje(request, usuario);
-                request.setAttribute("mensaje", "Viaje cancelado con éxito");
+                session.setAttribute("mensaje", "Viaje cancelado con éxito");
             }
 
         } catch (Exception e) {
-            request.setAttribute("error", e.getMessage());
+            session.setAttribute("error", e.getMessage());
             System.out.println("Error en " + action + ": " + e.getMessage());
             e.printStackTrace();
         }
@@ -409,8 +409,8 @@ public class CRUDviajes extends HttpServlet {
             LinkedList<Reserva> reservas = reservaCtrl.getReservasPorViaje(viaje.getIdViaje());
 
             String datosViaje = formatters.formatDatosViaje(viaje);
-            String datosChofer = formatters.formatDatosChofer(chofer, 
-                    viaje.getVehiculo() != null ? viaje.getVehiculo().getPatente() : null);
+            String datosChofer = formatters.formatDatosChofer(chofer,
+                    viaje.getVehiculo() != null ? viaje.getVehiculo() : null);
 
             int totalPasajeros = reservas.stream()
                     .mapToInt(Reserva::getCantidad_pasajeros_reservada)
@@ -442,41 +442,5 @@ public class CRUDviajes extends HttpServlet {
             System.err.println("Error preparando notificaciones de cancelación de viaje: " + e.getMessage());
         }
     }
-
-//    private String formatDatosViaje(Viaje viaje) {
-//        if (viaje == null) {
-//            return "Información del viaje no disponible";
-//        }
-//
-//        String origen = viaje.getOrigen() != null ? viaje.getOrigen() : "No especificado";
-//        String destino = viaje.getDestino() != null ? viaje.getDestino() : "No especificado";
-//        String fecha = viaje.getFecha() != null ? viaje.getFecha().toString() : "No especificado";
-//        String precio = viaje.getPrecio_unitario() != null ? String.valueOf(viaje.getPrecio_unitario()) : "No especificado";
-//        String lugar_salida = viaje.getLugar_salida() != null ? viaje.getLugar_salida() : "No especificado";
-//
-//        return String.format(
-//                "Origen: %s<br>Destino: %s<br>Lugar de Salida: %s<br>Fecha: %s<br>Precio por asiento: $%s",
-//                origen, destino, lugar_salida, fecha, precio
-//        );
-//    }
-
-//    private String formatDatosChofer(Usuario chofer, String patente) {
-//        if (chofer == null) {
-//            return "Información del chofer no disponible";
-//        }
-//
-//        String nombreCompleto = (chofer.getNombre() != null ? chofer.getNombre() : "No especificado")
-//                + (chofer.getApellido() != null ? " " + chofer.getApellido() : "");
-//        String telefono = chofer.getTelefono() != null ? chofer.getTelefono() : "No especificado";
-//        String correo = chofer.getCorreo() != null ? chofer.getCorreo() : "No especificado";
-//        String vehiculo = patente != null ? patente : "No especificado";
-//
-//        return String.format(
-//                "Nombre: %s<br>Teléfono: %s<br>Email: %s<br>Vehículo: %s",
-//                nombreCompleto, telefono, correo, vehiculo
-//        );
-//    }
-
-
 
 }

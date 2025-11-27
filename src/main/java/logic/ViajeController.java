@@ -6,6 +6,7 @@ import java.util.LinkedList;
 
 import data.*;
 import entidades.*;
+import utils.DataAccessException;
 
 public class ViajeController {
     private final ViajeDAO viajeDAO;
@@ -26,18 +27,18 @@ public class ViajeController {
     }
 
     public Viaje getOne(int id) {
-        return this.viajeDAO.getByViaje(id);
+        return viajeDAO.getByViaje(id);
     }
 
     public LinkedList<Viaje> getViajesUsuario(Usuario u) {
-        return this.viajeDAO.getByUser(u);
+        return viajeDAO.getByUser(u);
 
     }
 
     public void actualizarCantidad(int idViaje, int cantidad) {
         Viaje viaje = this.getOne(idViaje);
         int nueva_cant = viaje.getLugares_disponibles() - (cantidad);
-        this.viajeDAO.updateCantidad(idViaje, nueva_cant);
+        viajeDAO.updateCantidad(idViaje, nueva_cant);
     }
 
     public void actualizarViaje(int idViaje, Date fecha, int lugares, String origen,
@@ -104,14 +105,6 @@ public class ViajeController {
             throw new Exception("No tiene permisos para eliminar este viaje");
         }
 
-
-        /*int reservasActivas = viajeDAO.getReservasActivas(idViaje);
-        if (reservasActivas > 0) {
-            throw new Exception("No se puede eliminar un viaje con " + reservasActivas +
-                    " reservas activas. Cancélelo en su lugar.");
-        }
-        */
-
         viajeDAO.delete(viaje);
     }
 
@@ -136,12 +129,6 @@ public class ViajeController {
         if (fechaViaje.isBefore(LocalDate.now())) {
             throw new Exception("No se puede cancelar un viaje que ya pasó");
         }
-
-        /*int reservasActivas = viajeDAO.getReservasActivas(idViaje);
-        if (reservasActivas > 0) {
-            // TODO: Enviar notificaciones/emails a pasajeros
-            System.out.println("NOTIFICAR: " + reservasActivas + " pasajeros afectados");
-        } */
 
         boolean cancelado = viajeDAO.cancelarViaje(idViaje);
         if (!cancelado) {
@@ -168,10 +155,6 @@ public class ViajeController {
             throw new Exception("La fecha del viaje no puede ser en el pasado");
         }
 
-        /*if (tieneViajeEnFecha(conductor.getIdUsuario(), vehiculoId, fecha)) {
-            throw new Exception("Ya tiene un viaje programado para esa fecha con ese vehículo");
-        }*/
-
         Viaje viaje = new Viaje();
         viaje.setFecha(fecha);
         viaje.setLugares_disponibles(lugares);
@@ -183,13 +166,8 @@ public class ViajeController {
         viaje.setVehiculo(vehiculo);
         viaje.setCancelado(false);
 
+
         viajeDAO.add(viaje);
+
     }
-
-
-    /*private boolean tieneViajeEnFecha(int idConductor, int idVehiculo, Date fecha) {
-        return viajeDAO.existeViajeEnFecha(idConductor, idVehiculo, fecha);
-    }*/
-
-
 }

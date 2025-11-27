@@ -10,6 +10,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 @WebServlet("/feedback")
@@ -22,9 +23,10 @@ public class CRUDfeedback extends HttpServlet {
             throws ServletException, IOException {
 
         String token = request.getParameter("t");
+        HttpSession session = request.getSession();
 
         if (token == null || token.trim().isEmpty()) {
-            request.setAttribute("errorMessage", "Token inválido");
+            session.setAttribute("error", "Token inválido");
             request.getRequestDispatcher("/index.jsp").forward(request, response);
             return;
         }
@@ -34,7 +36,7 @@ public class CRUDfeedback extends HttpServlet {
             String validationError = validarReserva(reserva);
 
             if (validationError != null) {
-                request.setAttribute("error", validationError);
+                session.setAttribute("error", validationError);
                 request.getRequestDispatcher("/index.jsp").forward(request, response);
                 return;
             }
@@ -45,7 +47,7 @@ public class CRUDfeedback extends HttpServlet {
 
         } catch (Exception e) {
             e.printStackTrace();
-            request.setAttribute("errorMessage", "Error al buscar la reserva");
+            session.setAttribute("error", "Error al buscar la reserva");
             request.getRequestDispatcher("/index.jsp").forward(request, response);
         }
     }
@@ -53,9 +55,10 @@ public class CRUDfeedback extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String token = request.getParameter("t");
         String puntuacionStr = request.getParameter("puntuacion");
+        HttpSession session = request.getSession();
 
         if (token == null || token.trim().isEmpty() || puntuacionStr == null || puntuacionStr.trim().isEmpty()) {
-            request.setAttribute("errorMessage", "Faltan datos obligatorios.");
+            session.setAttribute("error", "Faltan datos obligatorios.");
             request.setAttribute("token", token);
             request.getRequestDispatcher("/feedback.jsp").forward(request, response);
             return;
@@ -66,7 +69,7 @@ public class CRUDfeedback extends HttpServlet {
             puntuacion = Integer.parseInt(puntuacionStr);
             if (puntuacion < 1 || puntuacion > 5) throw new NumberFormatException();
         } catch (NumberFormatException ex) {
-            request.setAttribute("errorMessage", "Puntuación inválida.");
+            session.setAttribute("error", "Puntuación inválida.");
             request.setAttribute("token", token);
             request.getRequestDispatcher("/feedback.jsp").forward(request, response);
             return;
@@ -77,18 +80,18 @@ public class CRUDfeedback extends HttpServlet {
             String validationError = validarReserva(reserva);
 
             if (validationError != null) {
-                request.setAttribute("error", validationError);
+                session.setAttribute("error", validationError);
                 request.getRequestDispatcher("/index.jsp").forward(request, response);
                 return;
             }
 
             feedbackController.guardarFeedback(puntuacion, token);
-            request.setAttribute("mensaje", "Feedback otorgado exitosamente!");
+            session.setAttribute("mensaje", "Feedback otorgado exitosamente!");
             response.sendRedirect(request.getContextPath() + "/index.jsp");
 
         } catch (Exception e) {
             e.printStackTrace();
-            request.setAttribute("errorMessage", "Error al guardar el feedback");
+            session.setAttribute("error", "Error al guardar el feedback");
             request.setAttribute("token", token);
             request.getRequestDispatcher("/feedback.jsp").forward(request, response);
         }

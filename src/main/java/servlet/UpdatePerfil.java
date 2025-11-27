@@ -29,31 +29,43 @@ public class UpdatePerfil extends HttpServlet {
     }
 
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
-        if (request.getSession().getAttribute("usuario") == null) {
+        HttpSession session = request.getSession(false);
+
+        if (session == null || session.getAttribute("usuario") == null) {
             response.sendRedirect(request.getContextPath() + "/login.jsp");
             return;
         }
-        Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
-        int idUsuario = usuario.getIdUsuario();
-        
-        Usuario usuarioNuevo = usuarioCtrl.getOneById(idUsuario);
-        
-        if (usuarioNuevo != null && usuarioNuevo.getNombreRol() == null) {
-            LinkedList<Rol> roles = rolCtrl.getAll();
-            for (Rol r : roles) {
-                if (usuarioNuevo.getRol() == r.getIdRol()) {
-                    usuarioNuevo.setNombreRol(r.getNombre());
-                    break;
+
+        try {
+            Usuario usuario = (Usuario) session.getAttribute("usuario");
+            int idUsuario = usuario.getIdUsuario();
+
+            Usuario usuarioNuevo = usuarioCtrl.getOneById(idUsuario);
+
+            if (usuarioNuevo != null && usuarioNuevo.getNombreRol() == null) {
+                LinkedList<Rol> roles = rolCtrl.getAll();
+                for (Rol r : roles) {
+                    if (usuarioNuevo.getRol() == r.getIdRol()) {
+                        usuarioNuevo.setNombreRol(r.getNombre());
+                        break;
+                    }
                 }
             }
+
+            session.setAttribute("usuario", usuarioNuevo);
+
+            response.sendRedirect(request.getContextPath() + "/perfil.jsp");
+
+        } catch (Exception e) {
+            session.setAttribute("error", "Error al cargar el perfil. Intente de nuevo más tarde.");
+
+            response.sendRedirect(request.getContextPath() + "/");
         }
-        
-        request.getSession().setAttribute("usuario", usuarioNuevo);
-        response.sendRedirect(request.getContextPath() + "/perfil.jsp");
     }
-    
+
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
@@ -64,10 +76,10 @@ public class UpdatePerfil extends HttpServlet {
          try {
              if ("profile".equals(action)) {
                  actualizarUsuario(request, logueado);
-                 request.setAttribute("mensaje", "Usuario actualizado con éxito");
+                 session.setAttribute("mensaje", "Usuario actualizado con éxito");
              } else if ("password".equals(action)) {
                  actualizarClave(request, logueado);
-                 request.setAttribute("mensaje", "Clave actualizada con éxito");
+                 session.setAttribute("mensaje", "Clave actualizada con éxito");
              } else {
                  throw new Exception("No se especifico la acción");
              }
@@ -88,8 +100,7 @@ public class UpdatePerfil extends HttpServlet {
              }
 
          } catch (Exception e) {
-             request.setAttribute("error", "Error: " + e.getMessage());
-             System.out.println("Error en editarUsuario: " + e.getMessage());
+             session.setAttribute("error", "Error: " + e.getMessage());
          }
 
          request.getRequestDispatcher("perfil.jsp").forward(request, response);

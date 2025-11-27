@@ -68,7 +68,7 @@
 
                 <div class="card-body">
                     <%
-                        String mensaje = (String) request.getAttribute("mensaje");
+                        String mensaje = (String) session.getAttribute("mensaje");
                         if (mensaje != null) {
                     %>
                     <div class="alert alert-info alert-dismissible fade show" role="alert">
@@ -77,10 +77,10 @@
                                 aria-label="Close"></button>
                     </div>
                     <%
-                            request.removeAttribute("mensaje");
+                            session.removeAttribute("mensaje");
                         }
 
-                        String error = (String) request.getAttribute("error");
+                        String error = (String) session.getAttribute("error");
                         if (error != null) {
                     %>
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -89,7 +89,7 @@
                                 aria-label="Close"></button>
                     </div>
                     <%
-                            request.removeAttribute("error");
+                            session.removeAttribute("error");
                         }
                     %>
                     <div class="scrollable-table">
