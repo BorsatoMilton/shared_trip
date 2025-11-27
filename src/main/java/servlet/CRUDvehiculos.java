@@ -19,9 +19,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-/**
- * Servlet implementation class CRUDvehiculos
- */
 @WebServlet("/vehiculos")
 public class CRUDvehiculos extends HttpServlet {
     private static final long serialVersionUID = 1L;
@@ -50,7 +47,7 @@ public class CRUDvehiculos extends HttpServlet {
                 vehiculos = vehiculoCtrl.getVehiculosUsuario(usuario);
             } else {
                 vehiculos = new LinkedList<>();
-                request.setAttribute("error", "No tiene permisos para ver vehículos");
+                session.setAttribute("error", "No tiene permisos para ver vehículos");
             }
 
             request.setAttribute("vehiculos", vehiculos);
@@ -58,7 +55,7 @@ public class CRUDvehiculos extends HttpServlet {
 
         } catch (Exception e) {
             log.error("Error en doGet de vehiculos: ", e);
-            request.setAttribute("error", "Error al cargar los vehículos");
+            session.setAttribute("error", "Error al cargar los vehículos");
             response.sendRedirect(request.getContextPath() + "/");
         }
     }
@@ -79,22 +76,22 @@ public class CRUDvehiculos extends HttpServlet {
         try {
             if ("update".equals(action)) {
                 actualizarVehiculo(request, usuario);
-                request.setAttribute("mensaje", "Vehículo actualizado con éxito");
+                session.setAttribute("mensaje", "Vehículo actualizado con éxito");
 
             } else if ("delete".equals(action)) {
                 eliminarVehiculo(request, usuario);
-                request.setAttribute("mensaje", "Vehículo eliminado con éxito");
+                session.setAttribute("mensaje", "Vehículo eliminado con éxito");
 
             } else if ("add".equals(action)) {
                 crearVehiculo(request, usuario);
-                request.setAttribute("mensaje", "Vehículo creado con éxito");
+                session.setAttribute("mensaje", "Vehículo creado con éxito");
 
             } else {
                 throw new Exception("Acción no válida");
             }
 
         } catch (Exception e) {
-            request.setAttribute("error", e.getMessage());
+            session.setAttribute("error", e.getMessage());
             log.error("Error en {} vehiculo: ", action, e);
         }
 
@@ -127,7 +124,6 @@ public class CRUDvehiculos extends HttpServlet {
             throw new Exception("Formato de patente inválido. Use estilos como: ABC123 o AB123CD");
         }
 
-
         int anio;
         try {
             anio = Integer.parseInt(anioStr);
@@ -143,7 +139,6 @@ public class CRUDvehiculos extends HttpServlet {
         if (modelo.length() < 2 || modelo.length() > 100) {
             throw new Exception("El modelo debe tener entre 2 y 100 caracteres");
         }
-
 
         vehiculoCtrl.crearVehiculo(patente, modelo, anio, usuario.getIdUsuario());
     }
