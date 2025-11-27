@@ -35,23 +35,16 @@ public class ViajesListadoInicio extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        HttpSession session = request.getSession();
         try {
             LinkedList<Viaje> viajes = viajeController.getAll();
             request.setAttribute("viajes", viajes);
             request.getRequestDispatcher("index.jsp").forward(request, response);
 
         } catch (Exception e) {
-            request.setAttribute("error", "Error al obtener los viajes");
+            session.setAttribute("error", "Error al obtener los viajes");
             request.getRequestDispatcher("index.jsp").forward(request, response);
         }
-    }
-
-    /**
-     * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-     */
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // TODO Auto-generated method stub
-        doGet(request, response);
     }
 
 }

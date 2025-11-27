@@ -47,16 +47,21 @@ public class CRUDreservas extends HttpServlet {
 
         Usuario usuario = (Usuario) session.getAttribute("usuario");
 
-        LinkedList<Reserva> reservas = reservaController.getReservasUsuario(usuario);
-
-        request.getSession().setAttribute("misreservas", reservas);
+        try {
+            LinkedList<Reserva> reservas = reservaController.getReservasUsuario(usuario);
+            session.setAttribute("misreservas", reservas);
+        } catch (Exception e) {
+            e.printStackTrace();
+            session.setAttribute("error", "Ocurrió un error al obtener las reservas.");
+        }
         request.getRequestDispatcher("misReservas.jsp").forward(request, response);
     }
+
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        HttpSession session = request.getSession(false);
+        HttpSession session = request.getSession();
 
         if (session == null || session.getAttribute("usuario") == null) {
             response.sendRedirect(request.getContextPath() + "/login.jsp");
@@ -68,17 +73,16 @@ public class CRUDreservas extends HttpServlet {
         try {
             if ("reserve".equals(action)) {
                 reservar(request, usuario);
-                request.setAttribute("mensaje", "Reserva realizada con éxito");
+                session.setAttribute("mensaje", "Reserva realizada con éxito");
             } else if ("cancelar".equals(action)) {
                 cancelarReserva(request, usuario);
-                request.setAttribute("mensaje", "Reserva cancelada con éxito");
+                session.setAttribute("mensaje", "Reserva cancelada con éxito");
             } else if ("validate".equals(action)) {
                 validarReserva(request);
-                request.setAttribute("mensaje", "Reserva validada");
+                session.setAttribute("mensaje", "Reserva validada");
             }
         } catch (Exception e) {
-            request.setAttribute("error", "Error: " + e.getMessage());
-            System.out.println("Error en operación: " + e.getMessage());
+            session.setAttribute("error", "Error: " + e.getMessage());
         }
 
         if ("reserve".equals(action)) {
