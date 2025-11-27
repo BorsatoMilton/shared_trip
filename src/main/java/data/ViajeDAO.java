@@ -1,7 +1,6 @@
 package data;
 
 import java.sql.*;
-import java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -11,7 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import entidades.Usuario;
 import entidades.Viaje;
-import utils.DataAccessException;
+import data.exceptions.DataAccessException;
 
 public class ViajeDAO {
     private FeedbackDAO fDAO = new FeedbackDAO();

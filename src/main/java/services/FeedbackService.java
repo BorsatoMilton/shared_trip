@@ -8,7 +8,6 @@ import entidades.Reserva;
 import entidades.Viaje;
 import entidades.Usuario;
 import jakarta.mail.MessagingException;
-import utils.MailService;
 
 import java.util.LinkedList;
 

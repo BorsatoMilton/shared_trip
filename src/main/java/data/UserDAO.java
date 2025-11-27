@@ -5,7 +5,7 @@ import java.sql.*;
 import java.util.LinkedList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import utils.DataAccessException;
+import data.exceptions.DataAccessException;
 
 public class UserDAO {
     private static final Logger logger = LoggerFactory.getLogger(UserDAO.class);

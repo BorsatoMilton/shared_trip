@@ -1,4 +1,4 @@
-package utils;
+package data.exceptions;
 
 public class DataAccessException extends RuntimeException {
     public DataAccessException(String message, Throwable cause) {

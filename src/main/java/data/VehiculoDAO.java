@@ -11,7 +11,7 @@ import entidades.Usuario;
 import entidades.Vehiculo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import utils.DataAccessException;
+import data.exceptions.DataAccessException;
 
 public class VehiculoDAO {
     private static final Logger logger = LoggerFactory.getLogger(VehiculoDAO.class);

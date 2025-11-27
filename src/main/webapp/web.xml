@@ -32,7 +32,7 @@
     </session-config>
 
     <listener>
-        <listener-class>utils.CronFeedbackListener</listener-class>
+        <listener-class>services.listeners.CronFeedbackListener</listener-class>
     </listener>
 
 </web-app>

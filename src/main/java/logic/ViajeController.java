@@ -6,7 +6,6 @@ import java.util.LinkedList;
 
 import data.*;
 import entidades.*;
-import utils.DataAccessException;
 
 public class ViajeController {
     private final ViajeDAO viajeDAO;

@@ -6,7 +6,6 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.LinkedList;
-import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -25,7 +24,7 @@ import logic.UserController;
 import logic.VehiculoController;
 import logic.ViajeController;
 import utils.Formatters;
-import utils.MailService;
+import services.MailService;
 
 @WebServlet("/viajes")
 public class CRUDviajes extends HttpServlet {

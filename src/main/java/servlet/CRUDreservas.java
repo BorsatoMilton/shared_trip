@@ -8,7 +8,7 @@ import jakarta.mail.MessagingException;
 import logic.ReservaController;
 import logic.ViajeController;
 import utils.Formatters;
-import utils.MailService;
+import services.MailService;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
