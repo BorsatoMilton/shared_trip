@@ -32,14 +32,18 @@ public class ViajesListadoInicio extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
-        HttpSession session = request.getSession();
+        try {
+            LinkedList<Viaje> viajes = viajeController.getAll();
+            request.setAttribute("viajes", viajes);
+            request.getRequestDispatcher("index.jsp").forward(request, response);
 
-        LinkedList<Viaje> viajes = viajeController.getAll();
-        request.setAttribute("viajes", viajes);
-
-        request.getRequestDispatcher("index.jsp").forward(request, response);
+        } catch (Exception e) {
+            request.setAttribute("error", "Error al obtener los viajes");
+            request.getRequestDispatcher("index.jsp").forward(request, response);
+        }
     }
 
     /**

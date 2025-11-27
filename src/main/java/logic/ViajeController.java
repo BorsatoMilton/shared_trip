@@ -6,6 +6,7 @@ import java.util.LinkedList;
 
 import data.*;
 import entidades.*;
+import utils.DataAccessException;
 
 public class ViajeController {
     private final ViajeDAO viajeDAO;
@@ -16,35 +17,79 @@ public class ViajeController {
         this.vehiculoDAO = new VehiculoDAO();
     }
 
-    public LinkedList<Viaje> getAll() {
-        return viajeDAO.getAll();
-    }
+    public LinkedList<Viaje> getAll() throws Exception {
+        LinkedList<Viaje> viajes;
+        try {
+            viajes = viajeDAO.getAll();
+        } catch (DataAccessException e) {
+            throw new Exception("No se pudieron obtener los viajes. Intente más tarde.");
+        }
 
-    public LinkedList<Viaje> getAllBySearch(String origen, String destino, String fecha) {
-        LinkedList<Viaje> viajes = viajeDAO.getAllBySearch(origen, destino, fecha);
         return viajes;
     }
 
-    public Viaje getOne(int id) {
-        return this.viajeDAO.getByViaje(id);
+
+    public LinkedList<Viaje> getAllBySearch(String origen, String destino, String fecha) throws Exception {
+        LinkedList<Viaje> viajes;
+        try {
+            viajes = viajeDAO.getAllBySearch(origen, destino, fecha);
+        } catch (DataAccessException e) {
+            throw new Exception("No se pudieron obtener los viajes. Intente más tarde.");
+        }
+
+        return viajes;
     }
 
-    public LinkedList<Viaje> getViajesUsuario(Usuario u) {
-        return this.viajeDAO.getByUser(u);
-
+    public Viaje getOne(int id) throws Exception {
+        Viaje viaje;
+        try {
+            viaje = this.viajeDAO.getByViaje(id);
+        } catch (DataAccessException e) {
+            throw new Exception("No se pudo obtener el viaje. Intente más tarde.");
+        }
+        return viaje;
     }
 
-    public void actualizarCantidad(int idViaje, int cantidad) {
-        Viaje viaje = this.getOne(idViaje);
+    public LinkedList<Viaje> getViajesUsuario(Usuario u) throws Exception {
+        LinkedList<Viaje> viajes;
+        try {
+            viajes = this.viajeDAO.getByUser(u);
+        } catch (DataAccessException e) {
+            throw new Exception("No se pudieron obtener los viajes del usuario. Intente más tarde.");
+        }
+
+        return viajes;
+    }
+
+    public void actualizarCantidad(int idViaje, int cantidad) throws Exception{
+        Viaje viaje;
+        try {
+            viaje = this.getOne(idViaje);
+        } catch (DataAccessException e) {
+            throw new Exception("No se pudo obtener el viaje. Intente más tarde.");
+        }
+
         int nueva_cant = viaje.getLugares_disponibles() - (cantidad);
-        this.viajeDAO.updateCantidad(idViaje, nueva_cant);
+
+        try {
+            this.viajeDAO.updateCantidad(idViaje, nueva_cant);
+        } catch (DataAccessException e) {
+            throw new Exception("No se pudo obtener el viaje. Intente más tarde.");
+        }
     }
 
     public void actualizarViaje(int idViaje, Date fecha, int lugares, String origen,
                                 String destino, double precio, String lugarSalida,
                                 int vehiculoId, Usuario usuario) throws Exception {
 
-        Viaje viaje = viajeDAO.getByViaje(idViaje);
+        Viaje viaje;
+        Vehiculo vehiculo;
+        try {
+            viaje = viajeDAO.getByViaje(idViaje);
+        } catch (DataAccessException e) {
+            throw new Exception("No se pudo registrar el viaje. Intente más tarde.");
+        }
+
         if (viaje == null) {
             throw new Exception("El viaje no existe");
         }
@@ -63,7 +108,12 @@ public class ViajeController {
             throw new Exception("No se puede modificar un viaje que ya pasó");
         }
 
-        Vehiculo vehiculo = vehiculoDAO.getById_vehiculo(vehiculoId);
+        try {
+            vehiculo = vehiculoDAO.getById_vehiculo(vehiculoId);
+        } catch (DataAccessException e) {
+            throw new Exception("No se pudo obtener el vehículo. Intente más tarde.");
+        }
+
         if (vehiculo == null) {
             throw new Exception("El vehículo seleccionado no existe");
         }
@@ -78,7 +128,6 @@ public class ViajeController {
             throw new Exception("Hay solo" + disponibles + " lugares disponibles. ");
         }
 
-        // 7. Actualizar el viaje
         viaje.setFecha(fecha);
         viaje.setLugares_disponibles(lugares);
         viaje.setOrigen(origen);
@@ -87,32 +136,30 @@ public class ViajeController {
         viaje.setLugar_salida(lugarSalida);
         viaje.setVehiculo(vehiculo);
 
-        viajeDAO.update(viaje, idViaje);
+        try {
+            viajeDAO.update(viaje, idViaje);
+        } catch (DataAccessException e) {
+            throw new Exception("No se pudo actualizar el viaje. Intente más tarde.");
+        }
     }
 
     public void eliminarViaje(int idViaje, Usuario usuario) throws Exception {
-
 
         Viaje viaje = viajeDAO.getByViaje(idViaje);
         if (viaje == null) {
             throw new Exception("El viaje no existe");
         }
 
-
         if (!"admin".equals(usuario.getNombreRol()) &&
                 viaje.getConductor().getIdUsuario() != usuario.getIdUsuario()) {
             throw new Exception("No tiene permisos para eliminar este viaje");
         }
 
-
-        /*int reservasActivas = viajeDAO.getReservasActivas(idViaje);
-        if (reservasActivas > 0) {
-            throw new Exception("No se puede eliminar un viaje con " + reservasActivas +
-                    " reservas activas. Cancélelo en su lugar.");
+        try {
+            viajeDAO.delete(viaje);
+        } catch (DataAccessException e) {
+            throw new Exception("No se pudo eliminar el viaje. Intente más tarde.");
         }
-        */
-
-        viajeDAO.delete(viaje);
     }
 
     public Viaje cancelarViaje(int idViaje, Usuario usuario) throws Exception {
@@ -137,17 +184,12 @@ public class ViajeController {
             throw new Exception("No se puede cancelar un viaje que ya pasó");
         }
 
-        /*int reservasActivas = viajeDAO.getReservasActivas(idViaje);
-        if (reservasActivas > 0) {
-            // TODO: Enviar notificaciones/emails a pasajeros
-            System.out.println("NOTIFICAR: " + reservasActivas + " pasajeros afectados");
-        } */
-
         boolean cancelado = viajeDAO.cancelarViaje(idViaje);
         if (!cancelado) {
-            throw new Exception("Error al cancelar el viaje en la base de datos");
+            throw new DataAccessException("El viaje no existe o no se pudo cancelar");
         }
         return viaje;
+
     }
 
     public void crearViaje(Date fecha, int lugares, String origen, String destino,
@@ -168,10 +210,6 @@ public class ViajeController {
             throw new Exception("La fecha del viaje no puede ser en el pasado");
         }
 
-        /*if (tieneViajeEnFecha(conductor.getIdUsuario(), vehiculoId, fecha)) {
-            throw new Exception("Ya tiene un viaje programado para esa fecha con ese vehículo");
-        }*/
-
         Viaje viaje = new Viaje();
         viaje.setFecha(fecha);
         viaje.setLugares_disponibles(lugares);
@@ -183,13 +221,10 @@ public class ViajeController {
         viaje.setVehiculo(vehiculo);
         viaje.setCancelado(false);
 
-        viajeDAO.add(viaje);
+        try {
+            viajeDAO.add(viaje);
+        } catch (DataAccessException e) {
+            throw new Exception("No se pudo registrar el viaje. Intente más tarde.");
+        }
     }
-
-
-    /*private boolean tieneViajeEnFecha(int idConductor, int idVehiculo, Date fecha) {
-        return viajeDAO.existeViajeEnFecha(idConductor, idVehiculo, fecha);
-    }*/
-
-
 }
