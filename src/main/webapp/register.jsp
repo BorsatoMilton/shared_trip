@@ -49,6 +49,8 @@
                                            id="nombre"
                                            name="nombre"
                                            placeholder="Nombre"
+                                           minlength="2"
+                                           maxlength="50"
                                            required
                                            value="<%= session.getAttribute("nombre") != null ? session.getAttribute("nombre") : ""%>">
                                     <label for="nombre" class="form-label">
@@ -64,6 +66,8 @@
                                            id="apellido"
                                            name="apellido"
                                            placeholder="Apellido"
+                                           minlength="2"
+                                           maxlength="50"
                                            required
                                            value="<%= session.getAttribute("apellido") != null ? session.getAttribute("apellido") : "" %>">
                                     <label for="apellido" class="form-label">
@@ -79,6 +83,8 @@
                                            id="correo"
                                            name="correo"
                                            placeholder="Correo Electrónico"
+                                           minlength="10"
+                                           maxlength="100"
                                            required
                                            value="<%= session.getAttribute("correo") != null ? session.getAttribute("correo") : "" %>">
                                     <label for="correo" class="form-label">
@@ -95,7 +101,7 @@
                                            name="usuario"
                                            placeholder="Usuario"
                                            required
-                                           minlength="6"
+                                           minlength="3"
                                            maxlength="20"
                                            value="<%= session.getAttribute("usuarioFormRegister") != null ? session.getAttribute("usuarioFormRegister") : "" %>">
                                     <label for="usuario" class="form-label">
@@ -112,7 +118,8 @@
                                            name="clave"
                                            placeholder="Clave"
                                            required
-                                           minlength="6">
+                                           minlength="6"
+                                           maxlength="100">
                                     <label for="clave" class="form-label">
                                         Contraseña
                                     </label>

@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import data.exceptions.DataAccessException;
+import utils.Generators;
 
 public class UserDAO {
     private static final Logger logger = LoggerFactory.getLogger(UserDAO.class);
@@ -40,24 +41,30 @@ public class UserDAO {
     public Usuario login(Usuario user) {
         logger.debug("Intentando login para usuario: {}", user.getUsuario());
 
-        try {
-            Connection conn = ConnectionDB.getInstancia().getConn();
-            try (PreparedStatement stmt = conn.prepareStatement(
-                    "SELECT id_usuario, usuario, usuarios.nombre AS nombre, apellido, correo, telefono, id_rol, roles.nombre AS nombre_rol " +
-                            "FROM usuarios INNER JOIN roles ON roles.id = usuarios.id_rol " +
-                            "WHERE usuario = ? AND clave = ? AND fecha_baja IS NULL")) {
+        String sql = "SELECT u.id_usuario, u.usuario, u.nombre AS nombre, u.apellido, " +
+                "u.correo, u.telefono, u.id_rol, u.clave, r.nombre AS nombre_rol " +
+                "FROM usuarios u " +
+                "INNER JOIN roles r ON r.id_rol = u.id_rol " +
+                "WHERE u.usuario = ? AND u.fecha_baja IS NULL";
 
-                stmt.setString(1, user.getUsuario());
-                stmt.setString(2, user.getClave());
+        try (Connection conn = ConnectionDB.getInstancia().getConn();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-                try (ResultSet rs = stmt.executeQuery()) {
-                    if (rs.next()) {
+            stmt.setString(1, user.getUsuario().trim());
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    String storedHash = rs.getString("clave");
+                    if (Generators.checkPassword(user.getClave(), storedHash)) {
                         logger.info("Usuario logueado exitosamente: {}", user.getUsuario());
                         return mapUsuarioWithRol(rs);
                     } else {
                         logger.warn("Login fallido para usuario: {}", user.getUsuario());
                         return null;
                     }
+                } else {
+                    logger.warn("Usuario no encontrado: {}", user.getUsuario());
+                    return null;
                 }
             }
 
@@ -65,10 +72,9 @@ public class UserDAO {
             logger.error("Error al realizar login para usuario {} - Estado: {} - Código: {}",
                     user.getUsuario(), e.getSQLState(), e.getErrorCode(), e);
             throw new DataAccessException("Error al realizar login", e);
-        } finally {
-            ConnectionDB.getInstancia().releaseConn();
         }
     }
+
 
     public Usuario getById(int id_usuario) {
         logger.debug("Buscando usuario con ID: {}", id_usuario);

@@ -20,7 +20,7 @@ public class RolDAO {
     public LinkedList<Rol> getAll() {
         logger.debug("Obteniendo todos los roles");
 
-        String query = "SELECT id, nombre FROM roles";
+        String query = "SELECT id_rol, nombre FROM roles";
         LinkedList<Rol> roles = new LinkedList<>();
 
         try {
@@ -48,7 +48,7 @@ public class RolDAO {
     public Rol getById(int idRol) {
         logger.debug("Buscando rol con ID: {}", idRol);
 
-        String query = "SELECT id, nombre FROM roles WHERE id = ?";
+        String query = "SELECT id_rol, nombre FROM roles WHERE id_rol = ?";
 
         try {
             Connection conn = ConnectionDB.getInstancia().getConn();
@@ -77,7 +77,7 @@ public class RolDAO {
 
     private Rol mapearRol(ResultSet rs) throws SQLException {
         Rol rol = new Rol();
-        rol.setIdRol(rs.getInt("id"));
+        rol.setIdRol(rs.getInt("id_rol"));
         rol.setNombre(rs.getString("nombre"));
         return rol;
     }

@@ -1,11 +1,10 @@
 package logic;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.LinkedList;
 
 import data.*;
 import entidades.*;
+import utils.Generators;
 
 public class UserController {
     private final UserDAO usuarioDAO;
@@ -15,9 +14,6 @@ public class UserController {
     }
 
     public Usuario login(Usuario u) {
-
-        String claveEncriptada = encriptarClave(u.getClave());
-        u.setClave(claveEncriptada);
         return usuarioDAO.login(u);
     }
 
@@ -86,7 +82,7 @@ public class UserController {
 
 
         if (clave != null && !clave.isEmpty()) {
-            String claveEncriptada = encriptarClave(clave);
+            String claveEncriptada = Generators.hashPassword(clave);
             u.setClave(claveEncriptada);
         }
 
@@ -97,7 +93,8 @@ public class UserController {
     }
 
     public boolean updatePassword(int id, String clave) {
-        return usuarioDAO.updatePassword(id, clave);
+        String claveEncriptada = Generators.hashPassword(clave);
+        return usuarioDAO.updatePassword(id, claveEncriptada);
     }
 
     public void crearUsuario(String usuario, String clave, String nombre,
@@ -117,7 +114,7 @@ public class UserController {
         }
 
 
-        String claveEncriptada = encriptarClave(clave);
+        String claveEncriptada = Generators.hashPassword(clave);
 
 
         Usuario u = new Usuario();
@@ -175,23 +172,5 @@ public class UserController {
     }
 
 
-    private String encriptarClave(String clave) {
-        return clave;
-        /*try {
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-            byte[] hash = md.digest(clave.getBytes());
-            StringBuilder hexString = new StringBuilder();
-
-            for (byte b : hash) {
-                String hex = Integer.toHexString(0xff & b);
-                if (hex.length() == 1) hexString.append('0');
-                hexString.append(hex);
-            }
-
-            return hexString.toString();
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("Error al encriptar la contraseña", e);
-        }*/
-    }
 
 }
