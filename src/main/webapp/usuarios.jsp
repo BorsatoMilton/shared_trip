@@ -189,12 +189,20 @@
                         <label class="form-label">Nombre completo</label>
                         <div class="row g-2">
                             <div class="col">
-                                <input type="text" class="form-control" placeholder="Nombre"
-                                       name="nombre" required>
+                                <input type="text" class="form-control"
+                                       placeholder="Nombre"
+                                       name="nombre"
+                                       minlength="2"
+                                       maxlength="50"
+                                       required>
                             </div>
                             <div class="col">
-                                <input type="text" class="form-control" placeholder="Apellido"
-                                       name="apellido" required>
+                                <input type="text" class="form-control"
+                                       placeholder="Apellido"
+                                       name="apellido"
+                                       minlength="2"
+                                       maxlength="50"
+                                       required>
                             </div>
                         </div>
                     </div>
@@ -202,23 +210,38 @@
                     <div class="mb-3">
                         <label class="form-label">Credenciales</label> <input
                             type="email" class="form-control mb-2"
-                            placeholder="Correo electrónico" name="correo" required>
+                            placeholder="Correo electrónico"
+                            name="correo"
+                            minlength="10"
+                            maxlength="100"
+                            required>
                         <div class="row g-2">
                             <div class="col">
-                                <input type="text" class="form-control" placeholder="Usuario"
-                                       name="usuario" required>
+                                <input type="text" class="form-control"
+                                       placeholder="Usuario"
+                                       name="usuario"
+                                       minlength="3"
+                                       maxlength="20"
+                                       required>
                             </div>
                             <div class="col">
                                 <input type="password" class="form-control"
-                                       placeholder="Contraseña" name="clave" required>
+                                       placeholder="Contraseña"
+                                       name="clave"
+                                       minlength="6"
+                                       maxlength="100"
+                                       required>
                             </div>
                         </div>
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label">Información de contacto</label> <input
-                            type="tel" class="form-control" placeholder="Teléfono"
-                            name="telefono" required>
+                            type="tel" class="form-control"
+                            placeholder="Teléfono"
+                            name="telefono"
+                            pattern="[0-9]{9,15}"
+                            required>
                     </div>
 
                     <div class="mb-3">
@@ -293,12 +316,22 @@
                         <label class="form-label">Nombre completo</label>
                         <div class="row g-2">
                             <div class="col">
-                                <input type="text" class="form-control" placeholder="Nombre"
-                                       name="nombre" id="editNombre" required>
+                                <input type="text" class="form-control"
+                                       placeholder="Nombre"
+                                       name="nombre"
+                                       id="editNombre"
+                                       minlength="2"
+                                       maxlength="50"
+                                       required>
                             </div>
                             <div class="col">
-                                <input type="text" class="form-control" placeholder="Apellido"
-                                       name="apellido" id="editApellido" required>
+                                <input type="text" class="form-control"
+                                       placeholder="Apellido"
+                                       name="apellido"
+                                       id="editApellido"
+                                       minlength="2"
+                                       maxlength="50"
+                                       required>
                             </div>
                         </div>
                     </div>
@@ -306,20 +339,33 @@
                     <div class="mb-3">
                         <label class="form-label">Credenciales</label> <input
                             type="email" class="form-control mb-2"
-                            placeholder="Correo electrónico" name="correo" id="editCorreo"
+                            placeholder="Correo electrónico"
+                            name="correo"
+                            id="editCorreo"
+                            minlength="10"
+                            maxlength="100"
                             required>
                         <div class="row g-2">
                             <div class="col">
-                                <input type="text" class="form-control" placeholder="Usuario"
-                                       name="usuario" id="editUsuario" required>
+                                <input type="text" class="form-control"
+                                       placeholder="Usuario"
+                                       name="usuario"
+                                       id="editUsuario"
+                                       minlength="3"
+                                       maxlength="20"
+                                       required>
                             </div>
                         </div>
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label">Información de contacto</label> <input
-                            type="tel" class="form-control" placeholder="Teléfono"
-                            name="telefono" id="editTelefono" required>
+                            type="tel" class="form-control"
+                            placeholder="Teléfono"
+                            name="telefono"
+                            id="editTelefono"
+                            pattern="[0-9]{9,15}"
+                            required>
                     </div>
 
                     <div class="mb-3">

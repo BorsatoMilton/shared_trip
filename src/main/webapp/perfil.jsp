@@ -100,29 +100,45 @@
                     <div class="row g-2">
                         <div class="col">
                             <input type="text" class="form-control" placeholder="Nombre"
-                                   name="nombre" value="<%= usuario.getNombre() %>" required>
+                                   name="nombre"
+                                   minlength="2"
+                                   maxlength="50"
+                                   value="<%= usuario.getNombre() %>" required>
                         </div>
                         <div class="col">
                             <input type="text" class="form-control" placeholder="Apellido"
-                                   name="apellido" value="<%= usuario.getApellido() %>" required>
+                                   name="apellido"
+                                   minlength="2"
+                                   maxlength="50"
+                                   value="<%= usuario.getApellido() %>" required>
                         </div>
                     </div>
                 </div>
                 <div class="mb-4">
-                    <label class="form-label">Credenciales</label> <input type="email"
-                                                                          class="form-control mb-2"
-                                                                          placeholder="Correo electrónico"
-                                                                          name="correo"
-                                                                          value="<%= usuario.getCorreo() %>" required>
-                    <input type="text"
-                           class="form-control" placeholder="Usuario" name="usuario"
-                           value="<%= usuario.getUsuario() %>"
-                           required>
+                    <label class="form-label">Credenciales</label>
+                            <input type="email"
+                                   class="form-control mb-2"
+                                   placeholder="Correo electrónico"
+                                   name="correo"
+                                   minlength="10"
+                                   maxlength="100"
+                                   value="<%= usuario.getCorreo() %>" required>
+                            <input type="text"
+                                   class="form-control"
+                                   placeholder="Usuario"
+                                   name="usuario"
+                                   minlength="3"
+                                   maxlength="20"
+                                   value="<%= usuario.getUsuario() %>"
+                                   required>
                 </div>
                 <div class="mb-4">
                     <label class="form-label">Información de contacto</label> <input
-                        type="tel" class="form-control" placeholder="Teléfono"
-                        name="telefono" value="<%= usuario.getTelefono() %>" required>
+                        type="tel" class="form-control"
+                        placeholder="Teléfono"
+                        name="telefono"
+                        pattern="[0-9]{9,15}"
+                        value="<%= usuario.getTelefono() %>" required>
                 </div>
                 <div class="d-flex justify-content-end">
                     <button type="button" class="btn btn-warning  me-2" id="btn-update-password"
@@ -153,7 +169,9 @@
                 <div class="modal-body">
                     <input type="hidden" name="action" value="password">
                     <label class="form-label">Nueva Contraseña</label>
-                    <input type="password" class="form-control" placeholder="Ej: irjner231kds" minlength="6"
+                    <input type="password" class="form-control" placeholder="Ej: irjner231kds"
+                           minlength="6"
+                           maxLength="100"
                            name="clave" id="updateClave" required>
                 </div>
                 <div class="modal-footer">
