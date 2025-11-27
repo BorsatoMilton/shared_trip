@@ -111,15 +111,44 @@ public class CRUDusuarioAdmin extends HttpServlet {
 
             } else if ("register".equals(action)) {
                 registrarUsuario(request);
+                limpiarDatosFormulario(session);
                 session.setAttribute("mensaje", "Usuario registrado con éxito");
                 response.sendRedirect(request.getContextPath() + "login.jsp");
             }
 
         } catch (Exception e) {
-            session.setAttribute("error", e.getMessage());
-            System.out.println("Error en operación: " + e.getMessage());
-            preservarDatosFormulario(request, session);
+
+                preservarDatosFormulario(request, session);
+                String error = e.getMessage();
+
+                switch (error) {
+
+                    case "USER_AND_EMAIL_EXISTS":
+                        session.setAttribute("error", "El usuario y el correo ya están registrados.");
+                        session.removeAttribute("usuarioFormRegister");
+                        session.removeAttribute("correo");
+                        break;
+
+                    case "USERNAME_EXISTS":
+                        session.setAttribute("error", "El nombre de usuario ya está en uso.");
+                        session.removeAttribute("usuarioFormRegister");
+                        break;
+
+                    case "EMAIL_EXISTS":
+                        session.setAttribute("error", "El correo electrónico ya está registrado.");
+                        session.removeAttribute("correo");
+                        break;
+
+                    default:
+                        session.setAttribute("error", e.getMessage());
+                }
+
+
+
+                response.sendRedirect(request.getContextPath() + "/register.jsp");
+                return;
         }
+
 
         if ("register".equals(action)) {
             response.sendRedirect(request.getContextPath() + "/register.jsp");
@@ -137,13 +166,6 @@ public class CRUDusuarioAdmin extends HttpServlet {
 
     }
 
-    private void preservarDatosFormulario(HttpServletRequest request, HttpSession session) {
-        session.setAttribute("formData_nombre", request.getParameter("nombre"));
-        session.setAttribute("formData_apellido", request.getParameter("apellido"));
-        session.setAttribute("formData_correo", request.getParameter("correo"));
-        session.setAttribute("formData_usuario", request.getParameter("usuario"));
-        session.setAttribute("formData_telefono", request.getParameter("telefono"));
-    }
 
     private void crearUsuario(HttpServletRequest request, Usuario admin) throws Exception {
 
@@ -233,6 +255,24 @@ public class CRUDusuarioAdmin extends HttpServlet {
         }
 
         usuarioCtrl.eliminarUsuario(id, logueado);
+    }
+
+
+    private void preservarDatosFormulario(HttpServletRequest request, HttpSession session) {
+        session.setAttribute("nombre", request.getParameter("nombre"));
+        session.setAttribute("apellido", request.getParameter("apellido"));
+        session.setAttribute("correo", request.getParameter("correo"));
+        session.setAttribute("usuarioFormRegister", request.getParameter("usuario"));
+        session.setAttribute("telefono", request.getParameter("telefono"));
+    }
+
+
+    private void limpiarDatosFormulario(HttpSession session) {
+        session.removeAttribute("nombre");
+        session.removeAttribute("apellido");
+        session.removeAttribute("correo");
+        session.removeAttribute("usuarioFormRegister");
+        session.removeAttribute("telefono");
     }
 
 

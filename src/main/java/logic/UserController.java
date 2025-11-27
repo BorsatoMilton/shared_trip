@@ -108,13 +108,14 @@ public class UserController {
         if (existente != null) {
             if (existente.getUsuario().equalsIgnoreCase(usuario) &&
                     existente.getCorreo().equalsIgnoreCase(correo)) {
-                throw new Exception("El usuario y el correo ya están registrados");
+                throw new Exception("USER_AND_EMAIL_EXISTS");
             } else if (existente.getUsuario().equalsIgnoreCase(usuario)) {
-                throw new Exception("El nombre de usuario ya está en uso");
+                throw new Exception("USERNAME_EXISTS");
             } else {
-                throw new Exception("El correo electrónico ya está registrado");
+                throw new Exception("EMAIL_EXISTS");
             }
         }
+
 
         String claveEncriptada = encriptarClave(clave);
 

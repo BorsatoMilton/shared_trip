@@ -14,7 +14,7 @@
 
 <div class="container-fluid  d-flex flex-column">
     <div class="row justify-content-center align-items-center flex-grow-1">
-        <div class="col-12 col-lg-8 col-xl-6">
+        <div class="col-12 col-lg-8 col-xl-6 mt-5">
             <% String mensaje = (String) session.getAttribute("mensaje");
                 if (mensaje != null) { %>
             <div class="alert alert-info alert-dismissible fade show" role="alert">
@@ -50,8 +50,7 @@
                                            name="nombre"
                                            placeholder="Nombre"
                                            required
-                                           value="<%= session.getAttribute("formData_nombre") != null ? session.getAttribute("formData_nombre") : (request.getParameter("nombre") != null ? request.getParameter("nombre") : "") %>"
-                                    >
+                                           value="<%= session.getAttribute("nombre") != null ? session.getAttribute("nombre") : ""%>">
                                     <label for="nombre" class="form-label">
                                         Nombre
                                     </label>
@@ -66,8 +65,7 @@
                                            name="apellido"
                                            placeholder="Apellido"
                                            required
-                                           value="<%= session.getAttribute("formData_apellido") != null ? session.getAttribute("formData_apellido") : (request.getParameter("apellido") != null ? request.getParameter("apellido") : "") %>"
-                                    >
+                                           value="<%= session.getAttribute("apellido") != null ? session.getAttribute("apellido") : "" %>">
                                     <label for="apellido" class="form-label">
                                         Apellido
                                     </label>
@@ -82,8 +80,7 @@
                                            name="correo"
                                            placeholder="Correo Electrónico"
                                            required
-                                           value="<%= session.getAttribute("formData_correo") != null ? session.getAttribute("formData_correo") : (request.getParameter("correo") != null ? request.getParameter("correo") : "") %>"
-                                    >
+                                           value="<%= session.getAttribute("correo") != null ? session.getAttribute("correo") : "" %>">
                                     <label for="correo" class="form-label">
                                         Correo Electrónico
                                     </label>
@@ -100,8 +97,7 @@
                                            required
                                            minlength="6"
                                            maxlength="20"
-                                           value="<%= session.getAttribute("formData_usuario") != null ? session.getAttribute("formData_usuario") : (request.getParameter("usuario") != null ? request.getParameter("usuario") : "") %>"
-                                    >
+                                           value="<%= session.getAttribute("usuarioFormRegister") != null ? session.getAttribute("usuarioFormRegister") : "" %>">
                                     <label for="usuario" class="form-label">
                                         Usuario
                                     </label>
@@ -123,7 +119,6 @@
                                 </div>
                             </div>
 
-                            <!-- Teléfono -->
                             <div class="col-12">
                                 <div class="form-floating">
                                     <input type="tel"
@@ -133,8 +128,7 @@
                                            placeholder="Teléfono"
                                            required
                                            pattern="[0-9]{9,15}"
-                                           value="<%= session.getAttribute("formData_telefono") != null ? session.getAttribute("formData_telefono") : (request.getParameter("telefono") != null ? request.getParameter("telefono") : "") %>"
-                                    >
+                                           value="<%= session.getAttribute("telefono") != null ? session.getAttribute("telefono") : "" %>">
                                     <label for="telefono" class="form-label">
                                         Teléfono
                                     </label>
@@ -169,15 +163,6 @@
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
 
-<script>
-    // Limpiar datos del formulario de la sesión después de cargarlos
-    document.addEventListener('DOMContentLoaded', function () {
-        // Hacer una petición para limpiar los datos de sesión
-        fetch('<%= request.getContextPath() %>/LimpiarDatosFormulario', {
-            method: 'POST'
-        }).catch(error => console.log('Error limpiando datos de sesión:', error));
-    });
-</script>
 <script src="js/notificacionesTiempo.js"></script>
 
 </body>
