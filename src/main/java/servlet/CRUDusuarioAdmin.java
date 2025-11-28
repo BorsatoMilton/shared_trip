@@ -151,7 +151,7 @@ public class CRUDusuarioAdmin extends HttpServlet {
                 }else if (logueado == null) {
                     redirectPage = "/login.jsp";
                 }else if ("admin".equals(rol)) {
-                    redirectPage = "/usuarios.jsp";
+                    redirectPage = "/usuarios";
                 }else {
                     redirectPage = "/";
                 }

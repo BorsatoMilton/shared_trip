@@ -16,8 +16,8 @@ public class ViajeController {
         this.vehiculoDAO = new VehiculoDAO();
     }
 
-    public LinkedList<Viaje> getAll() {
-        return viajeDAO.getAll();
+    public LinkedList<Viaje> getAll(boolean all) {
+        return viajeDAO.getAll(all);
     }
 
     public LinkedList<Viaje> getAllBySearch(String origen, String destino, String fecha) {
@@ -42,7 +42,7 @@ public class ViajeController {
 
     public void actualizarViaje(int idViaje, Date fecha, int lugares, String origen,
                                 String destino, double precio, String lugarSalida,
-                                int vehiculoId, Usuario usuario) throws Exception {
+                                Integer vehiculoId, Usuario usuario) throws Exception {
 
         Viaje viaje = viajeDAO.getByViaje(idViaje);
         if (viaje == null) {
@@ -63,14 +63,20 @@ public class ViajeController {
             throw new Exception("No se puede modificar un viaje que ya pasó");
         }
 
-        Vehiculo vehiculo = vehiculoDAO.getById_vehiculo(vehiculoId);
-        if (vehiculo == null) {
-            throw new Exception("El vehículo seleccionado no existe");
-        }
+        Vehiculo vehiculo = null;
 
-        if (vehiculo.getUsuario_duenio_id() != usuario.getIdUsuario() &&
-                !"admin".equals(usuario.getNombreRol())) {
-            throw new Exception("El vehículo seleccionado no le pertenece");
+        if(vehiculoId != -1){
+            vehiculo = vehiculoDAO.getById_vehiculo(vehiculoId);
+            if (vehiculo == null) {
+                throw new Exception("El vehículo seleccionado no existe");
+            }
+
+            if (vehiculo.getUsuario_duenio_id() != usuario.getIdUsuario() &&
+                    !"admin".equals(usuario.getNombreRol())) {
+                throw new Exception("El vehículo seleccionado no le pertenece");
+            }
+        }else {
+            vehiculo = viaje.getVehiculo();
         }
 
         int disponibles = viaje.getLugares_disponibles();
@@ -78,7 +84,6 @@ public class ViajeController {
             throw new Exception("Hay solo" + disponibles + " lugares disponibles. ");
         }
 
-        // 7. Actualizar el viaje
         viaje.setFecha(fecha);
         viaje.setLugares_disponibles(lugares);
         viaje.setOrigen(origen);
