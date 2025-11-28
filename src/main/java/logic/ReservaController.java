@@ -32,14 +32,14 @@ public class ReservaController {
         return reservas;
     }
 
-    public Reserva cancelarReserva(int idReserva, int idUsuario) throws Exception {
+    public Reserva cancelarReserva(int idReserva, Usuario usuario) throws Exception {
 
         Reserva reserva = reservaDAO.getByReserva(idReserva);
         if (reserva == null) {
             throw new Exception("La reserva no existe");
         }
 
-        if (reserva.getPasajero().getIdUsuario() != idUsuario) {
+        if (reserva.getPasajero().getIdUsuario() != usuario.getIdUsuario() && "usuario".equals(usuario.getNombreRol())) {
             throw new Exception("No tiene permisos para cancelar esta reserva");
         }
 
@@ -137,6 +137,28 @@ public class ReservaController {
         }
         reservaDAO.actualizarEstado(reserva.getIdReserva(), reserva.getEstado());
     }
+
+    public void eliminarReserva(int idReserva, Usuario usuario) throws Exception {
+
+        Reserva reserva = reservaDAO.getByReserva(idReserva);
+        if (reserva == null) {
+            throw new Exception("La reserva no existe");
+        }
+
+        if (reserva.getPasajero().getIdUsuario() != usuario.getIdUsuario() && "usuario".equals(usuario.getNombreRol())) {
+            throw new Exception("No tiene permisos para eliminar esta reserva");
+        }
+
+        if ("EN PROCESO".equals(reserva.getEstado())) {
+            throw new Exception("No se puede cancelar esta reserva, esta en proceso, primero cancelala.");
+        }
+
+        if (!reservaDAO.delete(idReserva)) {
+            throw new Exception("Error al eliminar la reserva en la base de datos");
+        }
+
+    }
+
 
     public int obtenerCantidad(int idReserva) {
         return this.reservaDAO.obtenerCantidad(idReserva);

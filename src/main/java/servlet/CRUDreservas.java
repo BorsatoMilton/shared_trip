@@ -92,6 +92,10 @@ public class CRUDreservas extends HttpServlet {
                 cancelarReserva(request, usuario);
                 session.setAttribute("mensaje", "Reserva cancelada con éxito");
                 redirectPage = "/reservas";
+            } else if ("eliminar".equals(action)) {
+                eliminarReserva(request, usuario);
+                session.setAttribute("mensaje", "Reserva eliminada con éxito");
+                redirectPage = "/reservas";
             } else if ("validate".equals(action)) {
                 validarReserva(request);
                 session.setAttribute("mensaje", "Reserva validada");
@@ -156,7 +160,7 @@ public class CRUDreservas extends HttpServlet {
             throw new Exception("Formato de número inválido");
         }
 
-        Reserva reserva = reservaController.cancelarReserva(idReserva, usuario.getIdUsuario());
+        Reserva reserva = reservaController.cancelarReserva(idReserva, usuario);
         enviarNotificacionesCancelacionReserva(reserva, usuario);
 
     }
@@ -234,6 +238,24 @@ public class CRUDreservas extends HttpServlet {
         if (!reservaEncontrada) {
             throw new Exception("No existe ninguna reserva con el código ingresado: " + codigoValidacion);
         }
+    }
+
+    private void eliminarReserva(HttpServletRequest request, Usuario usuario) throws Exception {
+
+        String reservaIdStr = request.getParameter("reservaId");
+
+        if (reservaIdStr == null || reservaIdStr.trim().isEmpty()) {
+            throw new Exception("ID de reserva inválido");
+        }
+
+        int idReserva;
+        try {
+            idReserva = Integer.parseInt(reservaIdStr);
+        } catch (NumberFormatException e) {
+            throw new Exception("Formato de número inválido");
+        }
+
+        reservaController.eliminarReserva(idReserva, usuario);
     }
 
 

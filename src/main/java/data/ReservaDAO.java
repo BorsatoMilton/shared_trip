@@ -467,7 +467,7 @@ public class ReservaDAO {
         }
     }
 
-    public void delete(int idReserva) {
+    public boolean delete(int idReserva) {
         logger.info("Eliminando reserva ID: {}", idReserva);
 
         try {
@@ -478,10 +478,14 @@ public class ReservaDAO {
                 stmt.setInt(1, idReserva);
 
                 int affected = stmt.executeUpdate();
-                checkAffectedRows(affected, "eliminar");
-                logger.info("Reserva eliminada exitosamente: ID {}", idReserva);
+                if (affected > 0) {
+                    logger.info("Reserva eliminada exitosamente: ID {}", idReserva);
+                    return true;
+                } else {
+                    logger.warn("No se encontró reserva a eliminar con ID: {}", idReserva);
+                    return false;
+                }
             }
-
         } catch (SQLException e) {
             logger.error("Error al eliminar reserva ID {} - Estado: {} - Código: {}",
                     idReserva, e.getSQLState(), e.getErrorCode(), e);
