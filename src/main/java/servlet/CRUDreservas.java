@@ -53,8 +53,15 @@ public class CRUDreservas extends HttpServlet {
         Usuario usuario = (Usuario) session.getAttribute("usuario");
 
         try {
-            LinkedList<Reserva> reservas = reservaController.getReservasUsuario(usuario);
-            session.setAttribute("misreservas", reservas);
+            if("admin".equals(usuario.getNombreRol())){
+                LinkedList<Reserva> reservas = reservaController.getReservasUsuario(usuario);
+                session.setAttribute("reservas", reservas);
+            }else if("usuario".equals(usuario.getNombreRol())){
+                LinkedList<Reserva> reservas = reservaController.getAllReservas();
+                session.setAttribute("reservas", reservas);
+            }else{
+                throw new DataAccessException("Rol no admitido");
+            }
         } catch (Exception e) {
             session.setAttribute("error", "Ocurrió un error al obtener las reservas.");
         }

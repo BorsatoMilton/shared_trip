@@ -46,16 +46,19 @@
     </style>
 </head>
 <body class="bg-light">
-<jsp:include page="header.jsp"></jsp:include>
+<div class="container-fluid p-0">
+    <div class="row align-items-start" style="height: 10vh">
+        <div class="col">
+            <jsp:include page="header.jsp"></jsp:include>
+        </div>
+    </div>
+</div>
 
 <div class="main-content">
     <div class="container-fluid p-0">
-
-
         <main class="container mt-4">
             <div class="card shadow-lg">
-                <div
-                        class="card-header d-flex justify-content-between align-items-center">
+                <div class="card-header d-flex justify-content-between align-items-center">
                     <h3 class="mb-0">
                         <i class="bi bi-people-fill me-2"></i>Administración de Usuarios
                     </h3>

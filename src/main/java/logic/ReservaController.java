@@ -19,6 +19,10 @@ public class ReservaController {
         this.viajeController = new ViajeController();
     }
 
+    public LinkedList<Reserva> getAllReservas() {
+        return this.reservaDAO.getAll();
+    }
+
     public Reserva getByToken(String token) {
         return this.reservaDAO.getByToken(token);
     }

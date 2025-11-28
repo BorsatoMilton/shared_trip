@@ -108,7 +108,7 @@
                             </thead>
                             <tbody>
                             <%
-                                LinkedList<Reserva> reservas = (LinkedList<Reserva>) request.getSession().getAttribute("misreservas");
+                                LinkedList<Reserva> reservas = (LinkedList<Reserva>) request.getSession().getAttribute("reservas");
                                 if (reservas != null && !reservas.isEmpty()) {
                                     for (Reserva reserva : reservas) {
                                         Date hoy = new Date();

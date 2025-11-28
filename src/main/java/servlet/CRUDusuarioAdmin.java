@@ -96,7 +96,7 @@ public class CRUDusuarioAdmin extends HttpServlet {
         HttpSession session = request.getSession();
         String action = request.getParameter("action");
         Usuario logueado = (Usuario) session.getAttribute("usuario");
-        String rol = (logueado == null ? null : session.getAttribute("rol").toString());
+        String rol = (logueado == null ? null : logueado.getNombreRol());
         String redirectPage = "/";
 
         try {

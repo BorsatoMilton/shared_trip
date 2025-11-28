@@ -90,6 +90,11 @@
                             <i class="bi bi-car-front-fill me-1"></i>Vehículos
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="<%= request.getContextPath() %>/reservas">
+                            <i class="bi bi-journal-check me-1"></i>Reservas
+                        </a>
+                    </li>
                     <% } else { %>
 
                     <li class="nav-item">

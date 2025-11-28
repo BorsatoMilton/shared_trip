@@ -64,7 +64,7 @@
                     <h3 class="mb-0">
                         <i class="bi bi-car-front-fill me-2"></i>Administración de Vehículos
                     </h3>
-                    <% if ("usuario".equals(request.getSession().getAttribute("rol"))) { %>
+                    <% if ("usuario".equals(((Usuario)session.getAttribute("usuario")).getNombreRol())) { %>
                     <button type="button" id="btnNuevoVehiculo" class="btn btn-light" data-bs-toggle="modal"
                             data-bs-target="#nuevoVehiculo">
                         <i class="bi bi-plus-circle me-2"></i>Nuevo Vehículo

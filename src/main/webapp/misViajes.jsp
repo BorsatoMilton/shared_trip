@@ -7,6 +7,7 @@
 <%@ page import="java.sql.Date" %>
 <%@ page import="entidades.Vehiculo" %>
 <%@ page import="java.time.LocalDate" %>
+<%@ page import="entidades.Usuario" %>
 
 <!DOCTYPE html>
 <html>
@@ -114,10 +115,12 @@
                     <h3 class="mb-0">
                         <i class="bi bi-people-fill me-2"></i>Administración de Viajes
                     </h3>
-                    <button type="button" class="btn btn-light" data-bs-toggle="modal"
+                    <% if ("usuario".equals(((Usuario)session.getAttribute("usuario")).getNombreRol())) { %>
+                        <button type="button" class="btn btn-light" data-bs-toggle="modal"
                             data-bs-target="#nuevoViaje">
                         <i class="bi bi-plus-circle me-2"></i>Nuevo Viaje
                     </button>
+                    <% } %>
                 </div>
 
                 <div class="card-body">
