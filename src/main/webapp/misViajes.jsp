@@ -153,12 +153,16 @@
                         <table class="table table-hover table-borderless">
                             <thead class="table-light">
                             <tr>
+                                <th scope="col">Fecha</th>
                                 <th scope="col">Origen</th>
                                 <th scope="col">Destino</th>
-                                <th scope="col">Fecha</th>
-                                <th scope="col">Lugares</th>
-                                <th scope="col">Precio Unitario</th>
                                 <th scope="col">Lugar de Salida</th>
+                                <% if("usuario".equals(((Usuario) session.getAttribute("usuario")).getNombreRol())) { %>
+                                    <th scope="col">Lugares</th>
+                                    <th scope="col">Precio Unitario</th>
+                                <% } else {%>
+                                    <th scope="col">Conductor</th>
+                                <% } %>
                                 <th scope="col">Cancelado</th>
                                 <th scope="col" class="text-end">Acciones</th>
                             </tr>
@@ -172,18 +176,25 @@
                                     for (Viaje viaje : viajes) {
                             %>
                             <tr class="align-middle">
+                                <td><%= viaje.getFecha() %>
+                                </td>
                                 <td><%= viaje.getOrigen() %>
                                 </td>
                                 <td><%= viaje.getDestino() %>
                                 </td>
-                                <td><%= viaje.getFecha() %>
+                                <td><%= viaje.getLugar_salida() %>
                                 </td>
+                                <% if("usuario".equals(((Usuario) session.getAttribute("usuario")).getNombreRol())) { %>
                                 <td><%= viaje.getLugares_disponibles() %>
                                 </td>
                                 <td>$<%= viaje.getPrecio_unitario() %>
                                 </td>
-                                <td><%= viaje.getLugar_salida() %>
+                                <% } else { %>
+                                <td>
+                                    <%= viaje.getConductor().getNombre() + " " + viaje.getConductor().getApellido()%><br>
+                                    <%= viaje.getConductor().getCorreo()%>
                                 </td>
+                                <% } %>
                                 <td><%= viaje.isCancelado() ? "Sí" : "No" %>
                                 </td>
                                 <td class="text-end action-buttons">
