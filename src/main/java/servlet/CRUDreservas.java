@@ -203,7 +203,7 @@ public class CRUDreservas extends HttpServlet {
             throw new Exception("El viaje esta cancelado");
         }
 
-        LinkedList<Reserva> reservas = reservaController.getReservasPorViaje(id);
+        LinkedList<Reserva> reservas = reservaController.getReservasPorViaje(id, false);
 
         if (reservas.isEmpty()) {
             throw new Exception("No existen reservas para este viaje");

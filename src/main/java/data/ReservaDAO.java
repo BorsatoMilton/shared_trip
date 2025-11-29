@@ -234,7 +234,7 @@ public class ReservaDAO {
         return reservas;
     }
 
-    public LinkedList<Reserva> getReservasByViaje(int idViaje) {
+    public LinkedList<Reserva> getReservasByViaje(int idViaje, boolean all) {
         logger.debug("Obteniendo reservas para viaje ID: {}", idViaje);
 
         LinkedList<Reserva> reservas = new LinkedList<>();
@@ -256,7 +256,11 @@ public class ReservaDAO {
                 "INNER JOIN usuarios u_conductor ON u_conductor.id_usuario = v.id_conductor " +
                 "INNER JOIN usuarios u_pasajero ON u_pasajero.id_usuario = r.id_pasajero_reserva " +
                 "INNER JOIN vehiculos veh ON veh.id_vehiculo = v.id_vehiculo_viaje " +
-                "WHERE r.id_viaje = ? AND r.reserva_cancelada = false";
+                "WHERE r.id_viaje = ?";
+
+        if (!all) {
+            query += " AND r.reserva_cancelada = false";
+        }
 
         try {
             Connection conn = ConnectionDB.getInstancia().getConn();

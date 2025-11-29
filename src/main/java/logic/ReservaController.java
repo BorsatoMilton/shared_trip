@@ -67,11 +67,11 @@ public class ReservaController {
         return reserva;
     }
 
-    public LinkedList<Reserva> getReservasPorViaje(int idViaje) throws Exception {
+    public LinkedList<Reserva> getReservasPorViaje(int idViaje, boolean all) throws Exception {
         if (idViaje < 0) {
             throw new Exception("ID de viaje inválido");
         }
-        return reservaDAO.getReservasByViaje(idViaje);
+        return reservaDAO.getReservasByViaje(idViaje, all);
     }
 
     public Reserva nuevaReserva(int viajeId, int cantPasajeros, Usuario usuario) throws Exception {
@@ -106,7 +106,7 @@ public class ReservaController {
         String fechaString = sdf.format(fecha);
 
 
-        LinkedList<Reserva> reservas = reservaDAO.getReservasByViaje(viajeId);
+        LinkedList<Reserva> reservas = reservaDAO.getReservasByViaje(viajeId, false);
 
         int codigo_verificacion;
         boolean repetido;

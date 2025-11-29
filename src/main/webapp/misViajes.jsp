@@ -1,7 +1,7 @@
 <%@ page import="java.util.LinkedList" %>
 <%@ page import="entidades.Viaje" %>
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-         pageEncoding="ISO-8859-1" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+         pageEncoding="UTF-8" %>
 <%@ page import="java.time.LocalDateTime" %>
 <%@ page import="java.time.ZoneId" %>
 <%@ page import="java.sql.Date" %>
@@ -113,7 +113,7 @@
             <div class="card shadow-lg">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h3 class="mb-0">
-                        <i class="bi bi-people-fill me-2"></i>Administración de Viajes
+                        <i class="bi bi-people-fill me-2"></i>AdministraciÃ³n de Viajes
                     </h3>
                     <div>
                         <jsp:include page="buscadorUniversal.jsp"/>
@@ -200,7 +200,7 @@
                                 </td>
                                 <td> <%= viaje.getVehiculo().getPatente() %></td>
                                 <% } %>
-                                <td><%= viaje.isCancelado() ? "Sí" : "No" %>
+                                <td><%= viaje.isCancelado() ? "SÃ­" : "No" %>
                                 </td>
                                 <td class="text-end action-buttons">
                                     <% if (!viaje.isCancelado()) { %>
@@ -251,9 +251,17 @@
                                     <button type="button"
                                             class="btn btn-sm btn-primary btn-codigo"
                                             data-id="<%= viaje.getIdViaje() %>">
-                                        <i class="bi bi-key"></i> Código
+                                        <i class="bi bi-key"></i> CÃ³digo
                                     </button>
                                     <% } %>
+
+                                    <br>
+
+                                    <button type="button"
+                                            class="btn btn-sm btn-primary mt-1 btn-obtener-reservas"
+                                            data-id="<%= viaje.getIdViaje() %>">
+                                        <i class="bi bi-journal-check me-1"></i> Reservas
+                                    </button>
                                 </td>
                             </tr>
                             <%
@@ -299,9 +307,9 @@
             <form id="formCodigoValidacion" method="POST" action="reservas">
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label for="codigo" class="form-label">Código de validación</label>
+                        <label for="codigo" class="form-label">CÃ³digo de validaciÃ³n</label>
                         <input type="number" class="form-control" name="codigo" id="codigo"
-                               placeholder="Ingrese el código de validación" required>
+                               placeholder="Ingrese el cÃ³digo de validaciÃ³n" required>
                     </div>
                     <input type="hidden" name="action" value="validate">
                     <input type="hidden" name="idViaje" id="idViajeAverificar">
@@ -383,7 +391,7 @@
                     </div>
                     <% if("usuario".equals(((Usuario)session.getAttribute("usuario")).getNombreRol())) { %>
                         <div class="mb-3">
-                            <label class="form-label" for="editIdVehiculo">Vehículo</label>
+                            <label class="form-label" for="editIdVehiculo">VehÃ­culo</label>
                             <select name="idVehiculo" id="editIdVehiculo" class="form-select w-100">
                                 <% if (vehiculos != null && !vehiculos.isEmpty()) {
                                     for (Vehiculo v : vehiculos) { %>
@@ -410,11 +418,11 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Confirmar eliminación</h5>
+                <h5 class="modal-title">Confirmar eliminaciÃ³n</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                ¿Estás seguro de eliminar este viaje?
+                Â¿EstÃ¡s seguro de eliminar este viaje?
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
@@ -434,11 +442,11 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Confirmar cancelación</h5>
+                <h5 class="modal-title">Confirmar cancelaciÃ³n</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                ¿Estás seguro de cancelar este viaje?
+                Â¿EstÃ¡s seguro de cancelar este viaje?
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
@@ -517,14 +525,14 @@
                     <div class="row">
                         <div class="col-12">
                             <div class="mb-3">
-                                <label class="form-label" for="idVehiculoNuevo">Vehículo</label>
+                                <label class="form-label" for="idVehiculoNuevo">VehÃ­culo</label>
                                 <select name="idVehiculo" id="idVehiculoNuevo" class="form-select w-100" required>
                                     <% if (vehiculos != null && !vehiculos.isEmpty()) { %>
                                     <% for (Vehiculo v : vehiculos) { %>
                                     <option value="<%= v.getId_vehiculo() %>"><%= v.getPatente() %></option>
                                     <% } %>
                                     <% } else { %>
-                                    <option value="">-- No hay vehículos cargados. Agregue uno. --</option>
+                                    <option value="">-- No hay vehÃ­culos cargados. Agregue uno. --</option>
                                     <% } %>
                                 </select>
                             </div>
@@ -543,6 +551,54 @@
 </div>
 
 
+<!-- MODAL RESERVAS VIAJE -->
+<div class="modal fade" id="reservasViaje" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-people-fill me-2"></i>Reservas del Viaje
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+
+                <div id="reservasLoader" class="text-center py-5">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Cargando...</span>
+                    </div>
+                    <p class="mt-3 text-muted">Cargando reservas...</p>
+                </div>
+
+                <div id="reservasContainer" style="display: none;">
+
+                </div>
+
+                <div id="sinReservas" style="display: none;" class="text-center py-5">
+                    <i class="bi bi-inbox fs-1 text-muted"></i>
+                    <p class="mt-3 text-muted">No hay reservas para este viaje</p>
+                </div>
+
+
+                <div id="errorReservas" style="display: none;" class="alert alert-danger">
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+                    <span id="errorMensaje"></span>
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
@@ -550,5 +606,6 @@
 <script src="<%= request.getContextPath() %>/js/buscadorMunicipios.js"></script>
 <script src="<%= request.getContextPath() %>/js/scriptViajes.js"></script>
 <script src="<%= request.getContextPath() %>/js/buscadorUniversal.js"></script>
+<script src="<%= request.getContextPath() %>/js/scriptCargarReservasViaje.js"></script>
 </body>
 </html>

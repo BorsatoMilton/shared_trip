@@ -411,7 +411,7 @@ public class CRUDviajes extends HttpServlet {
     private void enviarNotificacionesCancelacionViaje(Viaje viaje, Usuario chofer) {
         try {
 
-            LinkedList<Reserva> reservas = reservaCtrl.getReservasPorViaje(viaje.getIdViaje());
+            LinkedList<Reserva> reservas = reservaCtrl.getReservasPorViaje(viaje.getIdViaje(), false);
 
             String datosViaje = formatters.formatDatosViaje(viaje);
             String datosChofer = formatters.formatDatosChofer(chofer,
