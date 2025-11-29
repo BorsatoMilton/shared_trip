@@ -35,7 +35,7 @@ public class ViajesListadoInicio extends HttpServlet {
 
         HttpSession session = request.getSession();
         try {
-            LinkedList<Viaje> viajes = viajeController.getAll();
+            LinkedList<Viaje> viajes = viajeController.getAll(false);
             request.setAttribute("viajes", viajes);
             request.getRequestDispatcher("index.jsp").forward(request, response);
 

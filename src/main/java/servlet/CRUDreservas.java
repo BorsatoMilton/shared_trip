@@ -53,8 +53,15 @@ public class CRUDreservas extends HttpServlet {
         Usuario usuario = (Usuario) session.getAttribute("usuario");
 
         try {
-            LinkedList<Reserva> reservas = reservaController.getReservasUsuario(usuario);
-            session.setAttribute("misreservas", reservas);
+            if("admin".equals(usuario.getNombreRol())){
+                LinkedList<Reserva> reservas = reservaController.getAllReservas();
+                session.setAttribute("reservas", reservas);
+            }else if("usuario".equals(usuario.getNombreRol())){
+                LinkedList<Reserva> reservas = reservaController.getReservasUsuario(usuario);
+                session.setAttribute("reservas", reservas);
+            }else{
+                throw new DataAccessException("Rol no admitido");
+            }
         } catch (Exception e) {
             session.setAttribute("error", "Ocurrió un error al obtener las reservas.");
         }
@@ -84,6 +91,10 @@ public class CRUDreservas extends HttpServlet {
             } else if ("cancelar".equals(action)) {
                 cancelarReserva(request, usuario);
                 session.setAttribute("mensaje", "Reserva cancelada con éxito");
+                redirectPage = "/reservas";
+            } else if ("eliminar".equals(action)) {
+                eliminarReserva(request, usuario);
+                session.setAttribute("mensaje", "Reserva eliminada con éxito");
                 redirectPage = "/reservas";
             } else if ("validate".equals(action)) {
                 validarReserva(request);
@@ -149,7 +160,7 @@ public class CRUDreservas extends HttpServlet {
             throw new Exception("Formato de número inválido");
         }
 
-        Reserva reserva = reservaController.cancelarReserva(idReserva, usuario.getIdUsuario());
+        Reserva reserva = reservaController.cancelarReserva(idReserva, usuario);
         enviarNotificacionesCancelacionReserva(reserva, usuario);
 
     }
@@ -227,6 +238,24 @@ public class CRUDreservas extends HttpServlet {
         if (!reservaEncontrada) {
             throw new Exception("No existe ninguna reserva con el código ingresado: " + codigoValidacion);
         }
+    }
+
+    private void eliminarReserva(HttpServletRequest request, Usuario usuario) throws Exception {
+
+        String reservaIdStr = request.getParameter("reservaId");
+
+        if (reservaIdStr == null || reservaIdStr.trim().isEmpty()) {
+            throw new Exception("ID de reserva inválido");
+        }
+
+        int idReserva;
+        try {
+            idReserva = Integer.parseInt(reservaIdStr);
+        } catch (NumberFormatException e) {
+            throw new Exception("Formato de número inválido");
+        }
+
+        reservaController.eliminarReserva(idReserva, usuario);
     }
 
 

@@ -19,13 +19,31 @@ public class ReservaDAO {
         logger.debug("Obteniendo todas las reservas");
         LinkedList<Reserva> reservas = new LinkedList<>();
 
+        String query = "SELECT " +
+                "r.id_reserva, r.fecha_reserva, r.estado, r.cantidad_pasajeros_reservada, " +
+                "r.reserva_cancelada, r.codigo_reserva, r.feedback_token, " +
+                "v.id_viaje, v.fecha, v.lugares_disponibles, v.origen, v.destino, " +
+                "v.precio_unitario, v.cancelado, v.lugar_salida, v.id_vehiculo_viaje, " +
+                "u_conductor.id_usuario as conductor_id, u_conductor.nombre as conductor_nombre, " +
+                "u_conductor.apellido as conductor_apellido, u_conductor.correo as conductor_correo, " +
+                "u_conductor.telefono as conductor_telefono, " +
+                "u_pasajero.id_usuario as pasajero_id, u_pasajero.nombre as pasajero_nombre, " +
+                "u_pasajero.apellido as pasajero_apellido, u_pasajero.correo as pasajero_correo, " +
+                "u_pasajero.telefono as pasajero_telefono, " +
+                "veh.id_vehiculo, veh.patente, veh.modelo, veh.anio " +
+                "FROM reservas r " +
+                "INNER JOIN viajes v ON r.id_viaje = v.id_viaje " +
+                "INNER JOIN usuarios u_conductor ON u_conductor.id_usuario = v.id_conductor " +
+                "INNER JOIN usuarios u_pasajero ON u_pasajero.id_usuario = r.id_pasajero_reserva " +
+                "INNER JOIN vehiculos veh ON veh.id_vehiculo = v.id_vehiculo_viaje ";
+
         try {
             Connection conn = ConnectionDB.getInstancia().getConn();
             try (Statement stmt = conn.createStatement();
-                 ResultSet rs = stmt.executeQuery("SELECT * FROM reservas")) {
+                 ResultSet rs = stmt.executeQuery(query)) {
 
                 while (rs.next()) {
-                    reservas.add(mapReserva(rs));
+                    reservas.add(mapFullReservaFromJoin(rs));
                 }
                 logger.info("Obtenidas {} reservas", reservas.size());
             }
@@ -449,7 +467,7 @@ public class ReservaDAO {
         }
     }
 
-    public void delete(int idReserva) {
+    public boolean delete(int idReserva) {
         logger.info("Eliminando reserva ID: {}", idReserva);
 
         try {
@@ -460,10 +478,14 @@ public class ReservaDAO {
                 stmt.setInt(1, idReserva);
 
                 int affected = stmt.executeUpdate();
-                checkAffectedRows(affected, "eliminar");
-                logger.info("Reserva eliminada exitosamente: ID {}", idReserva);
+                if (affected > 0) {
+                    logger.info("Reserva eliminada exitosamente: ID {}", idReserva);
+                    return true;
+                } else {
+                    logger.warn("No se encontró reserva a eliminar con ID: {}", idReserva);
+                    return false;
+                }
             }
-
         } catch (SQLException e) {
             logger.error("Error al eliminar reserva ID {} - Estado: {} - Código: {}",
                     idReserva, e.getSQLState(), e.getErrorCode(), e);

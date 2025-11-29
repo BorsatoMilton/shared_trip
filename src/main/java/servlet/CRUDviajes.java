@@ -65,7 +65,7 @@ public class CRUDviajes extends HttpServlet {
 
         try {
             if ("admin".equalsIgnoreCase(tipo)) {
-                viajes = viajeCtrl.getAll();
+                viajes = viajeCtrl.getAll(true);
                 usuarios = usuarioCtrl.getAll();
             } else if ("usuario".equalsIgnoreCase(tipo)) {
                 viajes = viajeCtrl.getViajesUsuario(usuario);
@@ -245,7 +245,7 @@ public class CRUDviajes extends HttpServlet {
 
     private void actualizarViaje(HttpServletRequest request, Usuario usuario) throws Exception {
 
-
+        HttpSession session = request.getSession();
         String idStr = request.getParameter("idViaje");
         if (idStr == null || idStr.trim().isEmpty()) {
             throw new Exception("ID de viaje inválido");
@@ -291,13 +291,15 @@ public class CRUDviajes extends HttpServlet {
             throw new Exception("El lugar de salida es obligatorio");
         }
 
-        if (vehiculoIdStr == null || vehiculoIdStr.trim().isEmpty()) {
-            throw new Exception("Debe seleccionar un vehículo");
+        if("usuario".equals(((Usuario)session.getAttribute("usuario")).getNombreRol())) {
+            if (vehiculoIdStr == null || vehiculoIdStr.trim().isEmpty()) {
+                throw new Exception("Debe seleccionar un vehículo");
+            }
         }
 
         int lugares;
         double precio;
-        int vehiculoId;
+        int vehiculoId = -1;
 
         try {
             lugares = Integer.parseInt(lugaresStr);
@@ -312,7 +314,9 @@ public class CRUDviajes extends HttpServlet {
         }
 
         try {
-            vehiculoId = Integer.parseInt(vehiculoIdStr);
+            if(vehiculoIdStr != null) {
+                vehiculoId = Integer.parseInt(vehiculoIdStr);
+            }
         } catch (NumberFormatException e) {
             throw new Exception("ID de vehículo inválido");
         }
@@ -387,7 +391,7 @@ public class CRUDviajes extends HttpServlet {
     }
 
     private void cancelarViaje(HttpServletRequest request, Usuario u) throws Exception {
-        String idStr = request.getParameter("viajeId");
+        String idStr = request.getParameter("idViaje");
         if (idStr == null || idStr.trim().isEmpty()) {
             throw new Exception("ID de viaje inválido");
         }

@@ -7,6 +7,7 @@
 <%@ page import="java.sql.Date" %>
 <%@ page import="entidades.Vehiculo" %>
 <%@ page import="java.time.LocalDate" %>
+<%@ page import="entidades.Usuario" %>
 
 <!DOCTYPE html>
 <html>
@@ -114,10 +115,12 @@
                     <h3 class="mb-0">
                         <i class="bi bi-people-fill me-2"></i>Administración de Viajes
                     </h3>
-                    <button type="button" class="btn btn-light" data-bs-toggle="modal"
+                    <% if ("usuario".equals(((Usuario)session.getAttribute("usuario")).getNombreRol())) { %>
+                        <button type="button" class="btn btn-light" data-bs-toggle="modal"
                             data-bs-target="#nuevoViaje">
                         <i class="bi bi-plus-circle me-2"></i>Nuevo Viaje
                     </button>
+                    <% } %>
                 </div>
 
                 <div class="card-body">
@@ -150,12 +153,17 @@
                         <table class="table table-hover table-borderless">
                             <thead class="table-light">
                             <tr>
+                                <th scope="col">Fecha</th>
                                 <th scope="col">Origen</th>
                                 <th scope="col">Destino</th>
-                                <th scope="col">Fecha</th>
-                                <th scope="col">Lugares</th>
-                                <th scope="col">Precio Unitario</th>
                                 <th scope="col">Lugar de Salida</th>
+                                <% if("usuario".equals(((Usuario) session.getAttribute("usuario")).getNombreRol())) { %>
+                                    <th scope="col">Lugares</th>
+                                    <th scope="col">Precio Unitario</th>
+                                <% } else {%>
+                                    <th scope="col">Conductor</th>
+                                    <th scope="col">Patente</th>
+                                <% } %>
                                 <th scope="col">Cancelado</th>
                                 <th scope="col" class="text-end">Acciones</th>
                             </tr>
@@ -169,22 +177,30 @@
                                     for (Viaje viaje : viajes) {
                             %>
                             <tr class="align-middle">
+                                <td><%= viaje.getFecha() %>
+                                </td>
                                 <td><%= viaje.getOrigen() %>
                                 </td>
                                 <td><%= viaje.getDestino() %>
                                 </td>
-                                <td><%= viaje.getFecha() %>
+                                <td><%= viaje.getLugar_salida() %>
                                 </td>
+                                <% if("usuario".equals(((Usuario) session.getAttribute("usuario")).getNombreRol())) { %>
                                 <td><%= viaje.getLugares_disponibles() %>
                                 </td>
                                 <td>$<%= viaje.getPrecio_unitario() %>
                                 </td>
-                                <td><%= viaje.getLugar_salida() %>
+                                <% } else { %>
+                                <td>
+                                    <%= viaje.getConductor().getNombre() + " " + viaje.getConductor().getApellido()%><br>
+                                    <%= viaje.getConductor().getCorreo()%>
                                 </td>
+                                <td> <%= viaje.getVehiculo().getPatente() %></td>
+                                <% } %>
                                 <td><%= viaje.isCancelado() ? "Sí" : "No" %>
                                 </td>
                                 <td class="text-end action-buttons">
-
+                                    <% if (!viaje.isCancelado()) { %>
                                     <button type="button"
                                             class="btn btn-sm btn-warning btn-editar"
                                             data-id="<%=viaje.getIdViaje()%>"
@@ -198,7 +214,7 @@
                                             data-lugar_salida="<%=viaje.getLugar_salida()%>">
                                         <i class="bi bi-pencil"></i>
                                     </button>
-
+                                    <% } %>
                                     <% if (viaje.isCancelado()) { %>
                                     <button type="button"
                                             class="btn btn-sm btn-danger btn-eliminar"
@@ -207,22 +223,20 @@
                                     </button>
                                     <% } %>
 
+                                    <%
+                                        Date fechaViaje = viaje.getFecha();
+                                        LocalDateTime fechaViajeLocalDateTime = fechaViaje.toLocalDate().atStartOfDay();
+                                    %>
 
-                                    <form action="viajes" method="post" class="d-inline">
-                                        <input type="hidden" name="viajeId" value="<%= viaje.getIdViaje() %>">
-                                        <%
-                                            Date fechaViaje = viaje.getFecha();
-                                            LocalDateTime fechaViajeLocalDateTime = fechaViaje.toLocalDate().atStartOfDay();
-                                        %>
-                                        <input type="hidden" name="action" value="cancelarViaje">
-                                        <% if (!viaje.isCancelado()) { %>
-                                        <button type="submit" class="btn btn-danger btn-sm"
-                                                <% if (viaje.isCancelado() || fechaViajeLocalDateTime.isBefore(LocalDateTime.now())) { %>
-                                                disabled <% } %>>
-                                            <i class="bi bi-x-circle-fill"></i>
-                                        </button>
-                                        <% } %>
-                                    </form>
+                                    <% if (!viaje.isCancelado()) { %>
+                                    <button type="button" class="btn btn-sm btn-danger btn-cancelar"
+                                            data-id="<%=viaje.getIdViaje()%>"
+                                            <% if (viaje.isCancelado() || fechaViajeLocalDateTime.isBefore(LocalDateTime.now())) { %>
+                                            disabled
+                                            <% } %>>
+                                        <i class="bi bi-x-circle-fill"></i>
+                                    </button>
+                                    <% } %>
 
                                     <%
                                         LocalDate fechaViajeLocal = null;
@@ -359,18 +373,19 @@
                                    id="editPrecioUnitario" required>
                         </div>
                     </div>
-
-                    <div class="mb-3">
-                        <label class="form-label" for="editIdVehiculo">Vehículo</label>
-                        <select name="idVehiculo" id="editIdVehiculo" class="form-select w-100">
-                            <% if (vehiculos != null && !vehiculos.isEmpty()) {
-                                for (Vehiculo v : vehiculos) { %>
-                            <option value="<%=v.getId_vehiculo()%>"><%=v.getPatente()%>
-                            </option>
-                            <% }
-                            } %>
-                        </select>
-                    </div>
+                    <% if("usuario".equals(((Usuario)session.getAttribute("usuario")).getNombreRol())) { %>
+                        <div class="mb-3">
+                            <label class="form-label" for="editIdVehiculo">Vehículo</label>
+                            <select name="idVehiculo" id="editIdVehiculo" class="form-select w-100">
+                                <% if (vehiculos != null && !vehiculos.isEmpty()) {
+                                    for (Vehiculo v : vehiculos) { %>
+                                <option value="<%=v.getId_vehiculo()%>"><%=v.getPatente()%>
+                                </option>
+                                <% }
+                                } %>
+                            </select>
+                        </div>
+                    <% } %>
                 </div>
 
                 <div class="modal-footer">
@@ -405,6 +420,31 @@
     </div>
 </div>
 
+
+<!-- MODAL CANCELAR VIAJE -->
+<div class="modal fade" id="cancelarViaje" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmar cancelación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                ¿Estás seguro de cancelar este viaje?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <form id="formCancelar" action="viajes" method="post" class="d-inline">
+                    <input type="hidden" name="idViaje" id="idViajeCancelar">
+                    <input type="hidden" name="action" value="cancelarViaje">
+                    <button type="submit" class="btn btn-danger">Cancelar Viaje</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <!-- MODAL NUEVO VIAJE -->
 <div class="modal fade" id="nuevoViaje" tabindex="-1">
     <div class="modal-dialog modal-lg">
@@ -413,22 +453,27 @@
                 <h5 class="modal-title">Nuevo Viaje</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
+
             <div class="modal-body">
                 <form method="POST" action="viajes" id="altaViaje">
                     <input type="hidden" name="action" value="add">
+
                     <div class="row">
+
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="fecha" class="form-label">Fecha de Viaje:</label>
+                                <label for="fecha" class="form-label">Fecha de Viaje</label>
                                 <input type="date" class="form-control" id="fecha" name="fecha" required>
                             </div>
+
                             <div class="mb-3">
-                                <label for="lugares_disponibles">Lugares Disponibles</label>
+                                <label for="lugares_disponibles" class="form-label">Lugares Disponibles</label>
                                 <input type="number" class="form-control" name="lugares_disponibles"
                                        id="lugares_disponibles" placeholder="Ingrese los lugares disponibles" required>
                             </div>
+
                             <div class="mb-3">
-                                <label for="newOrigen" class="form-label">Origen:</label>
+                                <label for="newOrigen" class="form-label">Origen</label>
                                 <div class="dropdown-container">
                                     <input type="text" class="form-control" id="newOrigen" name="origen"
                                            placeholder="Ciudad de origen" required autocomplete="off">
@@ -436,19 +481,22 @@
                                 </div>
                             </div>
                         </div>
+
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="precio_unitario">Precio Unitario</label>
+                                <label for="precio_unitario" class="form-label">Precio Unitario</label>
                                 <input type="number" step="any" class="form-control" name="precio_unitario"
                                        id="precio_unitario" placeholder="Ingrese el precio unitario" required>
                             </div>
+
                             <div class="mb-3">
-                                <label for="lugar_salida">Lugar de Salida</label>
+                                <label for="lugar_salida" class="form-label">Lugar de Salida</label>
                                 <input type="text" class="form-control" name="lugar_salida" id="lugar_salida"
                                        placeholder="Ingrese el lugar de salida" required>
                             </div>
+
                             <div class="mb-3">
-                                <label for="newDestino" class="form-label">Destino:</label>
+                                <label for="newDestino" class="form-label">Destino</label>
                                 <div class="dropdown-container">
                                     <input type="text" class="form-control" id="newDestino" name="destino"
                                            placeholder="Ciudad de destino" required autocomplete="off">
@@ -456,28 +504,32 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label" for="idVehiculoNuevo">Vehículo</label>
-                            <select name="idVehiculo" id="idVehiculoNuevo" class="form-select w-100" required>
-                                <%
-                                    if (vehiculos != null && !vehiculos.isEmpty()) {
-                                        for (Vehiculo v : vehiculos) {
-                                %>
-                                <option value="<%=v.getId_vehiculo()%>"><%=v.getPatente()%>
-                                </option>
-                                <%
-                                        }
-                                    }
-                                %>
-                            </select>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="mb-3">
+                                <label class="form-label" for="idVehiculoNuevo">Vehículo</label>
+                                <select name="idVehiculo" id="idVehiculoNuevo" class="form-select w-100" required>
+                                    <% if (vehiculos != null && !vehiculos.isEmpty()) { %>
+                                    <% for (Vehiculo v : vehiculos) { %>
+                                    <option value="<%= v.getId_vehiculo() %>"><%= v.getPatente() %></option>
+                                    <% } %>
+                                    <% } else { %>
+                                    <option value="">-- No hay vehículos cargados. Agregue uno. --</option>
+                                    <% } %>
+                                </select>
+                            </div>
                         </div>
                     </div>
+
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                         <button type="submit" class="btn btn-primary">Guardar</button>
                     </div>
                 </form>
             </div>
+
         </div>
     </div>
 </div>

@@ -1,6 +1,7 @@
 <%@page import="java.util.Date" %>
 <%@ page import="entidades.Reserva" %>
 <%@ page import="java.util.LinkedList" %>
+<%@ page import="entidades.Usuario" %>
 
 <%@ page language="java" contentType="text/html; charset=UTF-8"
          pageEncoding="UTF-8" %>
@@ -100,15 +101,27 @@
                                 <th scope="col">Destino</th>
                                 <th scope="col">Fecha de Viaje</th>
                                 <th scope="col">Pasajeros</th>
+                                <% if("usuario".equals(((Usuario) session.getAttribute("usuario")).getNombreRol())) {%>
                                 <th scope="col">Total</th>
+                                <% } %>
+
                                 <th scope="col">Estado</th>
+
+                                <% if("usuario".equals(((Usuario) session.getAttribute("usuario")).getNombreRol())) {%>
                                 <th scope="col">Código Reserva</th>
+                                <% } %>
+
+                                <% if("admin".equals(((Usuario) session.getAttribute("usuario")).getNombreRol())) {%>
+                                <th scope="col">Reservante</th>
+                                <th scope="col">Conductor</th>
+                                <% } %>
+
                                 <th scope="col" class="text-end">Acciones</th>
                             </tr>
                             </thead>
                             <tbody>
                             <%
-                                LinkedList<Reserva> reservas = (LinkedList<Reserva>) request.getSession().getAttribute("misreservas");
+                                LinkedList<Reserva> reservas = (LinkedList<Reserva>) request.getSession().getAttribute("reservas");
                                 if (reservas != null && !reservas.isEmpty()) {
                                     for (Reserva reserva : reservas) {
                                         Date hoy = new Date();
@@ -122,20 +135,38 @@
                                 <td><%= reserva.getViaje().getDestino() %></td>
                                 <td><%= reserva.getViaje().getFecha() %></td>
                                 <td><%= reserva.getCantidad_pasajeros_reservada()%></td>
-                                <td>
-                                    $<%= reserva.getViaje().getPrecio_unitario() * reserva.getCantidad_pasajeros_reservada()%>
-                                </td>
+                                <% if("usuario".equals(((Usuario) session.getAttribute("usuario")).getNombreRol())) {%>
+                                    <td>
+                                        $<%= reserva.getViaje().getPrecio_unitario() * reserva.getCantidad_pasajeros_reservada()%>
+                                    </td>
+                                <% } %>
+
                                 <td><%= reserva.getEstado() %></td>
-                                <td><%= reserva.getCodigo_reserva()%></td>
+
+                                <% if("usuario".equals(((Usuario) session.getAttribute("usuario")).getNombreRol())) {%>
+                                    <td><%= reserva.getCodigo_reserva()%></td>
+                                <% } %>
+
+                                <% if("admin".equals(((Usuario) session.getAttribute("usuario")).getNombreRol())) {%>
+                                <td><%= reserva.getPasajero().getNombre() + " " + reserva.getPasajero().getApellido()%><br>
+                                    <%= reserva.getPasajero().getCorreo()%>
+                                </td>
+                                <td><%= reserva.getViaje().getConductor().getNombre() + " " + reserva.getViaje().getConductor().getApellido()%><br>
+                                    <%= reserva.getViaje().getConductor().getCorreo()%>
+                                </td>
+                                <% } %>
                                 <td class="text-end action-buttons">
-                                    <form action="reservas" method="POST" class="d-inline">
-                                        <input type="hidden" name="action" value="cancelar">
-                                        <input type="hidden" name="reservaId" value="<%= reserva.getIdReserva() %>">
-                                        <input type="hidden" name="viajeId" value="<%= reserva.getViaje().getIdViaje() %>">
-                                        <button type="submit" class="btn btn-danger btn-sm" <%= deshabilitar ? "disabled" : "" %>>
-                                            <i class="bi bi-x-circle-fill"></i>
-                                        </button>
-                                    </form>
+                                    <% if("EN PROCESO".equals(reserva.getEstado())) { %>
+                                    <button type="button" class="btn btn-sm btn-danger btn-cancelar"
+                                            data-id="<%=reserva.getIdReserva()%>">
+                                        <i class="bi bi-x-circle-fill"></i>
+                                    </button>
+                                    <% }if("CONFIRMADA".equals(reserva.getEstado()) || "CANCELADA".equals(reserva.getEstado())) { %>
+                                    <button type="button" class="btn btn-sm btn-danger btn-eliminar"
+                                            data-id="<%=reserva.getIdReserva()%>">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                    <% }%>
                                 </td>
                             </tr>
                             <%
@@ -165,9 +196,58 @@
     </div>
 </footer>
 
+
+<!-- MODAL ELIMINAR RESERVA -->
+<div class="modal fade" id="eliminarReserva" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmar eliminación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                ¿Estás seguro de eliminar esta reserva?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <form id="formCancelar" action="reservas" method="post" class="d-inline">
+                    <input type="hidden" name="action" value="eliminar">
+                    <input type="hidden" name="reservaId" id="idReservaEliminar">
+                    <button type="submit" class="btn btn-danger">Eliminar Reserva</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- MODAL CANCELAR RESERVA -->
+<div class="modal fade" id="cancelarReserva" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmar cancelación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                ¿Estás seguro de cancelar esta reserva?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <form id="formCancelar" action="reservas" method="post" class="d-inline">
+                    <input type="hidden" name="action" value="cancelar">
+                    <input type="hidden" name="reservaId" id="idReservaCancelar">
+                    <button type="submit" class="btn btn-danger">Cancelar Reserva</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
 <script src="<%= request.getContextPath() %>/js/notificacionesTiempo.js"></script>
+<script src="<%= request.getContextPath() %>/js/scriptReservas.js"></script>
 </body>
 </html>

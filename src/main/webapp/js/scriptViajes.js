@@ -21,6 +21,14 @@ const initCRUDOperations = () => {
         });
     });
 
+    document.querySelectorAll('.btn-cancelar').forEach(btn => {
+        btn.addEventListener('click', function () {
+            abrirModal('cancelarViaje', {
+                idViajeCancelar: this.dataset.id
+            });
+        });
+    });
+
 
     document.querySelectorAll('.btn-editar').forEach(btn => {
         btn.addEventListener('click', function () {

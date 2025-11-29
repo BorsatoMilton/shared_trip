@@ -64,7 +64,7 @@
                     <h3 class="mb-0">
                         <i class="bi bi-car-front-fill me-2"></i>Administración de Vehículos
                     </h3>
-                    <% if ("usuario".equals(request.getSession().getAttribute("rol"))) { %>
+                    <% if ("usuario".equals(((Usuario)session.getAttribute("usuario")).getNombreRol())) { %>
                     <button type="button" id="btnNuevoVehiculo" class="btn btn-light" data-bs-toggle="modal"
                             data-bs-target="#nuevoVehiculo">
                         <i class="bi bi-plus-circle me-2"></i>Nuevo Vehículo
@@ -106,6 +106,9 @@
                                 <th scope="col">Patente</th>
                                 <th scope="col">Modelo</th>
                                 <th scope="col">Año</th>
+                                <% if ("admin".equals(((Usuario)session.getAttribute("usuario")).getNombreRol())) { %>
+                                <th scope="col">Propietario</th>
+                                <% } %>
                                 <th scope="col" class="text-end">Acciones</th>
                             </tr>
                             </thead>
@@ -119,6 +122,13 @@
                                 <td><%= vehiculo.getPatente() %></td>
                                 <td><%= vehiculo.getModelo() %></td>
                                 <td><%= vehiculo.getAnio() %></td>
+
+                                <% if ("admin".equals(((Usuario)session.getAttribute("usuario")).getNombreRol())) { %>
+                                <td><%= vehiculo.getPropietario().getNombre() + " " + vehiculo.getPropietario().getApellido() %><br>
+                                    <%= vehiculo.getPropietario().getCorreo() %>
+                                </td>
+                                <% } %>
+
                                 <td class="text-end action-buttons">
                                     <button type="button"
                                             class="btn btn-sm btn-warning btn-editar"

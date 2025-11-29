@@ -16,7 +16,7 @@ public class ViajeDAO {
     private FeedbackDAO fDAO = new FeedbackDAO();
     private static final Logger logger = LoggerFactory.getLogger(ViajeDAO.class);
 
-    public LinkedList<Viaje> getAll() {
+    public LinkedList<Viaje> getAll(boolean all) {
         logger.debug("Obteniendo todos los viajes activos con detalles");
         LinkedList<Viaje> viajes = new LinkedList<>();
 
@@ -30,6 +30,19 @@ public class ViajeDAO {
                 "INNER JOIN usuarios u ON u.id_usuario = v.id_conductor " +
                 "INNER JOIN vehiculos veh ON veh.id_vehiculo = v.id_vehiculo_viaje " +
                 "WHERE v.fecha >= CURRENT_DATE AND u.fecha_baja IS NULL AND v.cancelado = 0";
+
+        if(all){
+            query = "SELECT " +
+                    "v.*, " +
+                    "u.id_usuario as conductor_id, u.nombre as conductor_nombre, " +
+                    "u.apellido as conductor_apellido, u.correo as conductor_correo, " +
+                    "u.telefono as conductor_telefono, " +
+                    "veh.id_vehiculo, veh.patente, veh.modelo, veh.anio " +
+                    "FROM viajes v " +
+                    "INNER JOIN usuarios u ON u.id_usuario = v.id_conductor " +
+                    "INNER JOIN vehiculos veh ON veh.id_vehiculo = v.id_vehiculo_viaje " +
+                    "WHERE u.fecha_baja IS NULL";
+        }
 
         try {
             Connection conn = ConnectionDB.getInstancia().getConn();
