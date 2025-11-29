@@ -2,7 +2,7 @@ package entidades;
 
 public class Rol {
     private int idRol;
-    public String nombre;
+    private String nombre;
 
     public int getIdRol() {
         return idRol;

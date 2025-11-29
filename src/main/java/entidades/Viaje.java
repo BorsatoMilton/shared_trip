@@ -4,14 +4,14 @@ import java.sql.Date;
 
 public class Viaje {
     private int idViaje;
-    public Date fecha;
-    public int lugares_disponibles;
-    public String origen;
-    public String destino;
-    public Double precio_unitario;
-    public boolean cancelado;
-    public String lugar_salida;
-    public Vehiculo vehiculo;
+    private Date fecha;
+    private int lugares_disponibles;
+    private String origen;
+    private String destino;
+    private Double precio_unitario;
+    private boolean cancelado;
+    private String lugar_salida;
+    private Vehiculo vehiculo;
     private Usuario conductor;
 
 

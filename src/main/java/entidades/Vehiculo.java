@@ -2,11 +2,11 @@ package entidades;
 
 public class Vehiculo {
     private int id_vehiculo;
-    public String patente;
-    public String modelo;
-    public int anio;
-    public int usuario_duenio_id;
-    public Usuario propietario;
+    private String patente;
+    private String modelo;
+    private int anio;
+    private int usuario_duenio_id;
+    private Usuario propietario;
 
 
     public int getId_vehiculo() {

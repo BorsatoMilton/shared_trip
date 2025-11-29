@@ -2,16 +2,16 @@ package entidades;
 
 public class Usuario {
     private int idUsuario;
-    public String usuario;
-    public String clave;
-    public String nombre;
-    public String apellido;
-    public String correo;
-    public String telefono;
-    public int rol;
-    public String nombreRol;
-    public double promedio_puntuacion;
-    public int cantidad_que_puntuaron;
+    private String usuario;
+    private String clave;
+    private String nombre;
+    private String apellido;
+    private String correo;
+    private String telefono;
+    private int rol;
+    private String nombreRol;
+    private double promedio_puntuacion;
+    private int cantidad_que_puntuaron;
 
     public String getNombreRol() {
         return nombreRol;

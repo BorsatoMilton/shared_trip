@@ -3,11 +3,11 @@ package entidades;
 import java.sql.Date;
 
 public class Feedback {
-    public int puntuacion;
-    public Date fecha_hora;
-    public Usuario usuario_calificado;
-    public Reserva reserva;
-    public String token;
+    private int puntuacion;
+    private Date fecha_hora;
+    private Usuario usuario_calificado;
+    private Reserva reserva;
+    private String token;
 
     public Reserva getReserva() {
         return reserva;
