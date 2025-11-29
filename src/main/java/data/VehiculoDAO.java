@@ -27,7 +27,7 @@ public class VehiculoDAO {
                          "SELECT v.id_vehiculo, v.patente, v.modelo, v.anio, v.usuario_duenio_id, u.nombre, u.apellido, u.correo " +
                                  "FROM vehiculos v " +
                                  "INNER JOIN usuarios u ON u.id_usuario = v.usuario_duenio_id " +
-                                 "WHERE u.fecha_baja IS NULL")) {
+                                 "WHERE u.fecha_baja IS NULL AND v.activo = TRUE")) {
 
                 while (rs.next()) {
                     Usuario u = new Usuario();
@@ -62,7 +62,7 @@ public class VehiculoDAO {
         Vehiculo v = null;
 
         String query = "SELECT id_vehiculo, patente, modelo, anio, usuario_duenio_id " +
-                "FROM vehiculos WHERE id_vehiculo = ?";
+                "FROM vehiculos WHERE id_vehiculo = ? AND activo = TRUE";
 
         try {
             Connection conn = ConnectionDB.getInstancia().getConn();
@@ -100,7 +100,7 @@ public class VehiculoDAO {
         Vehiculo v = null;
 
         String query = "SELECT id_vehiculo, patente, modelo, anio, usuario_duenio_id " +
-                "FROM vehiculos WHERE patente = ?";
+                "FROM vehiculos WHERE patente = ? AND activo = TRUE";
 
         try {
             Connection conn = ConnectionDB.getInstancia().getConn();
@@ -172,7 +172,7 @@ public class VehiculoDAO {
     public void update(Vehiculo v, int id_vehiculo) {
         logger.info("Actualizando vehículo ID: {}", id_vehiculo);
 
-        String query = "UPDATE vehiculos SET patente = ?, modelo = ?, anio = ? WHERE id_vehiculo = ?";
+        String query = "UPDATE vehiculos SET patente = ?, modelo = ?, anio = ? WHERE id_vehiculo = ? AND activo = TRUE";
 
         try {
             Connection conn = ConnectionDB.getInstancia().getConn();
@@ -205,7 +205,7 @@ public class VehiculoDAO {
         LinkedList<Vehiculo> vehiculos = new LinkedList<>();
 
         String query = "SELECT id_vehiculo, patente, modelo, anio, usuario_duenio_id " +
-                "FROM vehiculos WHERE usuario_duenio_id = ?";
+                "FROM vehiculos WHERE usuario_duenio_id = ? AND activo = TRUE";
 
         try {
             Connection conn = ConnectionDB.getInstancia().getConn();
@@ -240,7 +240,7 @@ public class VehiculoDAO {
     public boolean eliminarVehiculo(int id_vehiculo) {
         logger.info("Eliminando vehículo ID: {}", id_vehiculo);
 
-        String query = "DELETE FROM vehiculos WHERE id_vehiculo = ?";
+        String query = "UPDATE vehiculos SET activo = FALSE WHERE id_vehiculo = ?";
 
         try {
             Connection conn = ConnectionDB.getInstancia().getConn();
@@ -271,7 +271,7 @@ public class VehiculoDAO {
     public boolean tieneViajes(int idVehiculo) {
         logger.debug("Verificando si vehículo ID {} tiene viajes asociados", idVehiculo);
 
-        String sql = "SELECT COUNT(*) AS total FROM viajes WHERE id_vehiculo_viaje = ?";
+        String sql = "SELECT COUNT(*) AS total FROM viajes WHERE id_vehiculo_viaje = ? AND activo = TRUE";
 
         try {
             Connection conn = ConnectionDB.getInstancia().getConn();

@@ -29,7 +29,7 @@ public class ViajeDAO {
                 "FROM viajes v " +
                 "INNER JOIN usuarios u ON u.id_usuario = v.id_conductor " +
                 "INNER JOIN vehiculos veh ON veh.id_vehiculo = v.id_vehiculo_viaje " +
-                "WHERE v.fecha >= CURRENT_DATE AND u.fecha_baja IS NULL AND v.cancelado = 0";
+                "WHERE v.fecha >= CURRENT_DATE AND u.fecha_baja IS NULL AND v.cancelado = 0 AND v.activo = TRUE";
 
         if(all){
             query = "SELECT " +
@@ -41,7 +41,7 @@ public class ViajeDAO {
                     "FROM viajes v " +
                     "INNER JOIN usuarios u ON u.id_usuario = v.id_conductor " +
                     "INNER JOIN vehiculos veh ON veh.id_vehiculo = v.id_vehiculo_viaje " +
-                    "WHERE u.fecha_baja IS NULL";
+                    "WHERE u.fecha_baja IS NULL AND v.activo = TRUE";
         }
 
         try {
@@ -99,6 +99,7 @@ public class ViajeDAO {
                     "AND v.fecha = ? " +
                     "AND v.cancelado = 0 " +
                     "AND u.fecha_baja IS NULL " +
+                    "AND v.activo = TRUE " +
                     "ORDER BY v.fecha ASC, v.lugares_disponibles DESC";
         } else {
             query = "SELECT v.*, " +
@@ -114,6 +115,7 @@ public class ViajeDAO {
                     "AND v.fecha >= CURRENT_DATE " +
                     "AND v.cancelado = 0 " +
                     "AND u.fecha_baja IS NULL " +
+                    "AND v.activo = TRUE " +
                     "ORDER BY v.fecha ASC, v.lugares_disponibles DESC";
         }
 
@@ -158,7 +160,7 @@ public class ViajeDAO {
                 "FROM viajes v " +
                 "INNER JOIN usuarios u ON u.id_usuario = v.id_conductor " +
                 "INNER JOIN vehiculos veh ON veh.id_vehiculo = v.id_vehiculo_viaje " +
-                "WHERE v.id_viaje = ?";
+                "WHERE v.id_viaje = ? AND v.activo = TRUE";
 
         try {
             Connection conn = ConnectionDB.getInstancia().getConn();
@@ -194,7 +196,7 @@ public class ViajeDAO {
                 "FROM viajes v " +
                 "INNER JOIN usuarios u_conductor ON u_conductor.id_usuario = v.id_conductor " +
                 "INNER JOIN vehiculos veh ON veh.id_vehiculo = v.id_vehiculo_viaje " +
-                "WHERE v.id_conductor = ?";
+                "WHERE v.id_conductor = ? AND v.activo = TRUE";
 
         try {
             Connection conn = ConnectionDB.getInstancia().getConn();
@@ -219,7 +221,7 @@ public class ViajeDAO {
     public void updateCantidad(int idViaje, int cantPasajeros) {
         logger.info("Actualizando lugares disponibles para viaje ID: {} - Nueva cantidad: {}", idViaje, cantPasajeros);
 
-        String sql = "UPDATE viajes SET lugares_disponibles = ? WHERE id_viaje = ?";
+        String sql = "UPDATE viajes SET lugares_disponibles = ? WHERE id_viaje = ? AND activo = TRUE";
 
         try {
             Connection conn = ConnectionDB.getInstancia().getConn();
@@ -245,7 +247,7 @@ public class ViajeDAO {
     public boolean cancelarViaje(int id_viaje) {
         logger.info("Cancelando viaje ID: {}", id_viaje);
 
-        String sql = "UPDATE viajes SET cancelado = true WHERE id_viaje = ?";
+        String sql = "UPDATE viajes SET cancelado = true WHERE id_viaje = ? AND activo = TRUE";
 
         try {
             Connection conn = ConnectionDB.getInstancia().getConn();
@@ -274,7 +276,7 @@ public class ViajeDAO {
         logger.info("Actualizando viaje ID: {}", id_viaje);
 
         String sql = "UPDATE viajes SET fecha=?, lugares_disponibles=?, origen=?, destino=?, " +
-                "precio_unitario=?, cancelado=?, id_conductor=?, lugar_salida=?, id_vehiculo_viaje=? WHERE id_viaje=?";
+                "precio_unitario=?, cancelado=?, id_conductor=?, lugar_salida=?, id_vehiculo_viaje=? WHERE id_viaje=? AND activo = TRUE";
 
         try {
             Connection conn = ConnectionDB.getInstancia().getConn();
@@ -348,7 +350,7 @@ public class ViajeDAO {
     public void delete(Viaje v) {
         logger.info("Eliminando viaje ID: {}", v.getIdViaje());
 
-        String sql = "DELETE FROM viajes WHERE id_viaje = ?";
+        String sql = "UPDATE viajes SET activo = FALSE WHERE id_viaje = ?";
 
         try {
             Connection conn = ConnectionDB.getInstancia().getConn();

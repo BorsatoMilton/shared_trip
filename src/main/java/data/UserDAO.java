@@ -344,7 +344,11 @@ public class UserDAO {
 
         try {
             Connection conn = ConnectionDB.getInstancia().getConn();
-            try (PreparedStatement stmt = conn.prepareStatement("SELECT COUNT(*) as total FROM viajes WHERE id_conductor = ?")) {
+            try (PreparedStatement stmt = conn.prepareStatement("SELECT COUNT(*) AS total " +
+                    "FROM viajes " +
+                    "WHERE id_conductor = ? " +
+                    "AND fecha > CURRENT_DATE " +
+                    "AND cancelado = 0")) {
 
                 stmt.setInt(1, idUsuario);
                 try (ResultSet rs = stmt.executeQuery()) {
@@ -372,7 +376,7 @@ public class UserDAO {
         try {
             Connection conn = ConnectionDB.getInstancia().getConn();
             try (PreparedStatement stmt = conn.prepareStatement(
-                    "SELECT COUNT(*) as total FROM reservas WHERE id_pasajero_reserva = ? AND reserva_cancelada = 0")) {
+                    "SELECT COUNT(*) as total FROM reservas WHERE id_pasajero_reserva = ? AND estado <> 'EN PROCESO'")) {
 
                 stmt.setInt(1, idUsuario);
                 try (ResultSet rs = stmt.executeQuery()) {

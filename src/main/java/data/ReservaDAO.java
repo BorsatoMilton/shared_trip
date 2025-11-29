@@ -35,7 +35,8 @@ public class ReservaDAO {
                 "INNER JOIN viajes v ON r.id_viaje = v.id_viaje " +
                 "INNER JOIN usuarios u_conductor ON u_conductor.id_usuario = v.id_conductor " +
                 "INNER JOIN usuarios u_pasajero ON u_pasajero.id_usuario = r.id_pasajero_reserva " +
-                "INNER JOIN vehiculos veh ON veh.id_vehiculo = v.id_vehiculo_viaje ";
+                "INNER JOIN vehiculos veh ON veh.id_vehiculo = v.id_vehiculo_viaje " +
+                "WHERE r.activo = TRUE";
 
         try {
             Connection conn = ConnectionDB.getInstancia().getConn();
@@ -79,7 +80,7 @@ public class ReservaDAO {
                 "INNER JOIN usuarios u_conductor ON u_conductor.id_usuario = v.id_conductor " +
                 "INNER JOIN usuarios u_pasajero ON u_pasajero.id_usuario = r.id_pasajero_reserva " +
                 "INNER JOIN vehiculos veh ON veh.id_vehiculo = v.id_vehiculo_viaje " +
-                "WHERE r.id_reserva = ?";
+                "WHERE r.id_reserva = ? AND r.activo = TRUE";
 
         try {
             Connection conn = ConnectionDB.getInstancia().getConn();
@@ -127,7 +128,7 @@ public class ReservaDAO {
                 "INNER JOIN usuarios u_conductor ON u_conductor.id_usuario = v.id_conductor " +
                 "INNER JOIN usuarios u_pasajero ON u_pasajero.id_usuario = r.id_pasajero_reserva " +
                 "INNER JOIN vehiculos veh ON veh.id_vehiculo = v.id_vehiculo_viaje " +
-                "WHERE r.feedback_token = ?";
+                "WHERE r.feedback_token = ? AND r.activo = TRUE";
 
         try {
             Connection conn = ConnectionDB.getInstancia().getConn();
@@ -160,7 +161,7 @@ public class ReservaDAO {
         try {
             Connection conn = ConnectionDB.getInstancia().getConn();
             try (PreparedStatement stmt = conn.prepareStatement(
-                    "SELECT cantidad_pasajeros_reservada FROM reservas WHERE id_reserva = ?")) {
+                    "SELECT cantidad_pasajeros_reservada FROM reservas WHERE id_reserva = ? AND activo = TRUE")) {
 
                 stmt.setInt(1, idReserva);
 
@@ -208,7 +209,7 @@ public class ReservaDAO {
                 "INNER JOIN usuarios u_conductor ON u_conductor.id_usuario = v.id_conductor " +
                 "INNER JOIN usuarios u_pasajero ON u_pasajero.id_usuario = r.id_pasajero_reserva " +
                 "INNER JOIN vehiculos veh ON veh.id_vehiculo = v.id_vehiculo_viaje " +
-                "WHERE r.id_pasajero_reserva = ?";
+                "WHERE r.id_pasajero_reserva = ? AND r.activo = TRUE";
 
         try {
             Connection conn = ConnectionDB.getInstancia().getConn();
@@ -365,7 +366,7 @@ public class ReservaDAO {
         try {
             Connection conn = ConnectionDB.getInstancia().getConn();
             try (PreparedStatement stmt = conn.prepareStatement(
-                    "UPDATE reservas SET estado = ? WHERE id_reserva = ?")) {
+                    "UPDATE reservas SET estado = ? WHERE id_reserva = ? AND activo = TRUE")) {
 
                 stmt.setString(1, nuevoEstado);
                 stmt.setInt(2, idReserva);
@@ -391,7 +392,7 @@ public class ReservaDAO {
             Connection conn = ConnectionDB.getInstancia().getConn();
             try (PreparedStatement stmt = conn.prepareStatement(
                     "UPDATE reservas SET cantidad_pasajeros_reservada = ?, reserva_cancelada = ?, " +
-                            "id_viaje = ?, id_pasajero_reserva = ? WHERE id_reserva = ?")) {
+                            "id_viaje = ?, id_pasajero_reserva = ? WHERE id_reserva = ? AND activo = TRUE")) {
 
                 stmt.setInt(1, reserva.getCantidad_pasajeros_reservada());
                 stmt.setBoolean(2, reserva.isReserva_cancelada());
@@ -419,7 +420,7 @@ public class ReservaDAO {
         try {
             Connection conn = ConnectionDB.getInstancia().getConn();
             try (PreparedStatement stmt = conn.prepareStatement(
-                    "UPDATE reservas SET feedback_token = ? WHERE id_reserva = ?")) {
+                    "UPDATE reservas SET feedback_token = ? WHERE id_reserva = ? AND activo = TRUE")) {
 
                 stmt.setString(1, token);
                 stmt.setInt(2, idReserva);
@@ -444,7 +445,7 @@ public class ReservaDAO {
         try {
             Connection conn = ConnectionDB.getInstancia().getConn();
             try (PreparedStatement stmt = conn.prepareStatement(
-                    "UPDATE reservas SET reserva_cancelada = true, estado = 'CANCELADA' WHERE id_reserva = ?")) {
+                    "UPDATE reservas SET reserva_cancelada = true, estado = 'CANCELADA' WHERE id_reserva = ? AND activo = TRUE")) {
 
                 stmt.setInt(1, idReserva);
 
@@ -473,7 +474,7 @@ public class ReservaDAO {
         try {
             Connection conn = ConnectionDB.getInstancia().getConn();
             try (PreparedStatement stmt = conn.prepareStatement(
-                    "DELETE FROM reservas WHERE id_reserva = ?")) {
+                    "UPDATE reservas SET activo = FALSE WHERE id_reserva = ?")) {
 
                 stmt.setInt(1, idReserva);
 
