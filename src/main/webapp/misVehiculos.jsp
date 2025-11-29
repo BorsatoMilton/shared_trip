@@ -106,6 +106,9 @@
                                 <th scope="col">Patente</th>
                                 <th scope="col">Modelo</th>
                                 <th scope="col">Año</th>
+                                <% if ("admin".equals(((Usuario)session.getAttribute("usuario")).getNombreRol())) { %>
+                                <th scope="col">Propietario</th>
+                                <% } %>
                                 <th scope="col" class="text-end">Acciones</th>
                             </tr>
                             </thead>
@@ -119,6 +122,13 @@
                                 <td><%= vehiculo.getPatente() %></td>
                                 <td><%= vehiculo.getModelo() %></td>
                                 <td><%= vehiculo.getAnio() %></td>
+
+                                <% if ("admin".equals(((Usuario)session.getAttribute("usuario")).getNombreRol())) { %>
+                                <td><%= vehiculo.getPropietario().getNombre() + " " + vehiculo.getPropietario().getApellido() %><br>
+                                    <%= vehiculo.getPropietario().getCorreo() %>
+                                </td>
+                                <% } %>
+
                                 <td class="text-end action-buttons">
                                     <button type="button"
                                             class="btn btn-sm btn-warning btn-editar"

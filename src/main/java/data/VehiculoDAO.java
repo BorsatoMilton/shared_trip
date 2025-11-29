@@ -24,18 +24,24 @@ public class VehiculoDAO {
             Connection conn = ConnectionDB.getInstancia().getConn();
             try (Statement stmt = conn.createStatement();
                  ResultSet rs = stmt.executeQuery(
-                         "SELECT id_vehiculo, patente, modelo, anio, usuario_duenio_id " +
-                                 "FROM vehiculos " +
-                                 "INNER JOIN usuarios ON usuarios.id_usuario = vehiculos.usuario_duenio_id " +
-                                 "WHERE usuarios.fecha_baja IS NULL")) {
+                         "SELECT v.id_vehiculo, v.patente, v.modelo, v.anio, v.usuario_duenio_id, u.nombre, u.apellido, u.correo " +
+                                 "FROM vehiculos v " +
+                                 "INNER JOIN usuarios u ON u.id_usuario = v.usuario_duenio_id " +
+                                 "WHERE u.fecha_baja IS NULL")) {
 
                 while (rs.next()) {
+                    Usuario u = new Usuario();
+                    u.setNombre(rs.getString("u.nombre"));
+                    u.setApellido(rs.getString("u.apellido"));
+                    u.setCorreo(rs.getString("u.correo"));
+
                     Vehiculo v = new Vehiculo();
                     v.setId_vehiculo(rs.getInt("id_vehiculo"));
                     v.setPatente(rs.getString("patente"));
                     v.setModelo(rs.getString("modelo"));
                     v.setAnio(rs.getInt("anio"));
                     v.setUsuario_duenio_id(rs.getInt("usuario_duenio_id"));
+                    v.setPropietario(u);
                     vehiculos.add(v);
                 }
 

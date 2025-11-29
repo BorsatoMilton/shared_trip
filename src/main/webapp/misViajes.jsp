@@ -162,6 +162,7 @@
                                     <th scope="col">Precio Unitario</th>
                                 <% } else {%>
                                     <th scope="col">Conductor</th>
+                                    <th scope="col">Patente</th>
                                 <% } %>
                                 <th scope="col">Cancelado</th>
                                 <th scope="col" class="text-end">Acciones</th>
@@ -194,6 +195,7 @@
                                     <%= viaje.getConductor().getNombre() + " " + viaje.getConductor().getApellido()%><br>
                                     <%= viaje.getConductor().getCorreo()%>
                                 </td>
+                                <td> <%= viaje.getVehiculo().getPatente() %></td>
                                 <% } %>
                                 <td><%= viaje.isCancelado() ? "Sí" : "No" %>
                                 </td>

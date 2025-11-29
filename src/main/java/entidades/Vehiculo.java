@@ -6,6 +6,7 @@ public class Vehiculo {
     public String modelo;
     public int anio;
     public int usuario_duenio_id;
+    public Usuario propietario;
 
 
     public int getId_vehiculo() {
@@ -47,6 +48,15 @@ public class Vehiculo {
     public void setUsuario_duenio_id(int usuario_duenio_id) {
         this.usuario_duenio_id = usuario_duenio_id;
     }
+
+    public Usuario getPropietario() {
+        return propietario;
+    }
+
+    public void setPropietario(Usuario propietario) {
+        this.propietario = propietario;
+    }
+
 
     public Vehiculo() {
 
