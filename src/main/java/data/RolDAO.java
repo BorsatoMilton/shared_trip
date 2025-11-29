@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import entidades.Rol;
 import data.exceptions.DataAccessException;
 
-
 public class RolDAO {
     private static final Logger logger = LoggerFactory.getLogger(RolDAO.class);
 
@@ -23,25 +22,21 @@ public class RolDAO {
         String query = "SELECT id_rol, nombre FROM roles";
         LinkedList<Rol> roles = new LinkedList<>();
 
-        try {
-            Connection conn = ConnectionDB.getInstancia().getConn();
-            try (Statement stmt = conn.createStatement();
-                 ResultSet rs = stmt.executeQuery(query)) {
+        try (Connection conn = ConnectionDB.getInstancia().getConn();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
 
-                while (rs.next()) {
-                    roles.add(mapearRol(rs));
-                }
-
-                logger.info("Obtenidos {} roles", roles.size());
+            while (rs.next()) {
+                roles.add(mapearRol(rs));
             }
+
+            logger.info("Obtenidos {} roles", roles.size());
             return roles;
 
         } catch (SQLException e) {
             logger.error("Error al obtener roles - Estado: {} - Código: {}",
                     e.getSQLState(), e.getErrorCode(), e);
             throw new DataAccessException("Error al obtener roles", e);
-        } finally {
-            ConnectionDB.getInstancia().releaseConn();
         }
     }
 
@@ -50,28 +45,24 @@ public class RolDAO {
 
         String query = "SELECT id_rol, nombre FROM roles WHERE id_rol = ?";
 
-        try {
-            Connection conn = ConnectionDB.getInstancia().getConn();
-            try (PreparedStatement stmt = conn.prepareStatement(query)) {
+        try (Connection conn = ConnectionDB.getInstancia().getConn();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
 
-                stmt.setInt(1, idRol);
+            stmt.setInt(1, idRol);
 
-                try (ResultSet rs = stmt.executeQuery()) {
-                    if (rs.next()) {
-                        logger.debug("Rol encontrado: ID {}", idRol);
-                        return mapearRol(rs);
-                    }
-                    logger.warn("Rol no encontrado con ID: {}", idRol);
-                    return null;
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    logger.debug("Rol encontrado: ID {}", idRol);
+                    return mapearRol(rs);
                 }
+                logger.warn("Rol no encontrado con ID: {}", idRol);
+                return null;
             }
 
         } catch (SQLException e) {
             logger.error("Error al obtener rol ID {} - Estado: {} - Código: {}",
                     idRol, e.getSQLState(), e.getErrorCode(), e);
             throw new DataAccessException("Error al obtener rol por ID", e);
-        } finally {
-            ConnectionDB.getInstancia().releaseConn();
         }
     }
 

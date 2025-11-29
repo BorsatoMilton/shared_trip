@@ -16,7 +16,6 @@ public class FeedbackDAO {
 
     public LinkedList<Feedback> getAll() {
         logger.debug("Obteniendo todos los feedbacks");
-        LinkedList<Feedback> feedbacks = new LinkedList<>();
 
         String query = "SELECT f.fecha_hora_feedback, f.id_usuario_calificado, f.puntuacion, f.id_reserva, f.token, " +
                 "u.id_usuario, u.nombre, u.apellido, " +
@@ -25,25 +24,24 @@ public class FeedbackDAO {
                 "INNER JOIN usuarios u ON f.id_usuario_calificado = u.id_usuario " +
                 "INNER JOIN reservas r ON f.id_reserva = r.id_reserva";
 
-        try {
-            Connection conn = ConnectionDB.getInstancia().getConn();
-            try (Statement stmt = conn.createStatement();
-                 ResultSet rs = stmt.executeQuery(query)) {
+        LinkedList<Feedback> feedbacks = new LinkedList<>();
 
-                while (rs.next()) {
-                    Feedback f = mappingFullFeedback(rs);
-                    feedbacks.add(f);
-                }
-                logger.info("Obtenidos {} feedbacks", feedbacks.size());
+        try (
+                Connection conn = ConnectionDB.getInstancia().getConn();
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(query)
+        ) {
+            while (rs.next()) {
+                feedbacks.add(mappingFullFeedback(rs));
             }
+
+            logger.info("Obtenidos {} feedbacks", feedbacks.size());
             return feedbacks;
 
         } catch (SQLException e) {
             logger.error("Error al obtener todos los feedbacks - Estado: {} - Código: {}",
-                    e.getSQLState(), e.getErrorCode(), e);
+                    e.getSQLState(), e.getErrorCode());
             throw new DataAccessException("Error al obtener todos los feedbacks", e);
-        } finally {
-            ConnectionDB.getInstancia().releaseConn();
         }
     }
 
@@ -57,66 +55,62 @@ public class FeedbackDAO {
         result.put("promedio", 0.0);
         result.put("cantidad", 0);
 
-        try {
-            Connection conn = ConnectionDB.getInstancia().getConn();
-            try (PreparedStatement stmt = conn.prepareStatement(query)) {
-                stmt.setInt(1, u.getIdUsuario());
+        try (
+                Connection conn = ConnectionDB.getInstancia().getConn();
+                PreparedStatement stmt = conn.prepareStatement(query);
+        ) {
+            stmt.setInt(1, u.getIdUsuario());
 
-                try (ResultSet rs = stmt.executeQuery()) {
-                    if (rs.next()) {
-                        double avg = rs.getDouble("promedio");
-                        int count = rs.getInt("cantidad");
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    double avg = rs.getDouble("promedio");
+                    int count = rs.getInt("cantidad");
 
-                        if (!rs.wasNull()) {
-                            result.put("promedio", avg);
-                        }
-                        result.put("cantidad", count);
-                        logger.debug("Rating obtenido para usuario ID {}: promedio={}, cantidad={}",
-                                u.getIdUsuario(), avg, count);
+                    if (!rs.wasNull()) {
+                        result.put("promedio", avg);
                     }
+                    result.put("cantidad", count);
+
+                    logger.debug("Rating obtenido para usuario ID {}: promedio={}, cantidad={}",
+                            u.getIdUsuario(), avg, count);
                 }
             }
+
             return result;
 
         } catch (SQLException e) {
             logger.error("Error al obtener rating para usuario ID {} - Estado: {} - Código: {}",
-                    u.getIdUsuario(), e.getSQLState(), e.getErrorCode(), e);
+                    u.getIdUsuario(), e.getSQLState(), e.getErrorCode());
             throw new DataAccessException("Error al obtener rating del usuario", e);
-        } finally {
-            ConnectionDB.getInstancia().releaseConn();
         }
     }
 
     public Feedback getByReserva(Reserva r) {
         logger.debug("Obteniendo feedback para reserva ID: {}", r.getIdReserva());
-        Feedback f = null;
 
         String query = "SELECT fecha_hora_feedback, id_usuario_calificado, puntuacion, id_reserva, token " +
                 "FROM feedback WHERE id_reserva = ?";
 
-        try {
-            Connection conn = ConnectionDB.getInstancia().getConn();
-            try (PreparedStatement stmt = conn.prepareStatement(query)) {
-                stmt.setInt(1, r.getIdReserva());
+        try (
+                Connection conn = ConnectionDB.getInstancia().getConn();
+                PreparedStatement stmt = conn.prepareStatement(query)
+        ) {
+            stmt.setInt(1, r.getIdReserva());
 
-                try (ResultSet rs = stmt.executeQuery()) {
-                    if (rs.next()) {
-                        f = new Feedback();
-                        f = mappingFeedback(rs, f);
-                        logger.debug("Feedback encontrado para reserva ID: {}", r.getIdReserva());
-                    } else {
-                        logger.warn("No se encontró feedback para reserva ID: {}", r.getIdReserva());
-                    }
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    Feedback f = new Feedback();
+                    return mappingFeedback(rs, f);
+                } else {
+                    logger.warn("No se encontró feedback para reserva ID: {}", r.getIdReserva());
+                    return null;
                 }
             }
-            return f;
 
         } catch (SQLException e) {
             logger.error("Error al obtener feedback para reserva ID {} - Estado: {} - Código: {}",
-                    r.getIdReserva(), e.getSQLState(), e.getErrorCode(), e);
+                    r.getIdReserva(), e.getSQLState(), e.getErrorCode());
             throw new DataAccessException("Error al obtener feedback por reserva", e);
-        } finally {
-            ConnectionDB.getInstancia().releaseConn();
         }
     }
 
@@ -125,29 +119,27 @@ public class FeedbackDAO {
 
         String query = "UPDATE feedback SET fecha_hora_feedback=?, puntuacion=? WHERE token=?";
 
-        try {
-            Connection conn = ConnectionDB.getInstancia().getConn();
-            try (PreparedStatement stmt = conn.prepareStatement(query)) {
-                java.sql.Timestamp now = new java.sql.Timestamp(System.currentTimeMillis());
-                stmt.setTimestamp(1, now);
-                stmt.setInt(2, puntuacion);
-                stmt.setString(3, token);
+        try (
+                Connection conn = ConnectionDB.getInstancia().getConn();
+                PreparedStatement stmt = conn.prepareStatement(query)
+        ) {
+            stmt.setTimestamp(1, new Timestamp(System.currentTimeMillis()));
+            stmt.setInt(2, puntuacion);
+            stmt.setString(3, token);
 
-                int rowsAffected = stmt.executeUpdate();
-                if (rowsAffected > 0) {
-                    logger.info("Feedback guardado exitosamente para token: {}", token);
-                } else {
-                    logger.warn("No se encontró feedback con token: {}", token);
-                    throw new DataAccessException("No se encontró feedback con el token proporcionado");
-                }
+            int rowsAffected = stmt.executeUpdate();
+
+            if (rowsAffected > 0) {
+                logger.info("Feedback guardado exitosamente para token: {}", token);
+            } else {
+                logger.warn("No se encontró feedback con token: {}", token);
+                throw new DataAccessException("No se encontró feedback con el token proporcionado");
             }
 
         } catch (SQLException e) {
             logger.error("Error al guardar feedback con token {} - Estado: {} - Código: {}",
-                    token, e.getSQLState(), e.getErrorCode(), e);
+                    token, e.getSQLState(), e.getErrorCode());
             throw new DataAccessException("Error al guardar feedback", e);
-        } finally {
-            ConnectionDB.getInstancia().releaseConn();
         }
     }
 
@@ -156,30 +148,26 @@ public class FeedbackDAO {
 
         String query = "INSERT INTO feedback(id_usuario_calificado, id_reserva, token) VALUES (?, ?, ?)";
 
-        try {
-            Connection conn = ConnectionDB.getInstancia().getConn();
-            try (PreparedStatement stmt = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS)) {
-                stmt.setInt(1, f.getUsuario_calificado().getIdUsuario());
-                stmt.setInt(2, f.getReserva().getIdReserva());
-                stmt.setString(3, f.getToken());
+        try (
+                Connection conn = ConnectionDB.getInstancia().getConn();
+                PreparedStatement stmt = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS)
+        ) {
+            stmt.setInt(1, f.getUsuario_calificado().getIdUsuario());
+            stmt.setInt(2, f.getReserva().getIdReserva());
+            stmt.setString(3, f.getToken());
 
-                int affectedRows = stmt.executeUpdate();
-                if (affectedRows > 0) {
-                    logger.info("Feedback agregado exitosamente para usuario ID: {}",
-                            f.getUsuario_calificado().getIdUsuario());
-                } else {
-                    logger.error("No se pudo crear el feedback para usuario ID: {}",
-                            f.getUsuario_calificado().getIdUsuario());
-                    throw new DataAccessException("No se pudo crear el feedback");
-                }
+            int affectedRows = stmt.executeUpdate();
+
+            if (affectedRows <= 0) {
+                logger.error("No se pudo crear el feedback para usuario ID: {}",
+                        f.getUsuario_calificado().getIdUsuario());
+                throw new DataAccessException("No se pudo crear el feedback");
             }
 
         } catch (SQLException e) {
             logger.error("Error al agregar feedback para usuario ID {} - Estado: {} - Código: {}",
-                    f.getUsuario_calificado().getIdUsuario(), e.getSQLState(), e.getErrorCode(), e);
+                    f.getUsuario_calificado().getIdUsuario(), e.getSQLState(), e.getErrorCode());
             throw new DataAccessException("Error al agregar feedback", e);
-        } finally {
-            ConnectionDB.getInstancia().releaseConn();
         }
     }
 
