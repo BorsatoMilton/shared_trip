@@ -40,8 +40,6 @@ public class RolDAO {
             logger.error("Error al obtener roles - Estado: {} - Código: {}",
                     e.getSQLState(), e.getErrorCode(), e);
             throw new DataAccessException("Error al obtener roles", e);
-        } finally {
-            ConnectionDB.getInstancia().releaseConn();
         }
     }
 
@@ -70,8 +68,6 @@ public class RolDAO {
             logger.error("Error al obtener rol ID {} - Estado: {} - Código: {}",
                     idRol, e.getSQLState(), e.getErrorCode(), e);
             throw new DataAccessException("Error al obtener rol por ID", e);
-        } finally {
-            ConnectionDB.getInstancia().releaseConn();
         }
     }
 

@@ -42,8 +42,6 @@ public class FeedbackDAO {
             logger.error("Error al obtener todos los feedbacks - Estado: {} - Código: {}",
                     e.getSQLState(), e.getErrorCode(), e);
             throw new DataAccessException("Error al obtener todos los feedbacks", e);
-        } finally {
-            ConnectionDB.getInstancia().releaseConn();
         }
     }
 
@@ -82,8 +80,6 @@ public class FeedbackDAO {
             logger.error("Error al obtener rating para usuario ID {} - Estado: {} - Código: {}",
                     u.getIdUsuario(), e.getSQLState(), e.getErrorCode(), e);
             throw new DataAccessException("Error al obtener rating del usuario", e);
-        } finally {
-            ConnectionDB.getInstancia().releaseConn();
         }
     }
 
@@ -115,8 +111,6 @@ public class FeedbackDAO {
             logger.error("Error al obtener feedback para reserva ID {} - Estado: {} - Código: {}",
                     r.getIdReserva(), e.getSQLState(), e.getErrorCode(), e);
             throw new DataAccessException("Error al obtener feedback por reserva", e);
-        } finally {
-            ConnectionDB.getInstancia().releaseConn();
         }
     }
 
@@ -146,8 +140,6 @@ public class FeedbackDAO {
             logger.error("Error al guardar feedback con token {} - Estado: {} - Código: {}",
                     token, e.getSQLState(), e.getErrorCode(), e);
             throw new DataAccessException("Error al guardar feedback", e);
-        } finally {
-            ConnectionDB.getInstancia().releaseConn();
         }
     }
 
@@ -178,8 +170,6 @@ public class FeedbackDAO {
             logger.error("Error al agregar feedback para usuario ID {} - Estado: {} - Código: {}",
                     f.getUsuario_calificado().getIdUsuario(), e.getSQLState(), e.getErrorCode(), e);
             throw new DataAccessException("Error al agregar feedback", e);
-        } finally {
-            ConnectionDB.getInstancia().releaseConn();
         }
     }
 

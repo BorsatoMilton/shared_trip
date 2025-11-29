@@ -57,8 +57,6 @@ public class ViajeDAO {
         } catch (SQLException e) {
             logger.error("Error al obtener todos los viajes", e);
             throw new DataAccessException("Error al obtener todos los viajes", e);
-        } finally {
-            ConnectionDB.getInstancia().releaseConn();
         }
         return viajes;
     }
@@ -141,8 +139,6 @@ public class ViajeDAO {
         } catch (SQLException e) {
             logger.error("Error al buscar viajes - origen: {}, destino: {}, fecha: {}", origen, destino, fecha, e);
             throw new DataAccessException("Error al buscar viajes", e);
-        } finally {
-            ConnectionDB.getInstancia().releaseConn();
         }
 
         return viajes;
@@ -178,8 +174,6 @@ public class ViajeDAO {
         } catch (SQLException e) {
             logger.error("Error al obtener viaje ID {}", id_viaje, e);
             throw new DataAccessException("Error al obtener viaje", e);
-        } finally {
-            ConnectionDB.getInstancia().releaseConn();
         }
         return viaje;
     }
@@ -212,8 +206,6 @@ public class ViajeDAO {
         } catch (SQLException e) {
             logger.error("Error al obtener viajes del usuario ID {}", u.getIdUsuario(), e);
             throw new DataAccessException("Error al obtener viajes del usuario", e);
-        } finally {
-            ConnectionDB.getInstancia().releaseConn();
         }
         return viajes;
     }
@@ -239,8 +231,6 @@ public class ViajeDAO {
         } catch (SQLException e) {
             logger.error("Error al actualizar lugares del viaje ID {}", idViaje, e);
             throw new DataAccessException("Error al actualizar lugares del viaje", e);
-        } finally {
-            ConnectionDB.getInstancia().releaseConn();
         }
     }
 
@@ -267,8 +257,6 @@ public class ViajeDAO {
         } catch (SQLException e) {
             logger.error("Error al cancelar viaje ID {}", id_viaje, e);
             throw new DataAccessException("Error al cancelar viaje", e);
-        } finally {
-            ConnectionDB.getInstancia().releaseConn();
         }
     }
 
@@ -302,8 +290,6 @@ public class ViajeDAO {
         } catch (SQLException e) {
             logger.error("Error al actualizar viaje ID {}", id_viaje, e);
             throw new DataAccessException("Error al actualizar viaje", e);
-        } finally {
-            ConnectionDB.getInstancia().releaseConn();
         }
     }
 
@@ -342,8 +328,6 @@ public class ViajeDAO {
         } catch (SQLException e) {
             logger.error("Error al crear nuevo viaje", e);
             throw new DataAccessException("Error al crear nuevo viaje", e);
-        } finally {
-            ConnectionDB.getInstancia().releaseConn();
         }
     }
 
@@ -367,8 +351,6 @@ public class ViajeDAO {
         } catch (SQLException e) {
             logger.error("Error al eliminar viaje ID {}", v.getIdViaje(), e);
             throw new DataAccessException("Error al eliminar viaje", e);
-        } finally {
-            ConnectionDB.getInstancia().releaseConn();
         }
     }
 

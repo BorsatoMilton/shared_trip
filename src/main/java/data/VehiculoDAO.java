@@ -52,8 +52,6 @@ public class VehiculoDAO {
         } catch (SQLException e) {
             logger.error("Error al obtener todos los vehículos", e);
             throw new DataAccessException("Error al obtener todos los vehículos", e);
-        } finally {
-            ConnectionDB.getInstancia().releaseConn();
         }
     }
 
@@ -90,8 +88,6 @@ public class VehiculoDAO {
         } catch (SQLException e) {
             logger.error("Error al obtener vehículo por ID {}", id_vehiculo, e);
             throw new DataAccessException("Error al obtener vehículo por ID", e);
-        } finally {
-            ConnectionDB.getInstancia().releaseConn();
         }
     }
 
@@ -128,8 +124,6 @@ public class VehiculoDAO {
         } catch (SQLException e) {
             logger.error("Error al obtener vehículo patente {}", patente, e);
             throw new DataAccessException("Error al obtener vehículo por patente", e);
-        } finally {
-            ConnectionDB.getInstancia().releaseConn();
         }
     }
 
@@ -164,8 +158,6 @@ public class VehiculoDAO {
         } catch (SQLException e) {
             logger.error("Error al crear vehículo {}", v.getPatente(), e);
             throw new DataAccessException("Error al crear vehículo", e);
-        } finally {
-            ConnectionDB.getInstancia().releaseConn();
         }
     }
 
@@ -195,8 +187,6 @@ public class VehiculoDAO {
         } catch (SQLException e) {
             logger.error("Error al actualizar vehículo ID {}", id_vehiculo, e);
             throw new DataAccessException("Error al actualizar vehículo", e);
-        } finally {
-            ConnectionDB.getInstancia().releaseConn();
         }
     }
 
@@ -232,8 +222,6 @@ public class VehiculoDAO {
         } catch (SQLException e) {
             logger.error("Error al obtener vehículos del usuario ID {}", u.getIdUsuario(), e);
             throw new DataAccessException("Error al obtener vehículos del usuario", e);
-        } finally {
-            ConnectionDB.getInstancia().releaseConn();
         }
     }
 
@@ -263,8 +251,6 @@ public class VehiculoDAO {
         } catch (SQLException e) {
             logger.error("Error al eliminar vehículo ID {}", id_vehiculo, e);
             throw new DataAccessException("Error al eliminar vehículo", e);
-        } finally {
-            ConnectionDB.getInstancia().releaseConn();
         }
     }
 
@@ -291,8 +277,6 @@ public class VehiculoDAO {
         } catch (SQLException e) {
             logger.error("Error al verificar viajes del vehículo ID {}", idVehiculo, e);
             throw new DataAccessException("Error al verificar viajes del vehículo", e);
-        } finally {
-            ConnectionDB.getInstancia().releaseConn();
         }
     }
 }

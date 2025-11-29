@@ -40,7 +40,7 @@ public class ViajesListadoInicio extends HttpServlet {
             request.getRequestDispatcher("index.jsp").forward(request, response);
 
         } catch (Exception e) {
-            session.setAttribute("error", "Error al obtener los viajes");
+            session.setAttribute("error", "Error al obtener los viajes" + e.getMessage());
             request.getRequestDispatcher("index.jsp").forward(request, response);
         }
     }

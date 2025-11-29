@@ -54,8 +54,6 @@ public class ReservaDAO {
             logger.error("Error al obtener todas las reservas - Estado: {} - Código: {}",
                     e.getSQLState(), e.getErrorCode(), e);
             throw new DataAccessException("Error al obtener todas las reservas", e);
-        } finally {
-            ConnectionDB.getInstancia().releaseConn();
         }
     }
 
@@ -102,8 +100,6 @@ public class ReservaDAO {
             logger.error("Error al obtener reserva ID {} - Estado: {} - Código: {}",
                     id_reserva, e.getSQLState(), e.getErrorCode(), e);
             throw new DataAccessException("Error al obtener reserva", e);
-        } finally {
-            ConnectionDB.getInstancia().releaseConn();
         }
     }
 
@@ -150,8 +146,6 @@ public class ReservaDAO {
             logger.error("Error al obtener reserva con token {} - Estado: {} - Código: {}",
                     token, e.getSQLState(), e.getErrorCode(), e);
             throw new DataAccessException("Error al obtener reserva por token", e);
-        } finally {
-            ConnectionDB.getInstancia().releaseConn();
         }
     }
 
@@ -181,8 +175,6 @@ public class ReservaDAO {
             logger.error("Error al obtener cantidad para reserva ID {} - Estado: {} - Código: {}",
                     idReserva, e.getSQLState(), e.getErrorCode(), e);
             throw new DataAccessException("Error al obtener cantidad para reserva", e);
-        } finally {
-            ConnectionDB.getInstancia().releaseConn();
         }
     }
 
@@ -228,8 +220,6 @@ public class ReservaDAO {
             logger.error("Error al obtener reservas por usuario ID {} - Estado: {} - Código: {}",
                     usuario.getIdUsuario(), e.getSQLState(), e.getErrorCode(), e);
             throw new DataAccessException("Error al obtener reservas por usuario", e);
-        } finally {
-            ConnectionDB.getInstancia().releaseConn();
         }
         return reservas;
     }
@@ -279,8 +269,6 @@ public class ReservaDAO {
             logger.error("Error al obtener reservas por viaje ID {} - Estado: {} - Código: {}",
                     idViaje, e.getSQLState(), e.getErrorCode(), e);
             throw new DataAccessException("Error al obtener reservas por viaje", e);
-        } finally {
-            ConnectionDB.getInstancia().releaseConn();
         }
         return reservas;
     }
@@ -316,8 +304,6 @@ public class ReservaDAO {
             logger.error("Error al obtener reservas para feedback - Estado: {} - Código: {}",
                     e.getSQLState(), e.getErrorCode(), e);
             throw new DataAccessException("Error al obtener reservas para feedback", e);
-        } finally {
-            ConnectionDB.getInstancia().releaseConn();
         }
         return reservas;
     }
@@ -359,8 +345,6 @@ public class ReservaDAO {
             logger.error("Error al crear reserva - Estado: {} - Código: {}",
                     e.getSQLState(), e.getErrorCode(), e);
             throw new DataAccessException("Error al agregar reserva", e);
-        } finally {
-            ConnectionDB.getInstancia().releaseConn();
         }
     }
 
@@ -384,8 +368,6 @@ public class ReservaDAO {
             logger.error("Error al actualizar estado de reserva ID {} - Estado: {} - Código: {}",
                     idReserva, e.getSQLState(), e.getErrorCode(), e);
             throw new DataAccessException("Error al actualizar estado de reserva", e);
-        } finally {
-            ConnectionDB.getInstancia().releaseConn();
         }
     }
 
@@ -413,8 +395,6 @@ public class ReservaDAO {
             logger.error("Error al actualizar reserva ID {} - Estado: {} - Código: {}",
                     idReserva, e.getSQLState(), e.getErrorCode(), e);
             throw new DataAccessException("Error al actualizar reserva", e);
-        } finally {
-            ConnectionDB.getInstancia().releaseConn();
         }
     }
 
@@ -438,8 +418,6 @@ public class ReservaDAO {
             logger.error("Error al guardar token para reserva ID {} - Estado: {} - Código: {}",
                     idReserva, e.getSQLState(), e.getErrorCode(), e);
             throw new DataAccessException("Error al guardar token en la reserva", e);
-        } finally {
-            ConnectionDB.getInstancia().releaseConn();
         }
     }
 
@@ -467,8 +445,6 @@ public class ReservaDAO {
             logger.error("Error al cancelar reserva ID {} - Estado: {} - Código: {}",
                     idReserva, e.getSQLState(), e.getErrorCode(), e);
             throw new DataAccessException("Error al cancelar reserva", e);
-        } finally {
-            ConnectionDB.getInstancia().releaseConn();
         }
     }
 
@@ -495,12 +471,10 @@ public class ReservaDAO {
             logger.error("Error al eliminar reserva ID {} - Estado: {} - Código: {}",
                     idReserva, e.getSQLState(), e.getErrorCode(), e);
             throw new DataAccessException("Error al eliminar reserva", e);
-        } finally {
-            ConnectionDB.getInstancia().releaseConn();
         }
     }
 
-    // ========== MÉTODOS DE MAPEO ==========
+
 
     private Reserva mapFullReservaFromJoin(ResultSet rs) throws SQLException {
         Reserva reserva = new Reserva();
@@ -572,9 +546,6 @@ public class ReservaDAO {
         return reserva;
     }
 
-    /**
-     * Mapeo para reservas que necesitan datos básicos del viaje
-     */
     private Reserva mapReservaWithViaje(ResultSet rs) throws SQLException {
         Reserva reserva = new Reserva();
         reserva.setIdReserva(rs.getInt("id_reserva"));

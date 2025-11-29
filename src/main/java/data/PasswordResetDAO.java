@@ -37,8 +37,6 @@ public class PasswordResetDAO {
             logger.error("Error al guardar token de recuperación para usuario ID {} - Estado: {} - Código: {}",
                     idUsuario, e.getSQLState(), e.getErrorCode(), e);
             throw new DataAccessException("Error al guardar token de recuperación", e);
-        } finally {
-            ConnectionDB.getInstancia().releaseConn();
         }
     }
 
@@ -71,8 +69,6 @@ public class PasswordResetDAO {
             logger.error("Error al obtener password reset con token {} - Estado: {} - Código: {}",
                     token, e.getSQLState(), e.getErrorCode(), e);
             throw new DataAccessException("Error al obtener token de recuperación", e);
-        } finally {
-            ConnectionDB.getInstancia().releaseConn();
         }
     }
 
@@ -99,8 +95,6 @@ public class PasswordResetDAO {
             logger.error("Error al marcar token como utilizado {} - Estado: {} - Código: {}",
                     token, e.getSQLState(), e.getErrorCode(), e);
             throw new DataAccessException("Error al marcar token como utilizado", e);
-        } finally {
-            ConnectionDB.getInstancia().releaseConn();
         }
     }
 
@@ -109,25 +103,20 @@ public class PasswordResetDAO {
 
         String query = "UPDATE password_reset SET utilizado = TRUE WHERE id_usuario = ? AND utilizado = FALSE";
 
-        try {
-            Connection conn = ConnectionDB.getInstancia().getConn();
-            try (PreparedStatement stmt = conn.prepareStatement(query)) {
-                stmt.setInt(1, idUsuario);
+        try (Connection conn = ConnectionDB.getInstancia().getConn();
+                 PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, idUsuario);
 
-                int rowsAffected = stmt.executeUpdate();
-                if (rowsAffected > 0) {
-                    logger.info("Tokens previos invalidados para usuario ID: {}", idUsuario);
-                } else {
-                    logger.debug("No había tokens previos para invalidar - Usuario ID: {}", idUsuario);
-                }
+            int rowsAffected = stmt.executeUpdate();
+            if (rowsAffected > 0) {
+                logger.info("Tokens previos invalidados para usuario ID: {}", idUsuario);
+            } else {
+                logger.debug("No había tokens previos para invalidar - Usuario ID: {}", idUsuario);
             }
-
         } catch (SQLException e) {
             logger.error("Error al invalidar tokens previos para usuario ID {} - Estado: {} - Código: {}",
                     idUsuario, e.getSQLState(), e.getErrorCode(), e);
             throw new DataAccessException("Error al invalidar tokens previos", e);
-        } finally {
-            ConnectionDB.getInstancia().releaseConn();
         }
     }
 
@@ -158,8 +147,6 @@ public class PasswordResetDAO {
             logger.error("Error al verificar tokens pendientes para usuario ID {} - Estado: {} - Código: {}",
                     idUsuario, e.getSQLState(), e.getErrorCode(), e);
             throw new DataAccessException("Error al verificar tokens pendientes", e);
-        } finally {
-            ConnectionDB.getInstancia().releaseConn();
         }
     }
 

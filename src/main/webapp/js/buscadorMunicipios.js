@@ -95,7 +95,10 @@ function cargarOpciones(busqueda, key) {
     resultados.slice(0, 50).forEach((muni) => {
         const div = document.createElement('div');
         div.className = 'opcion';
-        div.textContent = quitarTildesPreservandoCase(muni.nombre);
+        div.textContent = quitarTildesPreservandoCase(
+            muni.nombre + ", " + muni.provincia.nombre
+        );
+
         div.dataset.value = muni.nombre;
         div.addEventListener('click', () => {
             input.value = muni.nombre;

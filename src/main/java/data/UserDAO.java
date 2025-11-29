@@ -33,8 +33,6 @@ public class UserDAO {
             logger.error("Error al obtener todos los usuarios - Estado: {} - Código: {}",
                     e.getSQLState(), e.getErrorCode(), e);
             throw new DataAccessException("Error al obtener todos los usuarios", e);
-        } finally {
-            ConnectionDB.getInstancia().releaseConn();
         }
     }
 
@@ -102,8 +100,6 @@ public class UserDAO {
             logger.error("Error al obtener usuario ID {} - Estado: {} - Código: {}",
                     id_usuario, e.getSQLState(), e.getErrorCode(), e);
             throw new DataAccessException("Error al obtener usuario por ID", e);
-        } finally {
-            ConnectionDB.getInstancia().releaseConn();
         }
     }
 
@@ -133,8 +129,6 @@ public class UserDAO {
             logger.error("Error al obtener usuario por email {} - Estado: {} - Código: {}",
                     correo, e.getSQLState(), e.getErrorCode(), e);
             throw new DataAccessException("Error al obtener usuario por email", e);
-        } finally {
-            ConnectionDB.getInstancia().releaseConn();
         }
     }
 
@@ -175,8 +169,6 @@ public class UserDAO {
             logger.error("Error al obtener usuario por user/email {}/{} - Estado: {} - Código: {}",
                     user, correo, e.getSQLState(), e.getErrorCode(), e);
             throw new DataAccessException("Error al obtener usuario por user/email", e);
-        } finally {
-            ConnectionDB.getInstancia().releaseConn();
         }
     }
 
@@ -216,8 +208,6 @@ public class UserDAO {
             logger.error("Error al crear usuario {} - Estado: {} - Código: {}",
                     u.getUsuario(), e.getSQLState(), e.getErrorCode(), e);
             throw new DataAccessException("Error al crear usuario", e);
-        } finally {
-            ConnectionDB.getInstancia().releaseConn();
         }
     }
 
@@ -252,8 +242,6 @@ public class UserDAO {
             logger.error("Error al actualizar usuario ID {} - Estado: {} - Código: {}",
                     u.getIdUsuario(), e.getSQLState(), e.getErrorCode(), e);
             throw new DataAccessException("Error al actualizar usuario", e);
-        } finally {
-            ConnectionDB.getInstancia().releaseConn();
         }
     }
 
@@ -281,8 +269,6 @@ public class UserDAO {
             logger.error("Error al actualizar contraseña para usuario ID {} - Estado: {} - Código: {}",
                     id, e.getSQLState(), e.getErrorCode(), e);
             throw new DataAccessException("Error al actualizar contraseña", e);
-        } finally {
-            ConnectionDB.getInstancia().releaseConn();
         }
     }
 
@@ -309,8 +295,6 @@ public class UserDAO {
             logger.error("Error al eliminar usuario ID {} - Estado: {} - Código: {}",
                     idUsuario, e.getSQLState(), e.getErrorCode(), e);
             throw new DataAccessException("Error al eliminar usuario", e);
-        } finally {
-            ConnectionDB.getInstancia().releaseConn();
         }
     }
 
@@ -334,8 +318,6 @@ public class UserDAO {
             logger.error("Error al contar administradores - Estado: {} - Código: {}",
                     e.getSQLState(), e.getErrorCode(), e);
             throw new DataAccessException("Error al contar administradores", e);
-        } finally {
-            ConnectionDB.getInstancia().releaseConn();
         }
     }
 
@@ -365,8 +347,6 @@ public class UserDAO {
             logger.error("Error al verificar viajes activos para usuario ID {} - Estado: {} - Código: {}",
                     idUsuario, e.getSQLState(), e.getErrorCode(), e);
             throw new DataAccessException("Error al verificar viajes activos del usuario", e);
-        } finally {
-            ConnectionDB.getInstancia().releaseConn();
         }
     }
 
@@ -393,8 +373,6 @@ public class UserDAO {
             logger.error("Error al verificar reservas activas para usuario ID {} - Estado: {} - Código: {}",
                     idUsuario, e.getSQLState(), e.getErrorCode(), e);
             throw new DataAccessException("Error al verificar reservas activas del usuario", e);
-        } finally {
-            ConnectionDB.getInstancia().releaseConn();
         }
     }
 
