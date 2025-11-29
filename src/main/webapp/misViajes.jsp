@@ -115,6 +115,9 @@
                     <h3 class="mb-0">
                         <i class="bi bi-people-fill me-2"></i>Administración de Viajes
                     </h3>
+                    <div>
+                        <jsp:include page="buscadorUniversal.jsp"/>
+                    </div>
                     <% if ("usuario".equals(((Usuario)session.getAttribute("usuario")).getNombreRol())) { %>
                         <button type="button" class="btn btn-light" data-bs-toggle="modal"
                             data-bs-target="#nuevoViaje">
@@ -150,7 +153,7 @@
                         }
                     %>
                     <div class="scrollable-table">
-                        <table class="table table-hover table-borderless">
+                        <table class="table table-hover table-borderless" id="tablaPrincipal">
                             <thead class="table-light">
                             <tr>
                                 <th scope="col">Fecha</th>
@@ -263,6 +266,11 @@
                             <%
                                 }
                             %>
+                            <tr id="noResultados" style="display:none;">
+                                <td colspan="8" style="padding:10px; color:dodgerblue; font-size:large;">
+                                    No existen resultados.
+                                </td>
+                            </tr>
                             </tbody>
                         </table>
                     </div>
@@ -541,5 +549,6 @@
 <script src="<%= request.getContextPath() %>/js/notificacionesTiempo.js"></script>
 <script src="<%= request.getContextPath() %>/js/buscadorMunicipios.js"></script>
 <script src="<%= request.getContextPath() %>/js/scriptViajes.js"></script>
+<script src="<%= request.getContextPath() %>/js/buscadorUniversal.js"></script>
 </body>
 </html>

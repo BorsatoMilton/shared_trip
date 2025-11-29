@@ -63,8 +63,11 @@
             <div class="card shadow-lg">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h3 class="mb-0">
-                        <i class="bi bi-bookmark-fill me-2"></i>Administración de Reservas
+                        <i class="bi bi-journal-check me-1"></i>Administración de Reservas
                     </h3>
+                    <div>
+                        <jsp:include page="buscadorUniversal.jsp"/>
+                    </div>
                 </div>
 
                 <div class="card-body">
@@ -94,7 +97,7 @@
                         }
                     %>
                     <div class="scrollable-table">
-                        <table class="table table-hover table-borderless">
+                        <table class="table table-hover table-borderless" id="tablaPrincipal">
                             <thead class="table-light">
                             <tr>
                                 <th scope="col">Origen</th>
@@ -179,6 +182,11 @@
                             <%
                                 }
                             %>
+                            <tr id="noResultados" style="display:none;">
+                                <td colspan="8" style="padding:10px; color:dodgerblue; font-size:large;">
+                                    No existen resultados.
+                                </td>
+                            </tr>
                             </tbody>
                         </table>
                     </div>
@@ -249,5 +257,6 @@
         crossorigin="anonymous"></script>
 <script src="<%= request.getContextPath() %>/js/notificacionesTiempo.js"></script>
 <script src="<%= request.getContextPath() %>/js/scriptReservas.js"></script>
+<script src="<%= request.getContextPath() %>/js/buscadorUniversal.js"></script>
 </body>
 </html>

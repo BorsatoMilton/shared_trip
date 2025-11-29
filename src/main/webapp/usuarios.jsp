@@ -1,14 +1,13 @@
 <%@ page import="java.util.LinkedList" %>
 <%@ page import="entidades.Usuario" %>
 <%@ page import="entidades.Rol" %>
-<%@ page import="logic.RolController" %>
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-         pageEncoding="ISO-8859-1" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+         pageEncoding="UTF-8" %>
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="ISO-8859-1">
-    <title>Gestión de Usuarios</title>
+    <title>GestiÃ³n de Usuarios</title>
     <link
             href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
             rel="stylesheet">
@@ -60,8 +59,11 @@
             <div class="card shadow-lg">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h3 class="mb-0">
-                        <i class="bi bi-people-fill me-2"></i>Administración de Usuarios
+                        <i class="bi bi-people-fill me-2"></i>AdministraciÃ³n de Usuarios
                     </h3>
+                    <div>
+                        <jsp:include page="buscadorUniversal.jsp"/>
+                    </div>
                     <button type="button" class="btn btn-light" data-bs-toggle="modal"
                             data-bs-target="#nuevoUsuario">
                         <i class="bi bi-plus-circle me-2"></i>Nuevo Usuario
@@ -98,13 +100,13 @@
                     %>
 
                     <div class="scrollable-table">
-                        <table class="table table-hover table-borderless">
+                        <table class="table table-hover table-borderless" id="tablaPrincipal">
                             <thead class="table-light">
                             <tr>
                                 <th scope="col">Usuario</th>
                                 <th scope="col">Nombre</th>
                                 <th scope="col">Correo</th>
-                                <th scope="col">Teléfono</th>
+                                <th scope="col">TelÃ©fono</th>
                                 <th scope="col">Rol</th>
                                 <th scope="col" class="text-end">Acciones</th>
                             </tr>
@@ -160,6 +162,11 @@
                             <%
                                 }
                             %>
+                            <tr id="noResultados" style="display:none;">
+                                <td colspan="8" style="padding:10px; color:dodgerblue; font-size:large;">
+                                No existen resultados.
+                                </td>
+                            </tr>
                             </tbody>
                         </table>
                     </div>
@@ -213,7 +220,7 @@
                     <div class="mb-3">
                         <label class="form-label">Credenciales</label> <input
                             type="email" class="form-control mb-2"
-                            placeholder="Correo electrónico"
+                            placeholder="Correo electrÃ³nico"
                             name="correo"
                             minlength="10"
                             maxlength="100"
@@ -229,7 +236,7 @@
                             </div>
                             <div class="col">
                                 <input type="password" class="form-control"
-                                       placeholder="Contraseña"
+                                       placeholder="ContraseÃ±a"
                                        name="clave"
                                        minlength="6"
                                        maxlength="100"
@@ -239,9 +246,9 @@
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Información de contacto</label> <input
+                        <label class="form-label">InformaciÃ³n de contacto</label> <input
                             type="tel" class="form-control"
-                            placeholder="Teléfono"
+                            placeholder="TelÃ©fono"
                             name="telefono"
                             pattern="[0-9]{9,15}"
                             required>
@@ -280,11 +287,11 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Confirmar eliminación</h5>
+                <h5 class="modal-title">Confirmar eliminaciÃ³n</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                ¿Estás seguro de eliminar al usuario <span id="nombreUsuario"></span>?
+                Â¿EstÃ¡s seguro de eliminar al usuario <span id="nombreUsuario"></span>?
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary"
@@ -342,7 +349,7 @@
                     <div class="mb-3">
                         <label class="form-label">Credenciales</label> <input
                             type="email" class="form-control mb-2"
-                            placeholder="Correo electrónico"
+                            placeholder="Correo electrÃ³nico"
                             name="correo"
                             id="editCorreo"
                             minlength="10"
@@ -362,9 +369,9 @@
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Información de contacto</label> <input
+                        <label class="form-label">InformaciÃ³n de contacto</label> <input
                             type="tel" class="form-control"
-                            placeholder="Teléfono"
+                            placeholder="TelÃ©fono"
                             name="telefono"
                             id="editTelefono"
                             pattern="[0-9]{9,15}"
@@ -401,6 +408,7 @@
 
 <script src="js/scriptUsuarios.js"></script>
 <script src="js/notificacionesTiempo.js"></script>
+<script src="js/buscadorUniversal.js"></script>
 <script
         src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
