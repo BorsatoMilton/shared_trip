@@ -17,36 +17,39 @@ public class VehiculoDAO {
     private static final Logger logger = LoggerFactory.getLogger(VehiculoDAO.class);
 
     public LinkedList<Vehiculo> getAll() {
-        LinkedList<Vehiculo> vehiculos = new LinkedList<>();
         logger.debug("Obteniendo todos los vehículos");
+        LinkedList<Vehiculo> vehiculos = new LinkedList<>();
 
-        try {
-            Connection conn = ConnectionDB.getInstancia().getConn();
-            try (Statement stmt = conn.createStatement();
-                 ResultSet rs = stmt.executeQuery(
-                         "SELECT v.id_vehiculo, v.patente, v.modelo, v.anio, v.usuario_duenio_id, u.nombre, u.apellido, u.correo " +
-                                 "FROM vehiculos v " +
-                                 "INNER JOIN usuarios u ON u.id_usuario = v.usuario_duenio_id " +
-                                 "WHERE u.fecha_baja IS NULL AND v.activo = TRUE")) {
+        String sql =
+                "SELECT v.id_vehiculo, v.patente, v.modelo, v.anio, v.usuario_duenio_id, " +
+                        "u.nombre, u.apellido, u.correo " +
+                        "FROM vehiculos v " +
+                        "INNER JOIN usuarios u ON u.id_usuario = v.usuario_duenio_id " +
+                        "WHERE u.fecha_baja IS NULL AND v.activo = TRUE";
 
-                while (rs.next()) {
-                    Usuario u = new Usuario();
-                    u.setNombre(rs.getString("u.nombre"));
-                    u.setApellido(rs.getString("u.apellido"));
-                    u.setCorreo(rs.getString("u.correo"));
+        try (Connection conn = ConnectionDB.getInstancia().getConn();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
 
-                    Vehiculo v = new Vehiculo();
-                    v.setId_vehiculo(rs.getInt("id_vehiculo"));
-                    v.setPatente(rs.getString("patente"));
-                    v.setModelo(rs.getString("modelo"));
-                    v.setAnio(rs.getInt("anio"));
-                    v.setUsuario_duenio_id(rs.getInt("usuario_duenio_id"));
-                    v.setPropietario(u);
-                    vehiculos.add(v);
-                }
+            while (rs.next()) {
 
-                logger.info("Obtenidos {} vehículos", vehiculos.size());
+                Usuario propietario = new Usuario();
+                propietario.setNombre(rs.getString("nombre"));
+                propietario.setApellido(rs.getString("apellido"));
+                propietario.setCorreo(rs.getString("correo"));
+
+                Vehiculo v = new Vehiculo();
+                v.setId_vehiculo(rs.getInt("id_vehiculo"));
+                v.setPatente(rs.getString("patente"));
+                v.setModelo(rs.getString("modelo"));
+                v.setAnio(rs.getInt("anio"));
+                v.setUsuario_duenio_id(rs.getInt("usuario_duenio_id"));
+                v.setPropietario(propietario);
+
+                vehiculos.add(v);
             }
+
+            logger.info("Obtenidos {} vehículos", vehiculos.size());
             return vehiculos;
 
         } catch (SQLException e) {
@@ -57,33 +60,32 @@ public class VehiculoDAO {
 
     public Vehiculo getById_vehiculo(int id_vehiculo) {
         logger.debug("Buscando vehículo con ID: {}", id_vehiculo);
-        Vehiculo v = null;
 
-        String query = "SELECT id_vehiculo, patente, modelo, anio, usuario_duenio_id " +
-                "FROM vehiculos WHERE id_vehiculo = ? AND activo = TRUE";
+        String sql =
+                "SELECT id_vehiculo, patente, modelo, anio, usuario_duenio_id " +
+                        "FROM vehiculos WHERE id_vehiculo = ? AND activo = TRUE";
 
-        try {
-            Connection conn = ConnectionDB.getInstancia().getConn();
-            try (PreparedStatement stmt = conn.prepareStatement(query)) {
+        try (Connection conn = ConnectionDB.getInstancia().getConn();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-                stmt.setInt(1, id_vehiculo);
+            stmt.setInt(1, id_vehiculo);
 
-                try (ResultSet rs = stmt.executeQuery()) {
-                    if (rs.next()) {
-                        v = new Vehiculo();
-                        v.setId_vehiculo(rs.getInt("id_vehiculo"));
-                        v.setPatente(rs.getString("patente"));
-                        v.setModelo(rs.getString("modelo"));
-                        v.setAnio(rs.getInt("anio"));
-                        v.setUsuario_duenio_id(rs.getInt("usuario_duenio_id"));
-                        logger.debug("Vehículo encontrado: {} (ID: {})", v.getPatente(), id_vehiculo);
-                    } else {
-                        logger.warn("Vehículo no encontrado con ID: {}", id_vehiculo);
-                    }
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    Vehiculo v = new Vehiculo();
+                    v.setId_vehiculo(rs.getInt("id_vehiculo"));
+                    v.setPatente(rs.getString("patente"));
+                    v.setModelo(rs.getString("modelo"));
+                    v.setAnio(rs.getInt("anio"));
+                    v.setUsuario_duenio_id(rs.getInt("usuario_duenio_id"));
+
+                    logger.debug("Vehículo encontrado: {} (ID: {})", v.getPatente(), id_vehiculo);
+                    return v;
                 }
             }
 
-            return v;
+            logger.warn("Vehículo no encontrado con ID: {}", id_vehiculo);
+            return null;
 
         } catch (SQLException e) {
             logger.error("Error al obtener vehículo por ID {}", id_vehiculo, e);
@@ -93,33 +95,31 @@ public class VehiculoDAO {
 
     public Vehiculo getByPatente(String patente) {
         logger.debug("Buscando vehículo con patente: {}", patente);
-        Vehiculo v = null;
 
-        String query = "SELECT id_vehiculo, patente, modelo, anio, usuario_duenio_id " +
-                "FROM vehiculos WHERE patente = ? AND activo = TRUE";
+        String sql =
+                "SELECT id_vehiculo, patente, modelo, anio, usuario_duenio_id " +
+                        "FROM vehiculos WHERE patente = ? AND activo = TRUE";
 
-        try {
-            Connection conn = ConnectionDB.getInstancia().getConn();
-            try (PreparedStatement stmt = conn.prepareStatement(query)) {
+        try (Connection conn = ConnectionDB.getInstancia().getConn();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-                stmt.setString(1, patente);
+            stmt.setString(1, patente);
 
-                try (ResultSet rs = stmt.executeQuery()) {
-                    if (rs.next()) {
-                        v = new Vehiculo();
-                        v.setId_vehiculo(rs.getInt("id_vehiculo"));
-                        v.setPatente(rs.getString("patente"));
-                        v.setModelo(rs.getString("modelo"));
-                        v.setAnio(rs.getInt("anio"));
-                        v.setUsuario_duenio_id(rs.getInt("usuario_duenio_id"));
-                        logger.debug("Vehículo encontrado: {}", patente);
-                    } else {
-                        logger.warn("Vehículo no encontrado con patente: {}", patente);
-                    }
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    Vehiculo v = new Vehiculo();
+                    v.setId_vehiculo(rs.getInt("id_vehiculo"));
+                    v.setPatente(rs.getString("patente"));
+                    v.setModelo(rs.getString("modelo"));
+                    v.setAnio(rs.getInt("anio"));
+                    v.setUsuario_duenio_id(rs.getInt("usuario_duenio_id"));
+                    logger.debug("Vehículo encontrado: {}", patente);
+                    return v;
                 }
             }
 
-            return v;
+            logger.warn("Vehículo no encontrado con patente: {}", patente);
+            return null;
 
         } catch (SQLException e) {
             logger.error("Error al obtener vehículo patente {}", patente, e);
@@ -130,29 +130,29 @@ public class VehiculoDAO {
     public void altaVehiculo(Vehiculo v) {
         logger.info("Creando nuevo vehículo: {}", v.getPatente());
 
-        String query = "INSERT INTO vehiculos(patente, modelo, anio, usuario_duenio_id) VALUES(?,?,?,?)";
+        String sql =
+                "INSERT INTO vehiculos(patente, modelo, anio, usuario_duenio_id) " +
+                        "VALUES(?,?,?,?)";
 
-        try {
-            Connection conn = ConnectionDB.getInstancia().getConn();
-            try (PreparedStatement stmt = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS)) {
+        try (Connection conn = ConnectionDB.getInstancia().getConn();
+             PreparedStatement stmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
 
-                stmt.setString(1, v.getPatente());
-                stmt.setString(2, v.getModelo());
-                stmt.setInt(3, v.getAnio());
-                stmt.setInt(4, v.getUsuario_duenio_id());
+            stmt.setString(1, v.getPatente());
+            stmt.setString(2, v.getModelo());
+            stmt.setInt(3, v.getAnio());
+            stmt.setInt(4, v.getUsuario_duenio_id());
 
-                int affectedRows = stmt.executeUpdate();
+            int rows = stmt.executeUpdate();
 
-                if (affectedRows > 0) {
-                    try (ResultSet keyResultSet = stmt.getGeneratedKeys()) {
-                        if (keyResultSet != null && keyResultSet.next()) {
-                            v.setId_vehiculo(keyResultSet.getInt(1));
-                            logger.info("Vehículo creado exitosamente: {} (ID: {})", v.getPatente(), v.getId_vehiculo());
-                        }
+            if (rows > 0) {
+                try (ResultSet keys = stmt.getGeneratedKeys()) {
+                    if (keys.next()) {
+                        v.setId_vehiculo(keys.getInt(1));
+                        logger.info("Vehículo creado exitosamente (ID: {})", v.getId_vehiculo());
                     }
-                } else {
-                    logger.error("No se pudo crear el vehículo: {}", v.getPatente());
                 }
+            } else {
+                logger.warn("No se pudo crear vehículo {}", v.getPatente());
             }
 
         } catch (SQLException e) {
@@ -164,24 +164,24 @@ public class VehiculoDAO {
     public void update(Vehiculo v, int id_vehiculo) {
         logger.info("Actualizando vehículo ID: {}", id_vehiculo);
 
-        String query = "UPDATE vehiculos SET patente = ?, modelo = ?, anio = ? WHERE id_vehiculo = ? AND activo = TRUE";
+        String sql =
+                "UPDATE vehiculos SET patente = ?, modelo = ?, anio = ? " +
+                        "WHERE id_vehiculo = ? AND activo = TRUE";
 
-        try {
-            Connection conn = ConnectionDB.getInstancia().getConn();
-            try (PreparedStatement stmt = conn.prepareStatement(query)) {
+        try (Connection conn = ConnectionDB.getInstancia().getConn();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-                stmt.setString(1, v.getPatente());
-                stmt.setString(2, v.getModelo());
-                stmt.setInt(3, v.getAnio());
-                stmt.setInt(4, id_vehiculo);
+            stmt.setString(1, v.getPatente());
+            stmt.setString(2, v.getModelo());
+            stmt.setInt(3, v.getAnio());
+            stmt.setInt(4, id_vehiculo);
 
-                int affectedRows = stmt.executeUpdate();
+            int rows = stmt.executeUpdate();
 
-                if (affectedRows > 0) {
-                    logger.info("Vehículo actualizado exitosamente: {} (ID: {})", v.getPatente(), id_vehiculo);
-                } else {
-                    logger.warn("No se encontró vehículo con ID: {}", id_vehiculo);
-                }
+            if (rows > 0) {
+                logger.info("Vehículo actualizado (ID: {})", id_vehiculo);
+            } else {
+                logger.warn("No se encontró vehículo ID {}", id_vehiculo);
             }
 
         } catch (SQLException e) {
@@ -192,35 +192,35 @@ public class VehiculoDAO {
 
     public LinkedList<Vehiculo> getByUser(Usuario u) {
         logger.debug("Obteniendo vehículos del usuario ID: {}", u.getIdUsuario());
-        LinkedList<Vehiculo> vehiculos = new LinkedList<>();
 
-        String query = "SELECT id_vehiculo, patente, modelo, anio, usuario_duenio_id " +
-                "FROM vehiculos WHERE usuario_duenio_id = ? AND activo = TRUE";
+        LinkedList<Vehiculo> lista = new LinkedList<>();
 
-        try {
-            Connection conn = ConnectionDB.getInstancia().getConn();
-            try (PreparedStatement stmt = conn.prepareStatement(query)) {
+        String sql =
+                "SELECT id_vehiculo, patente, modelo, anio, usuario_duenio_id " +
+                        "FROM vehiculos WHERE usuario_duenio_id = ? AND activo = TRUE";
 
-                stmt.setInt(1, u.getIdUsuario());
+        try (Connection conn = ConnectionDB.getInstancia().getConn();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-                try (ResultSet rs = stmt.executeQuery()) {
-                    while (rs.next()) {
-                        Vehiculo vehiculo = new Vehiculo();
-                        vehiculo.setId_vehiculo(rs.getInt("id_vehiculo"));
-                        vehiculo.setPatente(rs.getString("patente"));
-                        vehiculo.setModelo(rs.getString("modelo"));
-                        vehiculo.setAnio(rs.getInt("anio"));
-                        vehiculo.setUsuario_duenio_id(rs.getInt("usuario_duenio_id"));
-                        vehiculos.add(vehiculo);
-                    }
+            stmt.setInt(1, u.getIdUsuario());
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Vehiculo v = new Vehiculo();
+                    v.setId_vehiculo(rs.getInt("id_vehiculo"));
+                    v.setPatente(rs.getString("patente"));
+                    v.setModelo(rs.getString("modelo"));
+                    v.setAnio(rs.getInt("anio"));
+                    v.setUsuario_duenio_id(rs.getInt("usuario_duenio_id"));
+                    lista.add(v);
                 }
             }
 
-            logger.debug("Encontrados {} vehículos para usuario ID: {}", vehiculos.size(), u.getIdUsuario());
-            return vehiculos;
+            logger.debug("Encontrados {} vehículos para usuario ID {}", lista.size(), u.getIdUsuario());
+            return lista;
 
         } catch (SQLException e) {
-            logger.error("Error al obtener vehículos del usuario ID {}", u.getIdUsuario(), e);
+            logger.error("Error al obtener vehículos del usuario {}", u.getIdUsuario(), e);
             throw new DataAccessException("Error al obtener vehículos del usuario", e);
         }
     }
@@ -228,25 +228,23 @@ public class VehiculoDAO {
     public boolean eliminarVehiculo(int id_vehiculo) {
         logger.info("Eliminando vehículo ID: {}", id_vehiculo);
 
-        String query = "UPDATE vehiculos SET activo = FALSE WHERE id_vehiculo = ?";
+        String sql = "UPDATE vehiculos SET activo = FALSE WHERE id_vehiculo = ?";
 
-        try {
-            Connection conn = ConnectionDB.getInstancia().getConn();
-            try (PreparedStatement stmt = conn.prepareStatement(query)) {
+        try (Connection conn = ConnectionDB.getInstancia().getConn();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-                stmt.setInt(1, id_vehiculo);
-                int rowsAffected = stmt.executeUpdate();
+            stmt.setInt(1, id_vehiculo);
 
-                boolean eliminado = rowsAffected > 0;
+            int rows = stmt.executeUpdate();
+            boolean eliminado = rows > 0;
 
-                if (eliminado) {
-                    logger.info("Vehículo eliminado exitosamente: ID {}", id_vehiculo);
-                } else {
-                    logger.warn("No se encontró vehículo con ID: {}", id_vehiculo);
-                }
-
-                return eliminado;
+            if (eliminado) {
+                logger.info("Vehículo eliminado ID {}", id_vehiculo);
+            } else {
+                logger.warn("No se encontró vehículo ID {}", id_vehiculo);
             }
+
+            return eliminado;
 
         } catch (SQLException e) {
             logger.error("Error al eliminar vehículo ID {}", id_vehiculo, e);
@@ -259,19 +257,13 @@ public class VehiculoDAO {
 
         String sql = "SELECT COUNT(*) AS total FROM viajes WHERE id_vehiculo_viaje = ? AND activo = TRUE";
 
-        try {
-            Connection conn = ConnectionDB.getInstancia().getConn();
-            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = ConnectionDB.getInstancia().getConn();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-                stmt.setInt(1, idVehiculo);
+            stmt.setInt(1, idVehiculo);
 
-                try (ResultSet rs = stmt.executeQuery()) {
-                    if (rs.next()) {
-                        return rs.getInt("total") > 0;
-                    }
-                }
-
-                return false;
+            try (ResultSet rs = stmt.executeQuery()) {
+                return rs.next() && rs.getInt("total") > 0;
             }
 
         } catch (SQLException e) {
