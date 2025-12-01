@@ -4,8 +4,13 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import data.ReservaDAO;
+import data.ViajeDAO;
 import entidades.Reserva;
 import entidades.Usuario;
 import entidades.Viaje;
@@ -13,7 +18,7 @@ import entidades.Viaje;
 public class ReservaController {
     private final ReservaDAO reservaDAO;
     private final ViajeController viajeController;
-
+    
     public ReservaController() {
         this.reservaDAO = new ReservaDAO();
         this.viajeController = new ViajeController();
@@ -172,4 +177,25 @@ public class ReservaController {
     public void updateEntity(Reserva reserva, int idReserva) {
         this.reservaDAO.update(reserva, idReserva);
     }
+    
+    public double getIngresosTotales() {
+            return reservaDAO.calcularIngresosTotales();
+        }
+
+    public double getIngresosMesActual() {
+            return reservaDAO.calcularIngresosMesActual();
+    }
+
+    public double getPromedioPorReserva() {
+            return reservaDAO.calcularPromedioPorReserva();
+        }
+    
+//    public void pruebaExtremaReservasConfirmadas() {
+//    	this.reservaDAO.pruebaExtremaReservasConfirmadas();
+//    }
+
+    public Map<String, Object> getEstadisticasReservas() {
+            return reservaDAO.obtenerEstadisticasReservas();
+    }
+    
 }

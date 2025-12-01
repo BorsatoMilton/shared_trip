@@ -2,7 +2,9 @@ package data;
 
 import java.sql.*;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -472,6 +474,210 @@ public class ReservaDAO {
             throw new DataAccessException("Error al eliminar reserva", e);
         }
     }
+    
+    public double calcularIngresosTotales() {
+        logger.debug("Calculando ingresos totales");
+        
+        String query = "SELECT SUM(v.precio_unitario * r.cantidad_pasajeros_reservada) as ingresos_totales " +
+                       "FROM reservas r " +
+                       "INNER JOIN viajes v ON r.id_viaje = v.id_viaje " +
+                       "WHERE r.estado = 'CONFIRMADA' " +
+                       "AND r.reserva_cancelada = false " +
+                       "AND r.activo = true " +
+                       "AND v.activo = true";
+
+        try (
+            Connection conn = ConnectionDB.getInstancia().getConn();
+            PreparedStatement stmt = conn.prepareStatement(query);
+            ResultSet rs = stmt.executeQuery()
+        ) {
+            if (rs.next()) {
+                double ingresos = rs.getDouble("ingresos_totales");
+                logger.info("Ingresos totales calculados: {}", ingresos);
+                return ingresos;
+            } else {
+                logger.info("No se encontraron reservas confirmadas para calcular ingresos totales");
+                return 0.0;
+            }
+
+        } catch (SQLException e) {
+            logger.error("Error al calcular ingresos totales - Estado: {} - Código: {}",
+                    e.getSQLState(), e.getErrorCode(), e);
+            throw new DataAccessException("Error al calcular ingresos totales", e);
+        }
+    }
+    
+//    public void pruebaExtremaReservasConfirmadas() {
+//        logger.info("=== PRUEBA EXTREMA RESERVAS CONFIRMADAS ===");
+//        logger.info("Actualizando reservas EN PROCESO a CONFIRMADA");
+//        
+//        String query = "UPDATE reservas SET estado = 'CONFIRMADA' WHERE estado = 'EN PROCESO' AND reserva_cancelada = false";
+//        
+//        try (
+//            Connection conn = ConnectionDB.getInstancia().getConn();
+//            PreparedStatement stmt = conn.prepareStatement(query)
+//        ) {
+//            int filasActualizadas = stmt.executeUpdate();
+//            logger.info("Reservas actualizadas a CONFIRMADA: {}", filasActualizadas);
+//            
+//        } catch (SQLException e) {
+//            logger.error("Error al actualizar reservas", e);
+//        }
+//
+//        
+//        try (Connection conn = ConnectionDB.getInstancia().getConn()) {
+//            // Prueba 1: Contar reservas confirmadas
+//            String countQuery = "SELECT COUNT(*) as total FROM reservas WHERE estado = 'CONFIRMADA'";
+//            try (PreparedStatement stmt = conn.prepareStatement(countQuery);
+//                 ResultSet rs = stmt.executeQuery()) {
+//                if (rs.next()) {
+//                    logger.info("TOTAL RESERVAS CON ESTADO 'CONFIRMADA': {}", rs.getInt("total"));
+//                }
+//            }
+//            
+//            // Prueba 2: Ver TODAS las reservas y sus estados
+//            String allQuery = "SELECT id_reserva, estado, reserva_cancelada, activo FROM reservas LIMIT 10";
+//            try (PreparedStatement stmt = conn.prepareStatement(allQuery);
+//                 ResultSet rs = stmt.executeQuery()) {
+//                logger.info("--- PRIMERAS 10 RESERVAS ---");
+//                while (rs.next()) {
+//                    logger.info("Reserva ID: {}, Estado: '{}', Cancelada: {}, Activo: {}", 
+//                        rs.getInt("id_reserva"),
+//                        rs.getString("estado"),
+//                        rs.getBoolean("reserva_cancelada"),
+//                        rs.getBoolean("activo"));
+//                }
+//            }
+//            
+//            // Prueba 3: La consulta EXACTA de ingresos
+//            String incomeQuery = "SELECT SUM(v.precio_unitario * r.cantidad_pasajeros_reservada) as ingresos_totales " +
+//                               "FROM reservas r " +
+//                               "INNER JOIN viajes v ON r.id_viaje = v.id_viaje " +
+//                               "WHERE r.estado = 'CONFIRMADA'";
+//            try (PreparedStatement stmt = conn.prepareStatement(incomeQuery);
+//                 ResultSet rs = stmt.executeQuery()) {
+//                if (rs.next()) {
+//                    double ingresos = rs.getDouble("ingresos_totales");
+//                    logger.info("INGRESOS CON CONSULTA DIRECTA: {}", ingresos);
+//                    
+//                    // Verificar si es NULL
+//                    if (rs.wasNull()) {
+//                        logger.info("⚠️  EL RESULTADO FUE NULL - no hay reservas confirmadas con viajes");
+//                    }
+//                }
+//            }
+//            
+//        } catch (SQLException e) {
+//            logger.error("Error en prueba extrema", e);
+//        }
+//    }
+
+    public double calcularIngresosMesActual() {
+        logger.debug("Calculando ingresos del mes actual");
+        
+        String query = "SELECT SUM(v.precio_unitario * r.cantidad_pasajeros_reservada) as ingresos_mes " +
+                       "FROM reservas r " +
+                       "INNER JOIN viajes v ON r.id_viaje = v.id_viaje " +
+                       "WHERE r.estado = 'CONFIRMADA' " +
+                       "AND r.reserva_cancelada = false " +
+                       "AND r.activo = true " +
+                       "AND v.cancelado = false " +
+                       "AND MONTH(r.fecha_reserva) = MONTH(CURRENT_DATE()) " +
+                       "AND YEAR(r.fecha_reserva) = YEAR(CURRENT_DATE())";
+
+        try (
+            Connection conn = ConnectionDB.getInstancia().getConn();
+            PreparedStatement stmt = conn.prepareStatement(query);
+            ResultSet rs = stmt.executeQuery()
+        ) {
+            if (rs.next()) {
+                double ingresos = rs.getDouble("ingresos_mes");
+                logger.info("Ingresos del mes actual calculados: {}", ingresos);
+                return ingresos;
+            } else {
+                logger.info("No se encontraron reservas confirmadas para el mes actual");
+                return 0.0;
+            }
+
+        } catch (SQLException e) {
+            logger.error("Error al calcular ingresos del mes actual - Estado: {} - Código: {}",
+                    e.getSQLState(), e.getErrorCode(), e);
+            throw new DataAccessException("Error al calcular ingresos del mes actual", e);
+        }
+    }
+
+    public double calcularPromedioPorReserva() {
+        logger.debug("Calculando promedio por reserva");
+        
+        String query = "SELECT AVG(v.precio_unitario * r.cantidad_pasajeros_reservada) as promedio_reserva " +
+                       "FROM reservas r " +
+                       "INNER JOIN viajes v ON r.id_viaje = v.id_viaje " +
+                       "WHERE r.estado = 'CONFIRMADA' " +
+                       "AND r.reserva_cancelada = false " +
+                       "AND r.activo = true " +
+                       "AND v.cancelado = false";
+
+        try (
+            Connection conn = ConnectionDB.getInstancia().getConn();
+            PreparedStatement stmt = conn.prepareStatement(query);
+            ResultSet rs = stmt.executeQuery()
+        ) {
+            if (rs.next()) {
+                double promedio = rs.getDouble("promedio_reserva");
+                logger.info("Promedio por reserva calculado: {}", promedio);
+                return promedio;
+            } else {
+                logger.info("No se pudo calcular el promedio por reserva");
+                return 0.0;
+            }
+
+        } catch (SQLException e) {
+            logger.error("Error al calcular promedio por reserva - Estado: {} - Código: {}",
+                    e.getSQLState(), e.getErrorCode(), e);
+            throw new DataAccessException("Error al calcular promedio por reserva", e);
+        }
+    }
+
+    public Map<String, Object> obtenerEstadisticasReservas() {
+        logger.debug("Obteniendo estadísticas generales de reservas");
+        
+        Map<String, Object> estadisticas = new HashMap<>();
+        
+        String query = "SELECT " +
+                       "COUNT(*) as total_reservas, " +
+                       "SUM(CASE WHEN estado = 'CONFIRMADA' AND reserva_cancelada = false THEN 1 ELSE 0 END) as reservas_confirmadas, " +
+                       "SUM(CASE WHEN reserva_cancelada = true THEN 1 ELSE 0 END) as reservas_canceladas, " +
+                       "SUM(CASE WHEN estado = 'CONFIRMADA' AND reserva_cancelada = false THEN cantidad_pasajeros_reservada ELSE 0 END) as total_pasajeros " +
+                       "FROM reservas " +
+                       "WHERE activo = true";
+
+        try (
+            Connection conn = ConnectionDB.getInstancia().getConn();
+            PreparedStatement stmt = conn.prepareStatement(query);
+            ResultSet rs = stmt.executeQuery()
+        ) {
+            if (rs.next()) {
+                estadisticas.put("totalReservas", rs.getInt("total_reservas"));
+                estadisticas.put("reservasConfirmadas", rs.getInt("reservas_confirmadas"));
+                estadisticas.put("reservasCanceladas", rs.getInt("reservas_canceladas"));
+                estadisticas.put("totalPasajeros", rs.getInt("total_pasajeros"));
+                
+                int totalReservas = rs.getInt("total_reservas");
+                
+                logger.info("Estadísticas de reservas obtenidas: total={}, confirmadas={}, canceladas={}",
+                        totalReservas, rs.getInt("reservas_confirmadas"));
+            }
+
+        } catch (SQLException e) {
+            logger.error("Error al obtener estadísticas de reservas - Estado: {} - Código: {}",
+                    e.getSQLState(), e.getErrorCode(), e);
+            throw new DataAccessException("Error al obtener estadísticas de reservas", e);
+        }
+        
+        return estadisticas;
+    }
+    
+    
 
     private Reserva mapFullReservaFromJoin(ResultSet rs) throws SQLException {
         Reserva reserva = new Reserva();
