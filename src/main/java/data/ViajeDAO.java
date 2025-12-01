@@ -355,6 +355,47 @@ public class ViajeDAO {
             throw new DataAccessException("Error al eliminar viaje", e);
         }
     }
+    
+    public LinkedList<Viaje> obtenerViajesProximos(int limite) {
+        logger.debug("Obteniendo {} viajes próximos", limite);
+        
+        String query = "SELECT v.*, " +
+                "u.id_usuario as conductor_id, u.nombre as conductor_nombre, " +
+                "u.apellido as conductor_apellido, u.correo as conductor_correo, " +
+                "u.telefono as conductor_telefono, " +
+                "veh.id_vehiculo, veh.patente, veh.modelo, veh.anio " +
+                "FROM viajes v " +
+                "INNER JOIN usuarios u ON u.id_usuario = v.id_conductor " +
+                "INNER JOIN vehiculos veh ON veh.id_vehiculo = v.id_vehiculo_viaje " +
+                "WHERE v.fecha >= CURRENT_DATE " +
+                "AND v.cancelado = 0 " +
+                "AND u.fecha_baja IS NULL " +
+                "AND v.activo = TRUE " +
+                "ORDER BY v.fecha ASC LIMIT ?";
+
+        LinkedList<Viaje> viajes = new LinkedList<>();
+        
+        try (
+            Connection conn = ConnectionDB.getInstancia().getConn();
+            PreparedStatement stmt = conn.prepareStatement(query)
+        ) {
+            stmt.setInt(1, limite);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    viajes.add(mapViajeFromJoin(rs, true));
+                }
+            }
+            
+            logger.info("Obtenidos {} viajes próximos", viajes.size());
+            return viajes;
+
+        } catch (SQLException e) {
+            logger.error("Error al obtener viajes próximos - Estado: {} - Código: {}",
+                    e.getSQLState(), e.getErrorCode(), e);
+            throw new DataAccessException("Error al obtener viajes próximos", e);
+        }
+    }
 
     private Viaje mapViajeFromJoin(ResultSet rs, boolean puntuar) throws SQLException {
 
