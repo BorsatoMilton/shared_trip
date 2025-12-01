@@ -1,6 +1,7 @@
 package logic;
 
 import java.util.LinkedList;
+import java.util.Map;
 
 import data.*;
 import entidades.*;
@@ -172,5 +173,12 @@ public class UserController {
     }
 
 
+    public Map<String, Integer> getEstadisticasUsuarios() {
+            return usuarioDAO.obtenerEstadisticasUsuarios();
+    }
+
+    public LinkedList<Usuario> getUsuariosRecientes(int limite) {
+            return usuarioDAO.obtenerUsuariosRecientes(limite);
+    }
 
 }

@@ -174,4 +174,8 @@ public class ViajeController {
         viajeDAO.add(viaje);
 
     }
+    
+    public LinkedList<Viaje> obtenerViajesProximos(int limite) {
+    	return viajeDAO.obtenerViajesProximos(limite);
+    }
 }

@@ -96,6 +96,12 @@
                             <i class="bi bi-journal-check me-1"></i>Reservas
                         </a>
                     </li>
+                    
+                    <li class="nav-item">
+                        <a class="nav-link" href="<%= request.getContextPath() %>/dashboard">
+                            <i class="bi bi-speedometer"></i>DashBoard
+                        </a>
+                    </li>
                     <% } else { %>
 
                     <li class="nav-item">
