@@ -8,7 +8,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
 
     <title>Dashboard Admin - Sistema de Viajes</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -181,9 +181,8 @@
             <% } %>
         </div>
 
-        <!-- Segunda fila: Métricas financieras y estadísticas de usuarios -->
+
         <div class="row mb-4">
-            <!-- Métricas Financieras -->
             <div class="col-lg-6 mb-4">
                 <div class="dashboard-section p-4 h-100">
                     <h5 class="mb-3 text-dark">
@@ -229,7 +228,7 @@
                 </div>
             </div>
 
-            <!-- Estadísticas de Usuarios -->
+
             <div class="col-lg-6 mb-4">
                 <div class="dashboard-section p-4 h-100">
                     <h5 class="mb-3 text-dark">
@@ -270,9 +269,8 @@
             </div>
         </div>
 
-        <!-- Tercera fila: Tablas de datos -->
+
         <div class="row">
-            <!-- Reservas Recientes -->
             <div class="col-lg-6 mb-4">
                 <div class="dashboard-section p-4 h-100">
                     <h5 class="mb-3 text-dark">

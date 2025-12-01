@@ -1,10 +1,11 @@
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-         pageEncoding="ISO-8859-1" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+         pageEncoding="UTF-8" %>
+
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="ISO-8859-1">
-    <title>Iniciar Sesión</title>
+    <meta charset="UTF-8">
+    <title>Iniciar SesiÃ³n</title>
     <link
             href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
             rel="stylesheet"
@@ -57,7 +58,7 @@
 
             <div class="card shadow-lg border-0">
                 <div class="card-body p-2 p-md-5">
-                    <h2 class="text-center mb-4">Iniciar Sesión</h2>
+                    <h2 class="text-center mb-4">Iniciar SesiÃ³n</h2>
                     <hr>
                     <form action="auth" method="POST">
                         <div class="mb-3">
@@ -71,7 +72,7 @@
                         </div>
 
                         <div class="mb-4">
-                            <label for="password" class="form-label">Contraseña</label>
+                            <label for="password" class="form-label">ContraseÃ±a</label>
                             <div class="input-group">
                                 <input type="password"
                                        class="form-control form-control-lg"
@@ -87,8 +88,8 @@
                         </button>
 
                         <div class="d-flex justify-content-between">
-                            <a href="recuperarClave.jsp" class="text-decoration-none">¿Olvidaste tu contraseña?</a>
-                            <a href="register.jsp" class="text-decoration-none">Registrarse Aquí</a>
+                            <a href="recuperarClave.jsp" class="text-decoration-none">Â¿Olvidaste tu contraseÃ±a?</a>
+                            <a href="register.jsp" class="text-decoration-none">Registrarse AquÃ­</a>
                         </div>
                     </form>
                 </div>

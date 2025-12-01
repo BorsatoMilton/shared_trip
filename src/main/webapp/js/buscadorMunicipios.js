@@ -1,18 +1,21 @@
+"use strict";
+
 document.addEventListener('DOMContentLoaded', async () => {
     await iniciador();
     inicializarBuscadores();
 });
-
+const justSelected = {};
 let municipios = [];
-let debounceTimer = null;
+const debounceTimers = {};
 const stateFocus = {};
 
 async function iniciador() {
     try {
-        let response = await fetch("resources/municipios.json");
+        const response = await fetch("resources/municipios.json");
         if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
         const data = await response.json();
         municipios = Array.isArray(data.municipios) ? data.municipios : [];
+
         const hoy = new Date().toISOString().split("T")[0];
         document.querySelectorAll('input[type="date"][id="fecha"]').forEach(i => {
             i.min = hoy;
@@ -29,15 +32,23 @@ function inicializarBuscadores() {
         const tipo = input.id && input.id.includes("origen") ? "origen" : "destino";
         const key = tipo + "_" + index;
         input.dataset.key = key;
+
         const contenedor = input.parentElement.querySelector('.resultadoCiudades');
         if (!contenedor) return;
         contenedor.dataset.key = key;
+
         stateFocus[key] = -1;
         input.setAttribute('autocomplete', 'off');
-        input.addEventListener("input", () => debouncedCargar(input.value, key));
+
+        input.addEventListener("input", () => {
+            input.removeAttribute('data-selected');
+            debouncedCargar(input.value, key);
+        });
+
         input.addEventListener("keydown", (e) => manejarTeclas(e, key));
         input.addEventListener("blur", () => setTimeout(() => validarSeleccion(input, key), 150));
     });
+
 
     document.addEventListener('click', (e) => {
         if (!e.target.closest('.dropdown-container')) {
@@ -49,6 +60,7 @@ function inicializarBuscadores() {
         }
     });
 
+
     document.querySelectorAll('form').forEach(form => {
         form.addEventListener('submit', function (e) {
             const inputs = form.querySelectorAll('.dropdown-container input[data-key]');
@@ -56,60 +68,75 @@ function inicializarBuscadores() {
                 const val = inp.value.trim();
                 return !val || !municipios.some(m => normalizar(m.nombre) === normalizar(val));
             });
+
             if (invalid.length > 0) {
                 e.preventDefault();
+                invalid[0].value = "";
                 invalid[0].focus();
                 alert('Debe seleccionar un origen y destino válidos.');
+                return false;
             }
         });
     });
 }
 
 function debouncedCargar(valor, key) {
-    clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(() => cargarOpciones(valor, key), 200);
+    if (debounceTimers[key]) clearTimeout(debounceTimers[key]);
+    debounceTimers[key] = setTimeout(() => cargarOpciones(valor, key), 200);
 }
 
 function cargarOpciones(busqueda, key) {
     const contenedor = document.querySelector(`.resultadoCiudades[data-key="${key}"]`);
     const input = document.querySelector(`input[data-key="${key}"]`);
     if (!contenedor || !input) return;
+
     contenedor.innerHTML = "";
     stateFocus[key] = -1;
+
     const query = normalizar(busqueda);
     if (!query) {
         ocultarResultados(key);
         return;
     }
-    const resultados = municipios.filter(m =>
-        normalizar(m.nombre).includes(query)
-    );
+
+    const resultados = municipios.filter(m => normalizar(m.nombre).includes(query));
+
     if (resultados.length === 0) {
         const noRes = document.createElement('div');
-        noRes.className = 'opcion';
+        noRes.className = 'opcion no-results';
         noRes.textContent = 'No se encontraron resultados';
         contenedor.appendChild(noRes);
         contenedor.style.display = 'block';
         return;
     }
+
+
     resultados.slice(0, 50).forEach((muni) => {
         const div = document.createElement('div');
         div.className = 'opcion';
-        div.textContent = quitarTildesPreservandoCase(
-            muni.nombre + ", " + muni.provincia.nombre
-        );
+
+
+        div.textContent = `${muni.nombre}, ${muni.provincia?.nombre ?? ""}`.trim();
 
         div.dataset.value = muni.nombre;
+
         div.addEventListener('click', () => {
             input.value = muni.nombre;
+            input.setAttribute('data-selected', 'true');
             ocultarResultados(key);
         });
+
         div.addEventListener('mouseenter', () => {
             limpiarClaseActiva(contenedor);
             div.classList.add('active');
+            const items = Array.from(contenedor.querySelectorAll('.opcion'));
+            const idx = items.indexOf(div);
+            if (idx >= 0) stateFocus[key] = idx;
         });
+
         contenedor.appendChild(div);
     });
+
     contenedor.style.display = 'block';
     contenedor.scrollTop = 0;
 }
@@ -119,6 +146,7 @@ function manejarTeclas(e, key) {
     if (!contenedor) return;
     const items = Array.from(contenedor.querySelectorAll('.opcion'));
     const max = items.length - 1;
+
     if (e.key === 'ArrowDown') {
         e.preventDefault();
         if (max < 0) return;
@@ -133,8 +161,13 @@ function manejarTeclas(e, key) {
         if (stateFocus[key] >= 0 && items[stateFocus[key]]) {
             e.preventDefault();
             const input = document.querySelector(`input[data-key="${key}"]`);
-            const seleccionado = items[stateFocus[key]].textContent;
-            input.value = seleccionado;
+            const seleccionado = items[stateFocus[key]];
+
+            input.value = seleccionado.dataset.value;
+            input.setAttribute('data-selected', 'true');
+
+            justSelected[key] = true;
+
             ocultarResultados(key);
         }
     } else if (e.key === 'Escape') {
@@ -149,15 +182,13 @@ function actualizarFocoVisual(items, index) {
     const el = items[index];
     if (el) {
         el.classList.add('active');
-        el.scrollIntoView({block: 'nearest'});
+        el.scrollIntoView({ block: 'nearest' });
     }
 }
 
 function limpiarClaseActiva(contenedor) {
     if (!contenedor) return;
-    contenedor.querySelectorAll('.opcion.active').forEach(el => {
-        el.classList.remove('active');
-    });
+    contenedor.querySelectorAll('.opcion.active').forEach(el => el.classList.remove('active'));
 }
 
 function ocultarResultados(key) {
@@ -169,19 +200,33 @@ function ocultarResultados(key) {
 }
 
 function normalizar(texto) {
-    return String(texto).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-}
-
-function quitarTildesPreservandoCase(texto) {
-    return String(texto).normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    return String(texto || '')
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/ñ/g, "n");
 }
 
 function validarSeleccion(input, key) {
+    if (justSelected[key]) {
+        justSelected[key] = false;
+        return;
+    }
+
     const valor = input.value.trim();
     if (!valor) return;
-    const existe = municipios.some(m => normalizar(m.nombre) === normalizar(valor));
+
+    const existe = municipios.some(
+        m => normalizar(m.nombre) === normalizar(valor)
+    );
+
     if (!existe) {
         input.value = "";
-        ocultarResultados(key);
+        input.removeAttribute('data-selected');
+    } else {
+        input.setAttribute('data-selected', 'true');
     }
+
+    ocultarResultados(key);
 }
+

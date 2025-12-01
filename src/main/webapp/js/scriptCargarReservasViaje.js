@@ -3,6 +3,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalElement = document.getElementById('reservasViaje');
     let modalInstance = null;
 
+    window.reservasAbortController = null;
+
     document.querySelectorAll('.btn-obtener-reservas').forEach(btn => {
         btn.addEventListener('click', function () {
             const idViaje = this.dataset.id;
@@ -17,42 +19,73 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     modalElement.addEventListener('hidden.bs.modal', function () {
+        if (window.reservasAbortController) {
+            try { window.reservasAbortController.abort(); } catch (e) {}
+            window.reservasAbortController = null;
+        }
         resetearModal();
     });
 });
 
 
-function cargarReservas(idViaje) {
+async function cargarReservas(idViaje) {
+
+    if (window.reservasAbortController) {
+        try { window.reservasAbortController.abort(); } catch (e) {}
+        window.reservasAbortController = null;
+    }
+
+    const controller = new AbortController();
+    window.reservasAbortController = controller;
+    const signal = controller.signal;
 
     document.getElementById('reservasLoader').style.display = 'block';
     document.getElementById('reservasContainer').style.display = 'none';
     document.getElementById('sinReservas').style.display = 'none';
     document.getElementById('errorReservas').style.display = 'none';
 
+    const TIMEOUT = 10000;
+    const timeoutId = setTimeout(() => {
+        try { controller.abort(); } catch (e) {}
+    }, TIMEOUT);
 
-    fetch(`obtenerReservas?idViaje=${idViaje}`)
-        .then(response => response.json())
-        .then(data => {
-
-            document.getElementById('reservasLoader').style.display = 'none';
-
-            if (data.success) {
-                if (data.reservas && data.reservas.length > 0) {
-                    mostrarReservas(data.reservas);
-                } else {
-                    document.getElementById('sinReservas').style.display = 'block';
-                }
-            } else {
-                mostrarError(data.mensaje || 'Error al cargar reservas');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            document.getElementById('reservasLoader').style.display = 'none';
-            mostrarError('Error de conexión al servidor');
+    try {
+        const res = await fetch(`obtenerReservas?idViaje=${encodeURIComponent(idViaje)}`, {
+            signal
         });
-}
 
+        clearTimeout(timeoutId);
+
+        if (!res.ok) {
+            throw new Error(`HTTP ${res.status}`);
+        }
+
+        const data = await res.json();
+
+        if (data.success) {
+            if (data.reservas && data.reservas.length > 0) {
+                mostrarReservas(data.reservas);
+            } else {
+                document.getElementById('sinReservas').style.display = 'block';
+            }
+        } else {
+            mostrarError(data.mensaje || 'Error al cargar reservas');
+        }
+
+    } catch (error) {
+
+        if (error.name === 'AbortError') {
+            mostrarError('La solicitud fue cancelada o tardó demasiado (timeout).');
+        } else {
+            console.error("Error al cargar reservas:", error);
+            mostrarError('Error de conexión al servidor');
+        }
+
+    } finally {
+        window.reservasAbortController = null;
+        document.getElementById('reservasLoader').style.display = 'none';
+    }
+}
 
 function mostrarReservas(reservas) {
     const container = document.getElementById('reservasContainer');
@@ -111,7 +144,6 @@ function mostrarReservas(reservas) {
     container.style.display = 'block';
 }
 
-
 function obtenerBadgeEstado(estado) {
     const estados = {
         'EN PROCESO': '<span class="badge bg-warning text-dark"><i class="bi bi-clock me-1"></i>Pendiente</span>',
@@ -128,11 +160,20 @@ function mostrarError(mensaje) {
     document.getElementById('errorReservas').style.display = 'block';
 }
 
-
 function resetearModal() {
-    document.getElementById('reservasLoader').style.display = 'block';
-    document.getElementById('reservasContainer').style.display = 'none';
-    document.getElementById('sinReservas').style.display = 'none';
-    document.getElementById('errorReservas').style.display = 'none';
-    document.getElementById('reservasContainer').innerHTML = '';
+    const loader = document.getElementById('reservasLoader');
+    const container = document.getElementById('reservasContainer');
+    const sinReservas = document.getElementById('sinReservas');
+    const errorReservas = document.getElementById('errorReservas');
+
+    if (!loader || !container || !sinReservas || !errorReservas) {
+        return;
+    }
+
+    loader.style.display = 'block';
+    container.style.display = 'none';
+    sinReservas.style.display = 'none';
+    errorReservas.style.display = 'none';
+
+    container.innerHTML = '';
 }

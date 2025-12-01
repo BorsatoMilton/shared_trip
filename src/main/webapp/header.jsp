@@ -2,6 +2,7 @@
          pageEncoding="UTF-8" %>
 <%@ page import="entidades.Usuario, entidades.Rol" %>
 <head>
+    <meta charset="UTF-8">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <title></title>
     <style>
@@ -99,7 +100,7 @@
                     
                     <li class="nav-item">
                         <a class="nav-link" href="<%= request.getContextPath() %>/dashboard">
-                            <i class="bi bi-speedometer"></i>DashBoard
+                            <i class="bi bi-speedometer me-1"></i>Estadísticas
                         </a>
                     </li>
                     <% } else { %>

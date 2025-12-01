@@ -1,10 +1,10 @@
 <%@ page import="entidades.Usuario" %>
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-         pageEncoding="ISO-8859-1" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+         pageEncoding="UTF-8" %>
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="ISO-8859-1">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Actualizar Perfil</title>
 
@@ -118,7 +118,7 @@
                     <label class="form-label">Credenciales</label>
                             <input type="email"
                                    class="form-control mb-2"
-                                   placeholder="Correo electrónico"
+                                   placeholder="Correo electrÃ³nico"
                                    name="correo"
                                    minlength="10"
                                    maxlength="100"
@@ -133,16 +133,16 @@
                                    required>
                 </div>
                 <div class="mb-4">
-                    <label class="form-label">Información de contacto</label> <input
+                    <label class="form-label">InformaciÃ³n de contacto</label> <input
                         type="tel" class="form-control"
-                        placeholder="Teléfono"
+                        placeholder="TelÃ©fono"
                         name="telefono"
                         pattern="[0-9]{9,15}"
                         value="<%= usuario.getTelefono() %>" required>
                 </div>
                 <div class="d-flex justify-content-end">
                     <button type="button" class="btn btn-warning  me-2" id="btn-update-password"
-                            data-id="<%= usuario.getIdUsuario() %>">Actualizar Contraseña
+                            data-id="<%= usuario.getIdUsuario() %>">Actualizar ContraseÃ±a
                     </button>
                     <button type="submit" class="btn btn-primary">Guardar
                         Usuario
@@ -162,13 +162,13 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Actualizar Contraseña</h5>
+                <h5 class="modal-title">Actualizar ContraseÃ±a</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <form id="formEditarClave" method="POST" action="perfil">
                 <div class="modal-body">
                     <input type="hidden" name="action" value="password">
-                    <label class="form-label">Nueva Contraseña</label>
+                    <label class="form-label">Nueva ContraseÃ±a</label>
                     <input type="password" class="form-control" placeholder="Ej: irjner231kds"
                            minlength="6"
                            maxLength="100"

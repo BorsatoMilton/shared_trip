@@ -35,7 +35,7 @@ public class DashBoard extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-//    	reservaCtrl.pruebaExtremaReservasConfirmadas();
+
     	HttpSession session = request.getSession(false);
 
         if (session == null || session.getAttribute("usuario") == null) {
@@ -57,12 +57,12 @@ public class DashBoard extends HttpServlet {
             LinkedList<Reserva> todasReservas = reservaCtrl.getAllReservas();
 
             Map<String, Object> kpis = calcularKPIsAdmin(todasReservas, todosViajes, todosUsuarios);
-            Map<String, Object> metricasFinancieras = calcularMetricasFinancieras(todasReservas);
-            Map<String, Object> estadisticasUsuarios = calcularEstadisticasUsuarios(todosUsuarios);
+            Map<String, Object> metricasFinancieras = calcularMetricasFinancieras();
+            Map<String, Object> estadisticasUsuarios = calcularEstadisticasUsuarios();
             
-            LinkedList<Reserva> reservasRecientes = obtenerReservasRecientes(todasReservas);
-            LinkedList<Viaje> viajesProximos = obtenerViajesProximos(todosViajes);
-            LinkedList<Usuario> usuariosRecientes = obtenerUsuariosRecientes(todosUsuarios);
+            LinkedList<Reserva> reservasRecientes = obtenerReservasRecientes();
+            LinkedList<Viaje> viajesProximos = obtenerViajesProximos();
+            LinkedList<Usuario> usuariosRecientes = obtenerUsuariosRecientes();
 
             request.setAttribute("kpis", kpis);
             request.setAttribute("metricasFinancieras", metricasFinancieras);
@@ -116,7 +116,7 @@ public class DashBoard extends HttpServlet {
         return kpis;
     }
     
-    private Map<String, Object> calcularMetricasFinancieras(LinkedList<Reserva> reservas) {
+    private Map<String, Object> calcularMetricasFinancieras() {
         Map<String, Object> metricas = new HashMap<>();
         
         double ingresosTotales = reservaCtrl.getIngresosTotales();
@@ -133,7 +133,7 @@ public class DashBoard extends HttpServlet {
         return metricas;
     }
     
-    private Map<String, Object> calcularEstadisticasUsuarios(LinkedList<Usuario> usuarios) {
+    private Map<String, Object> calcularEstadisticasUsuarios() {
         Map<String, Object> stats = new HashMap<>();
         
         Map<String, Integer> estadisticas = usuarioCtrl.getEstadisticasUsuarios();
@@ -150,15 +150,15 @@ public class DashBoard extends HttpServlet {
         return stats;
     }
     
-    private LinkedList<Reserva> obtenerReservasRecientes(LinkedList<Reserva> reservas) {
+    private LinkedList<Reserva> obtenerReservasRecientes() {
         return reservaCtrl.obtenerReservasRecientes(5);
     }
     
-    private LinkedList<Viaje> obtenerViajesProximos(LinkedList<Viaje> viajes) {
+    private LinkedList<Viaje> obtenerViajesProximos() {
         return viajeCtrl.obtenerViajesProximos(5);
     }
     
-    private LinkedList<Usuario> obtenerUsuariosRecientes(LinkedList<Usuario> usuarios) {
+    private LinkedList<Usuario> obtenerUsuariosRecientes() {
         return usuarioCtrl.getUsuariosRecientes(5);
     }
 }

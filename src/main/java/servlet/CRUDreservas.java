@@ -85,6 +85,9 @@ public class CRUDreservas extends HttpServlet {
 
         try {
             if ("reserve".equals(action)) {
+                if("admin".equals(usuario.getNombreRol())){
+                    throw new Exception("El admin no puede realizar reservas.");
+                }
                 reservar(request, usuario);
                 session.setAttribute("mensaje", "Reserva realizada con éxito");
                 redirectPage = "/";

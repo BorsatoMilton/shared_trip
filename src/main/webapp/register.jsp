@@ -1,9 +1,9 @@
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-         pageEncoding="ISO-8859-1" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+         pageEncoding="UTF-8" %>
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="ISO-8859-1">
+    <meta charset="UTF-8">
     <title>Registro</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
@@ -82,13 +82,13 @@
                                            class="form-control form-control-lg"
                                            id="correo"
                                            name="correo"
-                                           placeholder="Correo Electrónico"
+                                           placeholder="Correo ElectrÃ³nico"
                                            minlength="10"
                                            maxlength="100"
                                            required
                                            value="<%= session.getAttribute("correo") != null ? session.getAttribute("correo") : "" %>">
                                     <label for="correo" class="form-label">
-                                        Correo Electrónico
+                                        Correo ElectrÃ³nico
                                     </label>
                                 </div>
                             </div>
@@ -121,7 +121,7 @@
                                            minlength="6"
                                            maxlength="100">
                                     <label for="clave" class="form-label">
-                                        Contraseña
+                                        ContraseÃ±a
                                     </label>
                                 </div>
                             </div>
@@ -132,12 +132,12 @@
                                            class="form-control form-control-lg"
                                            id="telefono"
                                            name="telefono"
-                                           placeholder="Teléfono"
+                                           placeholder="TelÃ©fono"
                                            required
                                            pattern="[0-9]{9,15}"
                                            value="<%= session.getAttribute("telefono") != null ? session.getAttribute("telefono") : "" %>">
                                     <label for="telefono" class="form-label">
-                                        Teléfono
+                                        TelÃ©fono
                                     </label>
                                 </div>
                             </div>
@@ -148,9 +148,9 @@
                                 </button>
                                 <div class="text-center mt-4">
                                     <p class="text-muted">
-                                        ¿Ya tienes cuenta?
+                                        Â¿Ya tienes cuenta?
                                         <a href="login.jsp" class="text-decoration-none fw-bold">
-                                            Inicia Sesión
+                                            Inicia SesiÃ³n
                                         </a>
                                     </p>
                                 </div>

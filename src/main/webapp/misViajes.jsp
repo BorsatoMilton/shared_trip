@@ -1,9 +1,8 @@
-<%@ page import="java.util.LinkedList" %>
-<%@ page import="entidades.Viaje" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
          pageEncoding="UTF-8" %>
+<%@ page import="java.util.LinkedList" %>
+<%@ page import="entidades.Viaje" %>
 <%@ page import="java.time.LocalDateTime" %>
-<%@ page import="java.time.ZoneId" %>
 <%@ page import="java.sql.Date" %>
 <%@ page import="entidades.Vehiculo" %>
 <%@ page import="java.time.LocalDate" %>
@@ -12,7 +11,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="ISO-8859-1">
+    <meta charset="UTF-8">
     <title>Mis Viajes</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
           rel="stylesheet"
@@ -205,7 +204,7 @@
                                 <td class="text-end action-buttons">
                                     <% if (!viaje.isCancelado()) { %>
                                     <button type="button"
-                                            class="btn btn-sm btn-warning btn-editar"
+                                            class="btn btn-sm btn-warning btn-editar me-1"
                                             data-id="<%=viaje.getIdViaje()%>"
                                             data-fecha="<%=viaje.getFecha()%>"
                                             data-lugares_disponibles="<%=viaje.getLugares_disponibles()%>"
@@ -218,25 +217,22 @@
                                         <i class="bi bi-pencil"></i>
                                     </button>
                                     <% } %>
-                                    <% if (viaje.isCancelado()) { %>
-                                    <button type="button"
-                                            class="btn btn-sm btn-danger btn-eliminar"
-                                            data-id="<%=viaje.getIdViaje()%>">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                    <% } %>
-
                                     <%
                                         Date fechaViaje = viaje.getFecha();
                                         LocalDateTime fechaViajeLocalDateTime = fechaViaje.toLocalDate().atStartOfDay();
                                     %>
 
-                                    <% if (!viaje.isCancelado()) { %>
-                                    <button type="button" class="btn btn-sm btn-danger btn-cancelar"
-                                            data-id="<%=viaje.getIdViaje()%>"
-                                            <% if (viaje.isCancelado() || fechaViajeLocalDateTime.isBefore(LocalDateTime.now())) { %>
-                                            disabled
-                                            <% } %>>
+                                    <% if (viaje.isCancelado() || fechaViajeLocalDateTime.isBefore(LocalDateTime.now())) { %>
+                                    <button type="button"
+                                            class="btn btn-sm btn-danger btn-eliminar me-1"
+                                            data-id="<%=viaje.getIdViaje()%>">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                    <% } %>
+
+                                    <% if (!viaje.isCancelado() && fechaViajeLocalDateTime.isAfter(LocalDateTime.now())) { %>
+                                    <button type="button" class="btn btn-sm btn-danger btn-cancelar me-1"
+                                            data-id="<%=viaje.getIdViaje()%>">
                                         <i class="bi bi-x-circle-fill"></i>
                                     </button>
                                     <% } %>

@@ -1,10 +1,10 @@
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-         pageEncoding="ISO-8859-1" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+         pageEncoding="UTF-8" %>
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="ISO-8859-1">
-    <title>Recuperar Contraseña</title>
+    <meta charset="UTF-8">
+    <title>Recuperar ContraseÃ±a</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         .main-content {
@@ -36,7 +36,7 @@
             <div class="col-md-8 col-lg-6">
                 <div class="card shadow">
                     <div class="card-header bg-primary text-white">
-                        <h4 class="mb-0">Recuperar Contraseña</h4>
+                        <h4 class="mb-0">Recuperar ContraseÃ±a</h4>
                     </div>
                     <div class="card-body">
                         <%
@@ -74,18 +74,18 @@
                             <input type="hidden" name="action" value="newPassword">
                             <input type="hidden" name="token" value="<%= token %>">
                             <div class="mb-3">
-                                <label for="nuevaPassword" class="form-label">Nueva Contraseña</label>
+                                <label for="nuevaPassword" class="form-label">Nueva ContraseÃ±a</label>
                                 <input type="password" class="form-control" id="nuevaPassword"
                                        name="nuevaPassword" required>
                             </div>
 
                             <div class="mb-3">
-                                <label for="confirmarPassword" class="form-label">Confirmar Contraseña</label>
+                                <label for="confirmarPassword" class="form-label">Confirmar ContraseÃ±a</label>
                                 <input type="password" class="form-control" id="confirmarPassword"
                                        name="confirmarPassword" required>
                             </div>
 
-                            <button type="submit" class="btn btn-primary w-100">Actualizar Contraseña</button>
+                            <button type="submit" class="btn btn-primary w-100">Actualizar ContraseÃ±a</button>
                         </form>
 
                         <div class="text-center mt-3">
