@@ -193,6 +193,10 @@ public class ReservaController {
 //    public void pruebaExtremaReservasConfirmadas() {
 //    	this.reservaDAO.pruebaExtremaReservasConfirmadas();
 //    }
+    
+    public LinkedList<Reserva> obtenerReservasRecientes(int limite) {
+    	return reservaDAO.obtenerReservasRecientes(limite);
+    }
 
     public Map<String, Object> getEstadisticasReservas() {
             return reservaDAO.obtenerEstadisticasReservas();

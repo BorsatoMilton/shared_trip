@@ -677,7 +677,52 @@ public class ReservaDAO {
         return estadisticas;
     }
     
-    
+    public LinkedList<Reserva> obtenerReservasRecientes(int limite) {
+        logger.debug("Obteniendo {} reservas más recientes", limite);
+        
+        String query = "SELECT " +
+                "r.id_reserva, r.fecha_reserva, r.estado, r.cantidad_pasajeros_reservada, " +
+                "r.reserva_cancelada, r.codigo_reserva, r.feedback_token, " +
+                "v.id_viaje, v.fecha, v.lugares_disponibles, v.origen, v.destino, " +
+                "v.precio_unitario, v.cancelado, v.lugar_salida, v.id_vehiculo_viaje, " +
+                "u_conductor.id_usuario as conductor_id, u_conductor.nombre as conductor_nombre, " +
+                "u_conductor.apellido as conductor_apellido, u_conductor.correo as conductor_correo, " +
+                "u_conductor.telefono as conductor_telefono, " +
+                "u_pasajero.id_usuario as pasajero_id, u_pasajero.nombre as pasajero_nombre, " +
+                "u_pasajero.apellido as pasajero_apellido, u_pasajero.correo as pasajero_correo, " +
+                "u_pasajero.telefono as pasajero_telefono, " +
+                "veh.id_vehiculo, veh.patente, veh.modelo, veh.anio " +
+                "FROM reservas r " +
+                "INNER JOIN viajes v ON r.id_viaje = v.id_viaje " +
+                "INNER JOIN usuarios u_conductor ON u_conductor.id_usuario = v.id_conductor " +
+                "INNER JOIN usuarios u_pasajero ON u_pasajero.id_usuario = r.id_pasajero_reserva " +
+                "INNER JOIN vehiculos veh ON veh.id_vehiculo = v.id_vehiculo_viaje " +
+                "WHERE r.activo = TRUE " +
+                "ORDER BY r.id_reserva DESC LIMIT ?";
+
+        LinkedList<Reserva> reservas = new LinkedList<>();
+        
+        try (
+            Connection conn = ConnectionDB.getInstancia().getConn();
+            PreparedStatement stmt = conn.prepareStatement(query)
+        ) {
+            stmt.setInt(1, limite);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    reservas.add(mapFullReservaFromJoin(rs));
+                }
+            }
+            
+            logger.info("Obtenidas {} reservas recientes", reservas.size());
+            return reservas;
+
+        } catch (SQLException e) {
+            logger.error("Error al obtener reservas recientes - Estado: {} - Código: {}",
+                    e.getSQLState(), e.getErrorCode(), e);
+            throw new DataAccessException("Error al obtener reservas recientes", e);
+        }
+    }
 
     private Reserva mapFullReservaFromJoin(ResultSet rs) throws SQLException {
         Reserva reserva = new Reserva();
