@@ -14,43 +14,7 @@
 
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <style>
-        body {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .main-content {
-            flex: 1 0 auto;
-            width: 100%;
-            padding-bottom: 60px;
-        }
-
-        .profile-container {
-            background: #ffffff;
-            border-radius: 15px;
-            padding: 2rem;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 500px;
-            margin: 2rem auto;
-        }
-
-        .profile-container h1 {
-            text-align: center;
-            margin-bottom: 1.5rem;
-            color: #1a73e8;
-            font-size: 2rem;
-            font-weight: bold;
-        }
-
-        .alert {
-            width: 500px;
-            margin: auto;
-        }
-
-    </style>
+    <link rel="stylesheet" href="styles/perfil.css">
 </head>
 <body>
 <jsp:include page="header.jsp"></jsp:include>

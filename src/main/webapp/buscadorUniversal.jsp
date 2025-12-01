@@ -1,29 +1,6 @@
-<style>
-    .search-container {
-        min-width: 350px;
-        margin: 10px auto 10px auto;
-    }
-    .search-wrapper {
-        position: relative;
-    }
-    .search-wrapper svg {
-        position: absolute;
-        top: 50%;
-        left: 10px;
-        transform: translateY(-50%);
-        width: 16px;
-        height: 16px;
-        pointer-events: none;
-        color: gray;
-    }
-    .search-input {
-        width: 100%;
-        padding: 10px 10px 10px 35px;
-        border: 1px solid #ccc;
-        border-radius: 8px;
-        font-size: 14px;
-    }
-</style>
+<head>
+    <link rel="stylesheet" href="styles/buscadorUniversal.css">
+</head>
 
 <div class="search-container">
     <div class="search-wrapper">

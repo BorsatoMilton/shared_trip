@@ -10,70 +10,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Dejá tu feedback - SharedTrip</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-        }
-
-        .header {
-            color: #2E86C1;
-            border-bottom: 2px solid #2E86C1;
-            padding-bottom: 10px;
-        }
-
-        .content {
-            background-color: #f4f4f4;
-            padding: 15px;
-            border-radius: 5px;
-            margin: 15px auto;
-            max-width: 700px;
-        }
-
-        .footer {
-            color: #7F8C8D;
-            margin-top: 20px;
-            font-size: 14px;
-        }
-
-        .info {
-            background-color: #e8f4fd;
-            border: 1px solid #b3d9ff;
-            padding: 10px;
-            border-radius: 5px;
-            margin: 10px 0;
-        }
-
-        .btn {
-            display: inline-block;
-            background-color: #2E86C1;
-            color: white;
-            padding: 10px 15px;
-            text-decoration: none;
-            border-radius: 5px;
-            margin-top: 10px;
-            border: none;
-            cursor: pointer;
-        }
-
-        label {
-            display: block;
-            margin-top: 8px;
-        }
-
-        .error {
-            color: #c0392b;
-        }
-
-        .rating {
-            margin: 10px 0;
-        }
-
-        .rating input {
-            margin-right: 6px;
-        }
-    </style>
+    <link rel="stylesheet" href="styles/feedback.css">
 </head>
 <body>
 <div class="header">

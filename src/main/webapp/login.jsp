@@ -11,24 +11,7 @@
             rel="stylesheet"
             integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
             crossorigin="anonymous">
-
-    <style>
-        .text-black {
-            color: black !important;
-        }
-
-        .main-content {
-            flex: 1 0 auto;
-            width: 100%;
-            padding-bottom: 60px;
-        }
-
-        body {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-    </style>
+    <link rel="stylesheet" href="styles/login.css">
 </head>
 
 <body>

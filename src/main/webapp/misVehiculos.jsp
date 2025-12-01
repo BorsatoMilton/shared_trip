@@ -15,36 +15,7 @@
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
-    <style>
-        .table-hover tbody tr:hover {
-            background-color: #f8f9fa;
-        }
-
-        .action-buttons .btn {
-            padding: 0.375rem 0.75rem;
-        }
-
-        .scrollable-table {
-            overflow-x: auto;
-        }
-
-        .main-content {
-            flex: 1 0 auto;
-            width: 100%;
-            padding-bottom: 60px;
-        }
-
-        body {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .card-header {
-            background: linear-gradient(45deg, #3f51b5, #2196f3);
-            color: white;
-        }
-    </style>
+    <link rel="stylesheet" href="styles/misVehiculos.css">
 
 </head>
 <body>

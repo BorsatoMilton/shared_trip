@@ -6,26 +6,7 @@
     <meta charset="UTF-8">
     <title>Recuperar Contraseña</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        .main-content {
-            flex: 1 0 auto;
-            padding: 20px 0;
-        }
-
-        .card {
-            max-width: 500px;
-            margin: 0 auto;
-        }
-
-        .password-requirements ul {
-            margin: 5px 0 0 0;
-            padding-left: 20px;
-        }
-
-        .password-requirements li {
-            margin-bottom: 3px;
-        }
-    </style>
+    <link rel="stylesheet" href="styles/resetearClave.css">
 </head>
 <body class="d-flex flex-column min-vh-100">
 <jsp:include page="header.jsp"/>
