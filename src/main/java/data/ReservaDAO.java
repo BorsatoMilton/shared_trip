@@ -13,6 +13,23 @@ import data.exceptions.DataAccessException;
 
 public class ReservaDAO {
     private static final Logger logger = LoggerFactory.getLogger(ReservaDAO.class);
+    private String universalQuery = "SELECT " +
+            "r.id_reserva, r.fecha_reserva, r.estado, r.cantidad_pasajeros_reservada, " +
+            "r.reserva_cancelada, r.codigo_reserva, r.feedback_token, " +
+            "v.id_viaje, v.fecha, v.lugares_disponibles, v.origen, v.destino, " +
+            "v.precio_unitario, v.cancelado, v.lugar_salida, v.id_vehiculo_viaje, " +
+            "u_conductor.id_usuario as conductor_id, u_conductor.nombre as conductor_nombre, " +
+            "u_conductor.apellido as conductor_apellido, u_conductor.correo as conductor_correo, " +
+            "u_conductor.telefono as conductor_telefono, " +
+            "u_pasajero.id_usuario as pasajero_id, u_pasajero.nombre as pasajero_nombre, " +
+            "u_pasajero.apellido as pasajero_apellido, u_pasajero.correo as pasajero_correo, " +
+            "u_pasajero.telefono as pasajero_telefono, " +
+            "veh.id_vehiculo, veh.patente, veh.modelo, veh.anio " +
+            "FROM reservas r " +
+            "INNER JOIN viajes v ON r.id_viaje = v.id_viaje " +
+            "INNER JOIN usuarios u_conductor ON u_conductor.id_usuario = v.id_conductor " +
+            "INNER JOIN usuarios u_pasajero ON u_pasajero.id_usuario = r.id_pasajero_reserva " +
+            "INNER JOIN vehiculos veh ON veh.id_vehiculo = v.id_vehiculo_viaje ";
 
     public ReservaDAO() {
     }
@@ -21,23 +38,7 @@ public class ReservaDAO {
         logger.debug("Obteniendo todas las reservas");
         LinkedList<Reserva> reservas = new LinkedList<>();
 
-        String query = "SELECT " +
-                "r.id_reserva, r.fecha_reserva, r.estado, r.cantidad_pasajeros_reservada, " +
-                "r.reserva_cancelada, r.codigo_reserva, r.feedback_token, " +
-                "v.id_viaje, v.fecha, v.lugares_disponibles, v.origen, v.destino, " +
-                "v.precio_unitario, v.cancelado, v.lugar_salida, v.id_vehiculo_viaje, " +
-                "u_conductor.id_usuario as conductor_id, u_conductor.nombre as conductor_nombre, " +
-                "u_conductor.apellido as conductor_apellido, u_conductor.correo as conductor_correo, " +
-                "u_conductor.telefono as conductor_telefono, " +
-                "u_pasajero.id_usuario as pasajero_id, u_pasajero.nombre as pasajero_nombre, " +
-                "u_pasajero.apellido as pasajero_apellido, u_pasajero.correo as pasajero_correo, " +
-                "u_pasajero.telefono as pasajero_telefono, " +
-                "veh.id_vehiculo, veh.patente, veh.modelo, veh.anio " +
-                "FROM reservas r " +
-                "INNER JOIN viajes v ON r.id_viaje = v.id_viaje " +
-                "INNER JOIN usuarios u_conductor ON u_conductor.id_usuario = v.id_conductor " +
-                "INNER JOIN usuarios u_pasajero ON u_pasajero.id_usuario = r.id_pasajero_reserva " +
-                "INNER JOIN vehiculos veh ON veh.id_vehiculo = v.id_vehiculo_viaje " +
+        String query = universalQuery +
                 "WHERE r.activo = TRUE";
 
         try (
@@ -61,23 +62,7 @@ public class ReservaDAO {
     public Reserva getByReserva(int id_reserva) {
         logger.debug("Buscando reserva con ID: {}", id_reserva);
 
-        String query = "SELECT " +
-                "r.id_reserva, r.fecha_reserva, r.estado, r.cantidad_pasajeros_reservada, " +
-                "r.reserva_cancelada, r.codigo_reserva, r.feedback_token, " +
-                "v.id_viaje, v.fecha, v.lugares_disponibles, v.origen, v.destino, " +
-                "v.precio_unitario, v.cancelado, v.lugar_salida, v.id_vehiculo_viaje, " +
-                "u_conductor.id_usuario as conductor_id, u_conductor.nombre as conductor_nombre, " +
-                "u_conductor.apellido as conductor_apellido, u_conductor.correo as conductor_correo, " +
-                "u_conductor.telefono as conductor_telefono, " +
-                "u_pasajero.id_usuario as pasajero_id, u_pasajero.nombre as pasajero_nombre, " +
-                "u_pasajero.apellido as pasajero_apellido, u_pasajero.correo as pasajero_correo, " +
-                "u_pasajero.telefono as pasajero_telefono, " +
-                "veh.id_vehiculo, veh.patente, veh.modelo, veh.anio " +
-                "FROM reservas r " +
-                "INNER JOIN viajes v ON r.id_viaje = v.id_viaje " +
-                "INNER JOIN usuarios u_conductor ON u_conductor.id_usuario = v.id_conductor " +
-                "INNER JOIN usuarios u_pasajero ON u_pasajero.id_usuario = r.id_pasajero_reserva " +
-                "INNER JOIN vehiculos veh ON veh.id_vehiculo = v.id_vehiculo_viaje " +
+        String query = universalQuery +
                 "WHERE r.id_reserva = ? AND r.activo = TRUE";
 
         try (
@@ -104,48 +89,26 @@ public class ReservaDAO {
     }
 
     public Reserva getByToken(String token) {
-        logger.debug("Buscando reserva con token: {}", token);
+        Reserva reserva = null;
+        String query = universalQuery +
+                "WHERE r.feedback_token = ?";
 
-        String query = "SELECT " +
-                "r.id_reserva, r.fecha_reserva, r.estado, r.cantidad_pasajeros_reservada, " +
-                "r.reserva_cancelada, r.codigo_reserva, r.feedback_token, " +
-                "v.id_viaje, v.fecha, v.lugares_disponibles, v.origen, v.destino, " +
-                "v.precio_unitario, v.cancelado, v.lugar_salida, v.id_vehiculo_viaje, " +
-                "u_conductor.id_usuario as conductor_id, u_conductor.nombre as conductor_nombre, " +
-                "u_conductor.apellido as conductor_apellido, u_conductor.correo as conductor_correo, " +
-                "u_conductor.telefono as conductor_telefono, " +
-                "u_pasajero.id_usuario as pasajero_id, u_pasajero.nombre as pasajero_nombre, " +
-                "u_pasajero.apellido as pasajero_apellido, u_pasajero.correo as pasajero_correo, " +
-                "u_pasajero.telefono as pasajero_telefono, " +
-                "veh.id_vehiculo, veh.patente, veh.modelo, veh.anio " +
-                "FROM reservas r " +
-                "INNER JOIN viajes v ON r.id_viaje = v.id_viaje " +
-                "INNER JOIN usuarios u_conductor ON u_conductor.id_usuario = v.id_conductor " +
-                "INNER JOIN usuarios u_pasajero ON u_pasajero.id_usuario = r.id_pasajero_reserva " +
-                "INNER JOIN vehiculos veh ON veh.id_vehiculo = v.id_vehiculo_viaje " +
-                "WHERE r.feedback_token = ? AND r.activo = TRUE";
+        try (Connection conn = ConnectionDB.getInstancia().getConn();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
 
-        try (
-                Connection conn = ConnectionDB.getInstancia().getConn();
-                PreparedStatement stmt = conn.prepareStatement(query)
-        ) {
-            stmt.setString(1, token);
+                stmt.setString(1, token);
 
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    logger.debug("Reserva encontrada con token: {}", token);
-                    return mapReservaWithViaje(rs);
-                } else {
-                    logger.warn("Reserva no encontrada con token: {}", token);
-                    return null;
+                try (ResultSet rs = stmt.executeQuery()) {
+                    if (rs.next()) {
+                        reserva = mapFullReservaFromJoin(rs);
+                    }
                 }
-            }
 
         } catch (SQLException e) {
-            logger.error("Error al obtener reserva con token {} - Estado: {} - Código: {}",
-                    token, e.getSQLState(), e.getErrorCode(), e);
-            throw new DataAccessException("Error al obtener reserva por token", e);
+            logger.error("Error al obtener Reserva con token: {}", token, e);
+            throw new DataAccessException("Error al obtener la reserva por token", e);
         }
+        return reserva;
     }
 
     public int obtenerCantidad(int idReserva) {
@@ -183,23 +146,7 @@ public class ReservaDAO {
         validateUsuario(usuario);
         LinkedList<Reserva> reservas = new LinkedList<>();
 
-        String query = "SELECT " +
-                "r.id_reserva, r.fecha_reserva, r.estado, r.cantidad_pasajeros_reservada, " +
-                "r.reserva_cancelada, r.codigo_reserva, r.feedback_token, " +
-                "v.id_viaje, v.fecha, v.lugares_disponibles, v.origen, v.destino, " +
-                "v.precio_unitario, v.cancelado, v.lugar_salida, v.id_vehiculo_viaje, " +
-                "u_conductor.id_usuario as conductor_id, u_conductor.nombre as conductor_nombre, " +
-                "u_conductor.apellido as conductor_apellido, u_conductor.correo as conductor_correo, " +
-                "u_conductor.telefono as conductor_telefono, " +
-                "u_pasajero.id_usuario as pasajero_id, u_pasajero.nombre as pasajero_nombre, " +
-                "u_pasajero.apellido as pasajero_apellido, u_pasajero.correo as pasajero_correo, " +
-                "u_pasajero.telefono as pasajero_telefono, " +
-                "veh.id_vehiculo, veh.patente, veh.modelo, veh.anio " +
-                "FROM reservas r " +
-                "INNER JOIN viajes v ON r.id_viaje = v.id_viaje " +
-                "INNER JOIN usuarios u_conductor ON u_conductor.id_usuario = v.id_conductor " +
-                "INNER JOIN usuarios u_pasajero ON u_pasajero.id_usuario = r.id_pasajero_reserva " +
-                "INNER JOIN vehiculos veh ON veh.id_vehiculo = v.id_vehiculo_viaje " +
+        String query = universalQuery +
                 "WHERE r.id_pasajero_reserva = ? AND r.activo = TRUE";
 
         try (
@@ -228,23 +175,7 @@ public class ReservaDAO {
         logger.debug("Obteniendo reservas para viaje ID: {}", idViaje);
 
         LinkedList<Reserva> reservas = new LinkedList<>();
-        String query = "SELECT " +
-                "r.id_reserva, r.fecha_reserva, r.estado, r.cantidad_pasajeros_reservada, " +
-                "r.reserva_cancelada, r.codigo_reserva, r.feedback_token, " +
-                "v.id_viaje, v.fecha, v.lugares_disponibles, v.origen, v.destino, " +
-                "v.precio_unitario, v.cancelado, v.lugar_salida, v.id_vehiculo_viaje, " +
-                "u_conductor.id_usuario as conductor_id, u_conductor.nombre as conductor_nombre, " +
-                "u_conductor.apellido as conductor_apellido, u_conductor.correo as conductor_correo, " +
-                "u_conductor.telefono as conductor_telefono, " +
-                "u_pasajero.id_usuario as pasajero_id, u_pasajero.nombre as pasajero_nombre, " +
-                "u_pasajero.apellido as pasajero_apellido, u_pasajero.correo as pasajero_correo, " +
-                "u_pasajero.telefono as pasajero_telefono, " +
-                "veh.id_vehiculo, veh.patente, veh.modelo, veh.anio " +
-                "FROM reservas r " +
-                "INNER JOIN viajes v ON r.id_viaje = v.id_viaje " +
-                "INNER JOIN usuarios u_conductor ON u_conductor.id_usuario = v.id_conductor " +
-                "INNER JOIN usuarios u_pasajero ON u_pasajero.id_usuario = r.id_pasajero_reserva " +
-                "INNER JOIN vehiculos veh ON veh.id_vehiculo = v.id_vehiculo_viaje " +
+        String query = universalQuery +
                 "WHERE r.id_viaje = ?";
 
         if (!all) {
@@ -278,23 +209,7 @@ public class ReservaDAO {
 
         LinkedList<Reserva> reservas = new LinkedList<>();
 
-        String query = "SELECT " +
-                "r.id_reserva, r.fecha_reserva, r.estado, r.cantidad_pasajeros_reservada, " +
-                "r.reserva_cancelada, r.codigo_reserva, r.feedback_token, " +
-                "v.id_viaje, v.fecha, v.lugares_disponibles, v.origen, v.destino, " +
-                "v.precio_unitario, v.cancelado, v.lugar_salida, v.id_vehiculo_viaje, " +
-                "u_conductor.id_usuario as conductor_id, u_conductor.nombre as conductor_nombre, " +
-                "u_conductor.apellido as conductor_apellido, u_conductor.correo as conductor_correo, " +
-                "u_conductor.telefono as conductor_telefono, " +
-                "u_pasajero.id_usuario as pasajero_id, u_pasajero.nombre as pasajero_nombre, " +
-                "u_pasajero.apellido as pasajero_apellido, u_pasajero.correo as pasajero_correo, " +
-                "u_pasajero.telefono as pasajero_telefono, " +
-                "veh.id_vehiculo, veh.patente, veh.modelo, veh.anio " +
-                "FROM reservas r " +
-                "INNER JOIN viajes v ON r.id_viaje = v.id_viaje " +
-                "INNER JOIN usuarios u_conductor ON u_conductor.id_usuario = v.id_conductor " +
-                "INNER JOIN usuarios u_pasajero ON u_pasajero.id_usuario = r.id_pasajero_reserva " +
-                "INNER JOIN vehiculos veh ON veh.id_vehiculo = v.id_vehiculo_viaje " +
+        String query = universalQuery +
                 "LEFT JOIN feedback f ON f.id_reserva = r.id_reserva " +
                 "WHERE v.fecha = ? " +
                 "AND r.estado = 'CONFIRMADA' " +
@@ -321,6 +236,37 @@ public class ReservaDAO {
             logger.error("Error al obtener reservas para feedback - Estado: {} - Código: {}",
                     e.getSQLState(), e.getErrorCode(), e);
             throw new DataAccessException("Error al obtener reservas para feedback", e);
+        }
+    }
+
+    public LinkedList<Reserva> obtenerReservasRecientes(int limite) {
+        logger.debug("Obteniendo {} reservas más recientes", limite);
+
+        String query = universalQuery +
+                "WHERE r.activo = TRUE " +
+                "ORDER BY r.id_reserva DESC LIMIT ?";
+
+        LinkedList<Reserva> reservas = new LinkedList<>();
+
+        try (
+                Connection conn = ConnectionDB.getInstancia().getConn();
+                PreparedStatement stmt = conn.prepareStatement(query)
+        ) {
+            stmt.setInt(1, limite);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    reservas.add(mapFullReservaFromJoin(rs));
+                }
+            }
+
+            logger.info("Obtenidas {} reservas recientes", reservas.size());
+            return reservas;
+
+        } catch (SQLException e) {
+            logger.error("Error al obtener reservas recientes - Estado: {} - Código: {}",
+                    e.getSQLState(), e.getErrorCode(), e);
+            throw new DataAccessException("Error al obtener reservas recientes", e);
         }
     }
 
@@ -627,53 +573,7 @@ public class ReservaDAO {
         
         return estadisticas;
     }
-    
-    public LinkedList<Reserva> obtenerReservasRecientes(int limite) {
-        logger.debug("Obteniendo {} reservas más recientes", limite);
-        
-        String query = "SELECT " +
-                "r.id_reserva, r.fecha_reserva, r.estado, r.cantidad_pasajeros_reservada, " +
-                "r.reserva_cancelada, r.codigo_reserva, r.feedback_token, " +
-                "v.id_viaje, v.fecha, v.lugares_disponibles, v.origen, v.destino, " +
-                "v.precio_unitario, v.cancelado, v.lugar_salida, v.id_vehiculo_viaje, " +
-                "u_conductor.id_usuario as conductor_id, u_conductor.nombre as conductor_nombre, " +
-                "u_conductor.apellido as conductor_apellido, u_conductor.correo as conductor_correo, " +
-                "u_conductor.telefono as conductor_telefono, " +
-                "u_pasajero.id_usuario as pasajero_id, u_pasajero.nombre as pasajero_nombre, " +
-                "u_pasajero.apellido as pasajero_apellido, u_pasajero.correo as pasajero_correo, " +
-                "u_pasajero.telefono as pasajero_telefono, " +
-                "veh.id_vehiculo, veh.patente, veh.modelo, veh.anio " +
-                "FROM reservas r " +
-                "INNER JOIN viajes v ON r.id_viaje = v.id_viaje " +
-                "INNER JOIN usuarios u_conductor ON u_conductor.id_usuario = v.id_conductor " +
-                "INNER JOIN usuarios u_pasajero ON u_pasajero.id_usuario = r.id_pasajero_reserva " +
-                "INNER JOIN vehiculos veh ON veh.id_vehiculo = v.id_vehiculo_viaje " +
-                "WHERE r.activo = TRUE " +
-                "ORDER BY r.id_reserva DESC LIMIT ?";
 
-        LinkedList<Reserva> reservas = new LinkedList<>();
-        
-        try (
-            Connection conn = ConnectionDB.getInstancia().getConn();
-            PreparedStatement stmt = conn.prepareStatement(query)
-        ) {
-            stmt.setInt(1, limite);
-
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    reservas.add(mapFullReservaFromJoin(rs));
-                }
-            }
-            
-            logger.info("Obtenidas {} reservas recientes", reservas.size());
-            return reservas;
-
-        } catch (SQLException e) {
-            logger.error("Error al obtener reservas recientes - Estado: {} - Código: {}",
-                    e.getSQLState(), e.getErrorCode(), e);
-            throw new DataAccessException("Error al obtener reservas recientes", e);
-        }
-    }
 
     private Reserva mapFullReservaFromJoin(ResultSet rs) throws SQLException {
         Reserva reserva = new Reserva();
@@ -724,30 +624,6 @@ public class ReservaDAO {
         return reserva;
     }
 
-
-    private Reserva mapReservaWithViaje(ResultSet rs) throws SQLException {
-        Reserva reserva = new Reserva();
-        reserva.setIdReserva(rs.getInt("id_reserva"));
-        reserva.setFecha_reserva(rs.getString("fecha_reserva"));
-        reserva.setCantidad_pasajeros_reservada(rs.getInt("cantidad_pasajeros_reservada"));
-        reserva.setReserva_cancelada(rs.getBoolean("reserva_cancelada"));
-        reserva.setEstado(rs.getString("estado"));
-        reserva.setCodigo_reserva(rs.getInt("codigo_reserva"));
-        reserva.setFeedback_token(rs.getString("feedback_token"));
-
-        Usuario pasajero = new Usuario();
-        pasajero.setIdUsuario(rs.getInt("id_pasajero_reserva"));
-        reserva.setPasajero(pasajero);
-
-        Viaje viaje = new Viaje();
-        viaje.setIdViaje(rs.getInt("id_viaje"));
-        viaje.setFecha(rs.getDate("fecha"));
-        viaje.setOrigen(rs.getString("origen"));
-        viaje.setDestino(rs.getString("destino"));
-        reserva.setViaje(viaje);
-
-        return reserva;
-    }
 
     private void validateUsuario(Usuario usuario) {
         if (usuario == null) {
