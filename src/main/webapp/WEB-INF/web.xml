@@ -5,31 +5,23 @@
          http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
          version="4.0">
 
-    <!-- Configuración básica -->
-    <display-name>MiProyectoWeb</display-name>
-    <description>Proyecto en Tomcat 9</description>
 
-    <!-- Páginas de inicio -->
+    <display-name>SharedTrip</display-name>
+    <description>Java carpooler</description>
+
     <welcome-file-list>
         <welcome-file>index.html</welcome-file>
         <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>
 
-    <servlet>
-        <servlet-name>CRUDusuarioAdmin</servlet-name>
-        <servlet-class>servlet.CRUDusuarioAdmin</servlet-class>
-    </servlet>
-
-
-    <servlet-mapping>
-        <servlet-name>CRUDusuarioAdmin</servlet-name>
-        <url-pattern>/usuarios</url-pattern>
-    </servlet-mapping>
-
-    <!-- Tiempo de sesión -->
     <session-config>
-        <session-timeout>30</session-timeout> <!-- En minutos -->
+        <session-timeout>30</session-timeout>
     </session-config>
+
+    <error-page>
+        <error-code>404</error-code>
+        <location>/error404.jsp</location>
+    </error-page>
 
     <listener>
         <listener-class>servlet.listeners.CronFeedbackListener</listener-class>
