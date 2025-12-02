@@ -19,20 +19,17 @@ public class FeedbackService {
         ReservaDAO reservaDAO = new ReservaDAO();
 
         LinkedList<Reserva> reservas = reservaDAO.getReservasForFeedback();
-        ;
+
         for (Reserva reserva : reservas) {
             Usuario pasajero = reserva.getPasajero();
             Viaje viaje = reserva.getViaje();
             Usuario chofer = viaje.getConductor();
 
-            if(feedbackDAO.getByReserva(reserva) == null){
-
-                String token = generators.generarToken();
-                Feedback feedback = new Feedback(viaje.getConductor(), reserva,token);
-                feedbackDAO.add(feedback);
-                reservaDAO.guardarToken(reserva.getIdReserva(), token);
-                enviarNotificacionesFeedback(viaje, pasajero, chofer, token);
-            }
+            String token = generators.generarToken();
+            Feedback feedback = new Feedback(viaje.getConductor(), reserva, token);
+            feedbackDAO.add(feedback);
+            reservaDAO.guardarToken(reserva.getIdReserva(), token);
+            enviarNotificacionesFeedback(viaje, pasajero, chofer, token);
         }
     }
 

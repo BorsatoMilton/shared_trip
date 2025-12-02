@@ -277,13 +277,29 @@ public class ReservaDAO {
         logger.debug("Obteniendo reservas para feedback");
 
         LinkedList<Reserva> reservas = new LinkedList<>();
-        String query = "SELECT r.*, v.id_viaje, v.fecha, v.origen, v.destino " +
+
+        String query = "SELECT " +
+                "r.id_reserva, r.fecha_reserva, r.estado, r.cantidad_pasajeros_reservada, " +
+                "r.reserva_cancelada, r.codigo_reserva, r.feedback_token, " +
+                "v.id_viaje, v.fecha, v.lugares_disponibles, v.origen, v.destino, " +
+                "v.precio_unitario, v.cancelado, v.lugar_salida, v.id_vehiculo_viaje, " +
+                "u_conductor.id_usuario as conductor_id, u_conductor.nombre as conductor_nombre, " +
+                "u_conductor.apellido as conductor_apellido, u_conductor.correo as conductor_correo, " +
+                "u_conductor.telefono as conductor_telefono, " +
+                "u_pasajero.id_usuario as pasajero_id, u_pasajero.nombre as pasajero_nombre, " +
+                "u_pasajero.apellido as pasajero_apellido, u_pasajero.correo as pasajero_correo, " +
+                "u_pasajero.telefono as pasajero_telefono, " +
+                "veh.id_vehiculo, veh.patente, veh.modelo, veh.anio " +
                 "FROM reservas r " +
                 "INNER JOIN viajes v ON r.id_viaje = v.id_viaje " +
-                "INNER JOIN usuarios u ON u.id_usuario = r.id_pasajero_reserva " +
+                "INNER JOIN usuarios u_conductor ON u_conductor.id_usuario = v.id_conductor " +
+                "INNER JOIN usuarios u_pasajero ON u_pasajero.id_usuario = r.id_pasajero_reserva " +
+                "INNER JOIN vehiculos veh ON veh.id_vehiculo = v.id_vehiculo_viaje " +
+                "LEFT JOIN feedback f ON f.id_reserva = r.id_reserva " +
                 "WHERE v.fecha = ? " +
                 "AND r.estado = 'CONFIRMADA' " +
-                "AND r.reserva_cancelada = false";
+                "AND r.reserva_cancelada = false " +
+                "AND f.id_reserva IS NULL";
 
         try (
                 Connection conn = ConnectionDB.getInstancia().getConn();
@@ -294,7 +310,7 @@ public class ReservaDAO {
 
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    reservas.add(mapReservaWithViaje(rs));
+                    reservas.add(mapFullReservaFromJoin(rs));
                 }
             }
 
@@ -708,26 +724,6 @@ public class ReservaDAO {
         return reserva;
     }
 
-    private Reserva mapReserva(ResultSet rs) throws SQLException {
-        Reserva reserva = new Reserva();
-        reserva.setIdReserva(rs.getInt("id_reserva"));
-        reserva.setFecha_reserva(rs.getString("fecha_reserva"));
-        reserva.setCantidad_pasajeros_reservada(rs.getInt("cantidad_pasajeros_reservada"));
-        reserva.setReserva_cancelada(rs.getBoolean("reserva_cancelada"));
-        reserva.setEstado(rs.getString("estado"));
-        reserva.setCodigo_reserva(rs.getInt("codigo_reserva"));
-        reserva.setFeedback_token(rs.getString("feedback_token"));
-
-        Usuario pasajero = new Usuario();
-        pasajero.setIdUsuario(rs.getInt("id_pasajero_reserva"));
-        reserva.setPasajero(pasajero);
-
-        Viaje viaje = new Viaje();
-        viaje.setIdViaje(rs.getInt("id_viaje"));
-        reserva.setViaje(viaje);
-
-        return reserva;
-    }
 
     private Reserva mapReservaWithViaje(ResultSet rs) throws SQLException {
         Reserva reserva = new Reserva();
