@@ -82,7 +82,7 @@ public class CRUDusuarioAdmin extends HttpServlet {
 
             request.setAttribute("usuarios", usuarios);
             request.setAttribute("roles", roles);
-            request.getRequestDispatcher("usuarios.jsp").forward(request, response);
+            request.getRequestDispatcher("WEB-INF/usuarios.jsp").forward(request, response);
 
         } catch (Exception e) {
             logger.error("Error al obtener los usuarios: {}", e.getMessage());

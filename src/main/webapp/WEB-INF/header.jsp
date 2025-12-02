@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="styles/header.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/styles/header.css">
 </head>
 
 <body>

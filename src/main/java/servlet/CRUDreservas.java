@@ -65,7 +65,7 @@ public class CRUDreservas extends HttpServlet {
         } catch (Exception e) {
             session.setAttribute("error", "Ocurrió un error al obtener las reservas.");
         }
-        request.getRequestDispatcher("misReservas.jsp").forward(request, response);
+        request.getRequestDispatcher("WEB-INF/misReservas.jsp").forward(request, response);
     }
 
 
@@ -109,9 +109,9 @@ public class CRUDreservas extends HttpServlet {
             if ("reserve".equals(action)) {
                 redirectPage = "/";
             } else if ("cancelar".equals(action)) {
-                redirectPage = "/misReservas.jsp";
+                redirectPage = "WEB-INF/misReservas.jsp";
             } else if ("validate".equals(action)) {
-                redirectPage = "/misViajes.jsp";
+                redirectPage = "WEB-INF/misViajes.jsp";
             }
         }
         response.sendRedirect(request.getContextPath() + redirectPage);

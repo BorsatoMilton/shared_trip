@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="styles/resetearClave.css">
 </head>
 <body class="d-flex flex-column min-vh-100">
-<jsp:include page="header.jsp"/>
+<jsp:include page="WEB-INF/header.jsp"/>
 
 <div class="main-content">
     <div class="container mt-5">
@@ -49,11 +49,17 @@
                         %>
 
                         <%
-                            String token = request.getAttribute("token").toString();
+                            Object token = request.getAttribute("token");
+                            if(token == null){
+                                session.setAttribute("error", "Token inexistente");
+                                response.sendRedirect(request.getContextPath() + "/");
+                                return;
+                            }
+                            String tokenString = token.toString();
                         %>
                         <form method="POST" action="auth">
                             <input type="hidden" name="action" value="newPassword">
-                            <input type="hidden" name="token" value="<%= token %>">
+                            <input type="hidden" name="token" value="<%= tokenString %>">
                             <div class="mb-3">
                                 <label for="nuevaPassword" class="form-label">Nueva Contraseña</label>
                                 <input type="password" class="form-control" id="nuevaPassword"
@@ -80,7 +86,7 @@
     </div>
 </div>
 
-<jsp:include page="footer.jsp"/>
+<jsp:include page="WEB-INF/footer.jsp"/>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="js/notificacionesTiempo.js"></script>

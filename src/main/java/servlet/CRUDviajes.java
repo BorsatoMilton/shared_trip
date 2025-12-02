@@ -83,7 +83,7 @@ public class CRUDviajes extends HttpServlet {
             request.setAttribute("usuarios", usuarios);
             request.setAttribute("vehiculos", vehiculos);
 
-            request.getRequestDispatcher("misViajes.jsp").forward(request, response);
+            request.getRequestDispatcher("WEB-INF/misViajes.jsp").forward(request, response);
 
         } catch (Exception e) {
             session.setAttribute("error", "Error al cargar los viajes: " + e.getMessage());

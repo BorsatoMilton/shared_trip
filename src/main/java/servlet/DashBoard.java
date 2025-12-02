@@ -71,7 +71,7 @@ public class DashBoard extends HttpServlet {
             request.setAttribute("viajesProximos", viajesProximos);
             request.setAttribute("usuariosRecientes", usuariosRecientes);
             
-            request.getRequestDispatcher("/dashboard.jsp").forward(request, response);
+            request.getRequestDispatcher("WEB-INF/dashboard.jsp").forward(request, response);
             
         } catch (Exception e) {
             logger.error("Error al cargar el dashboard: {}", e.getMessage());

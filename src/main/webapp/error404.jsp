@@ -34,13 +34,13 @@
 
 <body>
 
-<%@ include file="./header.jsp" %>
+<%@ include file="WEB-INF/header.jsp" %>
 
 <div class="contenido404">
     <img src="resources/images/404.png" alt="404" class="fondo404">
 </div>
 
-<%@ include file="./footer.jsp" %>
+<%@ include file="WEB-INF/footer.jsp" %>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 

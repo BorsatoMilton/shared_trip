@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="styles/recuperarClave.css">
 </head>
 <body class="d-flex flex-column min-vh-100">
-<jsp:include page="header.jsp"/>
+<jsp:include page="WEB-INF/header.jsp"/>
 
 <div class="main-content">
     <div class="container mt-5">
@@ -40,7 +40,7 @@
     </div>
 </div>
 
-<jsp:include page="footer.jsp"/>
+<jsp:include page="WEB-INF/footer.jsp"/>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
