@@ -1,5 +1,5 @@
 <head>
-    <link rel="stylesheet" href="styles/buscadorUniversal.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/styles/buscadorUniversal.css">
 </head>
 
 <div class="search-container">

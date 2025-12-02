@@ -13,7 +13,7 @@
             rel="stylesheet">
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="styles/usuarios.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/styles/usuarios.css">
 </head>
 <body class="bg-light">
 <div class="container-fluid p-0">
@@ -377,9 +377,9 @@
 </div>
 
 
-<script src="js/scriptUsuarios.js"></script>
-<script src="js/notificacionesTiempo.js"></script>
-<script src="js/buscadorUniversal.js"></script>
+<script src="../js/scriptUsuarios.js"></script>
+<script src="../js/notificacionesTiempo.js"></script>
+<script src="../js/buscadorUniversal.js"></script>
 <script
         src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>

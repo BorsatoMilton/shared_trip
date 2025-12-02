@@ -10,7 +10,7 @@
 </head>
 <body>
 
-<jsp:include page="header.jsp"/>
+<jsp:include page="WEB-INF/header.jsp"/>
 
 <div class="container-fluid  d-flex flex-column">
     <div class="row justify-content-center align-items-center flex-grow-1">
@@ -163,7 +163,7 @@
     </div>
 </div>
 
-<jsp:include page="footer.jsp"/>
+<jsp:include page="WEB-INF/footer.jsp"/>
 
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"

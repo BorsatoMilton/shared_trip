@@ -51,7 +51,7 @@ public class CRUDvehiculos extends HttpServlet {
             }
 
             request.setAttribute("vehiculos", vehiculos);
-            request.getRequestDispatcher("misVehiculos.jsp").forward(request, response);
+            request.getRequestDispatcher("WEB-INF/misVehiculos.jsp").forward(request, response);
 
         } catch (Exception e) {
             logger.error("Error en doGet de vehiculos: ", e);

@@ -15,7 +15,7 @@
 </head>
 
 <body>
-<jsp:include page="header.jsp"/>
+<jsp:include page="WEB-INF/header.jsp"/>
 
 <div class="container flex-grow-1">
     <div class="row justify-content-center mt-5">
@@ -84,7 +84,7 @@
 <footer>
     <div class="row align-items-end" style="height: 10vh">
         <div class="col">
-            <jsp:include page="footer.jsp"></jsp:include>
+            <jsp:include page="WEB-INF/footer.jsp"></jsp:include>
         </div>
     </div>
 </footer>

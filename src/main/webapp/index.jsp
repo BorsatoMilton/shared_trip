@@ -22,13 +22,13 @@
 <div class="container-fluid p-0">
     <div class="row">
         <div class="col-12">
-            <jsp:include page="header.jsp"></jsp:include>
+            <jsp:include page="WEB-INF/header.jsp"></jsp:include>
         </div>
     </div>
 
     <div class="row mt-3">
         <div class="col-12">
-            <jsp:include page="buscadorViajes.jsp"></jsp:include>
+            <jsp:include page="WEB-INF/buscadorViajes.jsp"></jsp:include>
         </div>
     </div>
 
@@ -208,7 +208,7 @@
 
 <div class="row align-items-end">
     <div class="col">
-        <jsp:include page="footer.jsp"></jsp:include>
+        <jsp:include page="WEB-INF/footer.jsp"></jsp:include>
     </div>
 </div>
 

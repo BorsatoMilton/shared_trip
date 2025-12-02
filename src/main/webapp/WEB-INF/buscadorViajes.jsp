@@ -7,7 +7,8 @@
           integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
           crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="styles/buscadorViajes.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/styles/buscadorViajes.css">
+
 </head>
 
 <div class="busqueda-container">
