@@ -143,7 +143,6 @@ public class ReservaDAO {
     public LinkedList<Reserva> getByUser(Usuario usuario) {
         logger.debug("Obteniendo reservas para usuario ID: {}", usuario.getIdUsuario());
 
-        validateUsuario(usuario);
         LinkedList<Reserva> reservas = new LinkedList<>();
 
         String query = universalQuery +
@@ -623,13 +622,7 @@ public class ReservaDAO {
 
         return reserva;
     }
-
-
-    private void validateUsuario(Usuario usuario) {
-        if (usuario == null) {
-            throw new IllegalArgumentException("Usuario inválido");
-        }
-    }
+    
 
     private void checkAffectedRows(int affected, String operation) {
         if (affected == 0) {
