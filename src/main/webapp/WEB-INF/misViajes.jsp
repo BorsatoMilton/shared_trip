@@ -169,7 +169,7 @@
                                             fechaViajeLocal = viaje.getFecha().toLocalDate();
                                         }
                                     %>
-                                    <% if (fechaViajeLocal != null && fechaViajeLocal.equals(LocalDate.now()) && !viaje.isCancelado()) { %>
+                                    <% if (fechaViajeLocal != null && fechaViajeLocal.equals(LocalDate.now()) && !viaje.isCancelado() && ("usuario").equals(((Usuario) session.getAttribute("usuario")).getNombreRol())) { %>
                                     <button type="button"
                                             class="btn btn-sm btn-primary btn-codigo"
                                             data-id="<%= viaje.getIdViaje() %>">
