@@ -3,6 +3,7 @@ package data;
 import java.sql.*;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -143,30 +144,28 @@ public class FeedbackDAO {
         }
     }
 
-    public void add(Feedback f) {
-        logger.info("Creando nuevo feedback para usuario ID: {}", f.getUsuario_calificado().getIdUsuario());
-
+    public void addAll(List<Feedback> lista) {
         String query = "INSERT INTO feedback(id_usuario_calificado, id_reserva, token) VALUES (?, ?, ?)";
 
         try (
                 Connection conn = ConnectionDB.getInstancia().getConn();
-                PreparedStatement stmt = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS)
+                PreparedStatement stmt = conn.prepareStatement(query)
         ) {
-            stmt.setInt(1, f.getUsuario_calificado().getIdUsuario());
-            stmt.setInt(2, f.getReserva().getIdReserva());
-            stmt.setString(3, f.getToken());
+            conn.setAutoCommit(false);
 
-            int affectedRows = stmt.executeUpdate();
-
-            if (affectedRows <= 0) {
-                logger.error("No se pudo crear el feedback para usuario ID: {}",
-                        f.getUsuario_calificado().getIdUsuario());
-                throw new DataAccessException("No se pudo crear el feedback");
+            for (Feedback f : lista) {
+                stmt.setInt(1, f.getUsuario_calificado().getIdUsuario());
+                stmt.setInt(2, f.getReserva().getIdReserva());
+                stmt.setString(3, f.getToken());
+                stmt.addBatch();
             }
 
+            stmt.executeBatch();
+            conn.commit();
+
         } catch (SQLException e) {
-            logger.error("Error al agregar feedback para usuario ID {} - Estado: {} - Código: {}",
-                    f.getUsuario_calificado().getIdUsuario(), e.getSQLState(), e.getErrorCode());
+            logger.error("Error al agregar feedback en batch: SQLState={} Code={}",
+                    e.getSQLState(), e.getErrorCode());
             throw new DataAccessException("Error al agregar feedback", e);
         }
     }

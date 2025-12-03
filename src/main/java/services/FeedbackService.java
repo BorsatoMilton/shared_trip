@@ -7,7 +7,10 @@ import entidades.Feedback;
 import entidades.Reserva;
 import entidades.Viaje;
 import entidades.Usuario;
+
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 public class FeedbackService {
     MailService mailService = MailService.getInstance();
@@ -17,8 +20,9 @@ public class FeedbackService {
 
     public void procesarFeedbackPendiente() throws Exception {
         ReservaDAO reservaDAO = new ReservaDAO();
-
         LinkedList<Reserva> reservas = reservaDAO.getReservasForFeedback();
+
+        List<Feedback> listaFeedbacks = new ArrayList<>();
 
         for (Reserva reserva : reservas) {
             Usuario pasajero = reserva.getPasajero();
@@ -26,12 +30,16 @@ public class FeedbackService {
             Usuario chofer = viaje.getConductor();
 
             String token = generators.generarToken();
-            Feedback feedback = new Feedback(viaje.getConductor(), reserva, token);
-            feedbackDAO.add(feedback);
+            Feedback feedback = new Feedback(chofer, reserva, token);
+            listaFeedbacks.add(feedback);
+
             reservaDAO.guardarToken(reserva.getIdReserva(), token);
             enviarNotificacionesFeedback(viaje, pasajero, chofer, token);
         }
+
+        feedbackDAO.addAll(listaFeedbacks);
     }
+
 
     private void enviarNotificacionesFeedback(Viaje viaje, Usuario pasajero, Usuario chofer, String token) {
         try {
