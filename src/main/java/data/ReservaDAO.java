@@ -622,7 +622,7 @@ public class ReservaDAO {
 
         return reserva;
     }
-    
+
 
     private void checkAffectedRows(int affected, String operation) {
         if (affected == 0) {

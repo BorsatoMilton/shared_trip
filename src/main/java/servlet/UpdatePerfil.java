@@ -56,7 +56,7 @@ public class UpdatePerfil extends HttpServlet {
             }
 
             session.setAttribute("usuario", usuarioNuevo);
-            response.sendRedirect(request.getContextPath() + "WEB-INF/perfil.jsp");
+            request.getRequestDispatcher("WEB-INF/perfil.jsp").forward(request, response);
 
         } catch (Exception e) {
             session.setAttribute("error", "Error al cargar el perfil. Intente de nuevo más tarde.");

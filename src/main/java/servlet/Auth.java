@@ -124,11 +124,8 @@ public class Auth extends HttpServlet {
         if (old != null) old.invalidate();
         HttpSession session = request.getSession();
 
-        //Rol rol = new RolController().getOne(u.getRol());
-
         u.setClave(null);
         session.setAttribute("usuario", u);
-        //session.setAttribute("rol", rol.getNombre());
 
         return "/";
     }
