@@ -6,14 +6,10 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import data.ReservaDAO;
-import data.ViajeDAO;
-import entidades.Reserva;
-import entidades.Usuario;
-import entidades.Viaje;
+import entities.Reserva;
+import entities.Usuario;
+import entities.Viaje;
 
 public class ReservaController {
     private final ReservaDAO reservaDAO;

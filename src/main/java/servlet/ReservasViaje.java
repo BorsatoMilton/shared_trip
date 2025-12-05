@@ -1,8 +1,8 @@
 package servlet;
 
 import com.google.gson.Gson;
-import entidades.Reserva;
-import entidades.Usuario;
+import entities.Reserva;
+import entities.Usuario;
 import logic.ReservaController;
 
 import javax.servlet.ServletException;

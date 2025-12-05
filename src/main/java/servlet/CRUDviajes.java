@@ -14,10 +14,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import entidades.Reserva;
-import entidades.Usuario;
-import entidades.Vehiculo;
-import entidades.Viaje;
+import entities.Reserva;
+import entities.Usuario;
+import entities.Vehiculo;
+import entities.Viaje;
 import jakarta.mail.MessagingException;
 import logic.ReservaController;
 import logic.UserController;

@@ -1,6 +1,6 @@
 <%@ page import="java.util.LinkedList" %>
-<%@ page import="entidades.Usuario" %>
-<%@ page import="entidades.Rol" %>
+<%@ page import="entities.Usuario" %>
+<%@ page import="entities.Rol" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
          pageEncoding="UTF-8" %>
 <!DOCTYPE html>

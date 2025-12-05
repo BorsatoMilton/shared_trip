@@ -10,8 +10,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import entidades.Rol;
-import entidades.Usuario;
+import entities.Rol;
+import entities.Usuario;
 import logic.RolController;
 import logic.UserController;
 import utils.InputValidator;

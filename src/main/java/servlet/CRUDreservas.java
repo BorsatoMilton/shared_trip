@@ -1,12 +1,10 @@
 package servlet;
 
-import data.FeedbackDAO;
 import data.exceptions.DataAccessException;
-import entidades.Reserva;
-import entidades.Usuario;
-import entidades.Vehiculo;
-import entidades.Viaje;
-import jakarta.mail.MessagingException;
+import entities.Reserva;
+import entities.Usuario;
+import entities.Vehiculo;
+import entities.Viaje;
 import logic.ReservaController;
 import logic.ViajeController;
 import org.slf4j.Logger;

@@ -12,7 +12,7 @@ import java.util.Properties;
 import java.util.concurrent.*;
 
 import io.github.cdimascio.dotenv.Dotenv;
-import entidades.Usuario;
+import entities.Usuario;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

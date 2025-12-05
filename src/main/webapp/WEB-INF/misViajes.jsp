@@ -1,12 +1,12 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
          pageEncoding="UTF-8" %>
 <%@ page import="java.util.LinkedList" %>
-<%@ page import="entidades.Viaje" %>
+<%@ page import="entities.Viaje" %>
 <%@ page import="java.time.LocalDateTime" %>
 <%@ page import="java.sql.Date" %>
-<%@ page import="entidades.Vehiculo" %>
+<%@ page import="entities.Vehiculo" %>
 <%@ page import="java.time.LocalDate" %>
-<%@ page import="entidades.Usuario" %>
+<%@ page import="entities.Usuario" %>
 
 <!DOCTYPE html>
 <html>
@@ -128,7 +128,11 @@
                                 <td><%= viaje.isCancelado() ? "Sí" : "No" %>
                                 </td>
                                 <td class="text-end action-buttons">
-                                    <% if (!viaje.isCancelado()) { %>
+                                    <%
+                                        Date fechaViaje = viaje.getFecha();
+                                        LocalDateTime fechaViajeLocalDateTime = fechaViaje.toLocalDate().atStartOfDay();
+                                    %>
+                                    <% if (!viaje.isCancelado() && fechaViajeLocalDateTime.isAfter(LocalDateTime.now())) { %>
                                     <button type="button"
                                             class="btn btn-sm btn-warning btn-editar me-1"
                                             data-id="<%=viaje.getIdViaje()%>"
@@ -143,10 +147,6 @@
                                         <i class="bi bi-pencil"></i>
                                     </button>
                                     <% } %>
-                                    <%
-                                        Date fechaViaje = viaje.getFecha();
-                                        LocalDateTime fechaViajeLocalDateTime = fechaViaje.toLocalDate().atStartOfDay();
-                                    %>
 
                                     <% if (viaje.isCancelado() || fechaViajeLocalDateTime.isBefore(LocalDateTime.now())) { %>
                                     <button type="button"

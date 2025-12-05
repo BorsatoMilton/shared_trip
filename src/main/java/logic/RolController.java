@@ -3,7 +3,7 @@ package logic;
 import java.util.LinkedList;
 
 import data.RolDAO;
-import entidades.Rol;
+import entities.Rol;
 
 public class RolController {
 

@@ -1,11 +1,8 @@
 package logic;
 
 import data.FeedbackDAO;
-import entidades.Feedback;
-import entidades.Reserva;
-import entidades.Usuario;
-
-import java.util.LinkedList;
+import entities.Feedback;
+import entities.Reserva;
 
 public class FeedbackController {
     private final FeedbackDAO feedbackDAO;

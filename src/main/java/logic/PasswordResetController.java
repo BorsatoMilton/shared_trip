@@ -1,7 +1,7 @@
 package logic;
 
 import data.PasswordResetDAO;
-import entidades.PasswordReset;
+import entities.PasswordReset;
 
 
 public class PasswordResetController {

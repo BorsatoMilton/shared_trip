@@ -1,7 +1,7 @@
 <%@page import="java.util.Date" %>
-<%@ page import="entidades.Reserva" %>
+<%@ page import="entities.Reserva" %>
 <%@ page import="java.util.LinkedList" %>
-<%@ page import="entidades.Usuario" %>
+<%@ page import="entities.Usuario" %>
 
 <%@ page language="java" contentType="text/html; charset=UTF-8"
          pageEncoding="UTF-8" %>

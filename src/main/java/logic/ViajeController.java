@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import java.util.LinkedList;
 
 import data.*;
-import entidades.*;
+import entities.*;
 
 public class ViajeController {
     private final ViajeDAO viajeDAO;

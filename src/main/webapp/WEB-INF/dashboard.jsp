@@ -1,8 +1,8 @@
 <%@ page import="java.util.LinkedList" %>
 <%@ page import="java.util.Map" %>
-<%@ page import="entidades.Viaje" %>
-<%@ page import="entidades.Reserva" %>
-<%@ page import="entidades.Usuario" %>
+<%@ page import="entities.Viaje" %>
+<%@ page import="entities.Reserva" %>
+<%@ page import="entities.Usuario" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
          pageEncoding="UTF-8" %>
 <!DOCTYPE html>

@@ -1,8 +1,8 @@
 package utils;
 
-import entidades.Usuario;
-import entidades.Vehiculo;
-import entidades.Viaje;
+import entities.Usuario;
+import entities.Vehiculo;
+import entities.Viaje;
 
 public class Formatters {
     

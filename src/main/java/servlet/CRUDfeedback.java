@@ -1,7 +1,7 @@
 package servlet;
 
-import entidades.Feedback;
-import entidades.Reserva;
+import entities.Feedback;
+import entities.Reserva;
 import logic.FeedbackController;
 import logic.ReservaController;
 import org.slf4j.Logger;

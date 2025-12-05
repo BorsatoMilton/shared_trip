@@ -7,8 +7,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.LinkedList;
 
-import entidades.Usuario;
-import entidades.Vehiculo;
+import entities.Usuario;
+import entities.Vehiculo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import data.exceptions.DataAccessException;

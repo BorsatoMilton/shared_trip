@@ -1,4 +1,4 @@
-package entidades;
+package entities;
 
 public class Vehiculo {
     private int id_vehiculo;

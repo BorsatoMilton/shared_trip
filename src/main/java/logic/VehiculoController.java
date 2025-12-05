@@ -3,7 +3,7 @@ package logic;
 import java.util.LinkedList;
 
 import data.*;
-import entidades.*;
+import entities.*;
 
 public class VehiculoController {
 

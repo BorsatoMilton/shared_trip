@@ -1,7 +1,6 @@
 package servlet;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.LinkedList;
 
 import javax.servlet.ServletException;
@@ -11,9 +10,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import entidades.Usuario;
-import entidades.Vehiculo;
-import logic.UserController;
+import entities.Usuario;
+import entities.Vehiculo;
 import logic.VehiculoController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

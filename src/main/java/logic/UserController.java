@@ -4,7 +4,7 @@ import java.util.LinkedList;
 import java.util.Map;
 
 import data.*;
-import entidades.*;
+import entities.*;
 import utils.Generators;
 
 public class UserController {

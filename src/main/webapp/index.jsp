@@ -1,4 +1,4 @@
-<%@ page import="entidades.Viaje" %>
+<%@ page import="entities.Viaje" %>
 <%@ page import="java.util.LinkedList" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
          pageEncoding="UTF-8" %>

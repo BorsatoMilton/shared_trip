@@ -4,12 +4,12 @@ import java.sql.*;
 import java.util.LinkedList;
 import java.util.Map;
 
-import entidades.Vehiculo;
+import entities.Vehiculo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import entidades.Usuario;
-import entidades.Viaje;
+import entities.Usuario;
+import entities.Viaje;
 import data.exceptions.DataAccessException;
 
 public class ViajeDAO {
@@ -30,7 +30,8 @@ public class ViajeDAO {
                     "FROM viajes v " +
                     "INNER JOIN usuarios u ON u.id_usuario = v.id_conductor " +
                     "INNER JOIN vehiculos veh ON veh.id_vehiculo = v.id_vehiculo_viaje " +
-                    "WHERE u.fecha_baja IS NULL AND v.activo = TRUE";
+                    "WHERE u.fecha_baja IS NULL AND v.activo = TRUE " +
+                    "ORDER BY v.fecha DESC";
         } else {
             query = "SELECT v.*, " +
                     "u.id_usuario as conductor_id, u.nombre as conductor_nombre, " +
@@ -40,7 +41,8 @@ public class ViajeDAO {
                     "FROM viajes v " +
                     "INNER JOIN usuarios u ON u.id_usuario = v.id_conductor " +
                     "INNER JOIN vehiculos veh ON veh.id_vehiculo = v.id_vehiculo_viaje " +
-                    "WHERE v.fecha >= CURRENT_DATE AND u.fecha_baja IS NULL AND v.cancelado = 0 AND v.activo = TRUE";
+                    "WHERE v.fecha >= CURRENT_DATE AND u.fecha_baja IS NULL AND v.cancelado = 0 AND v.activo = TRUE " +
+                    "ORDER BY v.fecha DESC";
         }
 
         try (Connection conn = ConnectionDB.getInstancia().getConn();
@@ -95,7 +97,7 @@ public class ViajeDAO {
                         "AND v.cancelado = 0 " +
                         "AND u.fecha_baja IS NULL " +
                         "AND v.activo = TRUE " +
-                        "ORDER BY v.fecha ASC, v.lugares_disponibles DESC"
+                        "ORDER BY v.fecha DESC, v.lugares_disponibles DESC"
                 :
                 "SELECT v.*, " +
                         "u.id_usuario as conductor_id, u.nombre as conductor_nombre, " +
@@ -111,7 +113,7 @@ public class ViajeDAO {
                         "AND v.cancelado = 0 " +
                         "AND u.fecha_baja IS NULL " +
                         "AND v.activo = TRUE " +
-                        "ORDER BY v.fecha ASC, v.lugares_disponibles DESC";
+                        "ORDER BY v.fecha DESC, v.lugares_disponibles DESC";
 
         try (Connection conn = ConnectionDB.getInstancia().getConn();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -187,7 +189,8 @@ public class ViajeDAO {
                 "FROM viajes v " +
                 "INNER JOIN usuarios u_conductor ON u_conductor.id_usuario = v.id_conductor " +
                 "INNER JOIN vehiculos veh ON veh.id_vehiculo = v.id_vehiculo_viaje " +
-                "WHERE v.id_conductor = ? AND v.activo = TRUE";
+                "WHERE v.id_conductor = ? AND v.activo = TRUE " +
+                "ORDER BY v.fecha DESC";
 
         try (Connection conn = ConnectionDB.getInstancia().getConn();
              PreparedStatement stmt = conn.prepareStatement(query)) {

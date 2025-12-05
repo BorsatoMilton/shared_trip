@@ -1,10 +1,8 @@
 package servlet;
 
-import entidades.PasswordReset;
-import entidades.Rol;
-import entidades.Usuario;
+import entities.PasswordReset;
+import entities.Usuario;
 import logic.PasswordResetController;
-import logic.RolController;
 import logic.UserController;
 import utils.Generators;
 import utils.InputValidator;

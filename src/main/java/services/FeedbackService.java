@@ -3,10 +3,10 @@ package services;
 import utils.Generators;
 import data.FeedbackDAO;
 import data.ReservaDAO;
-import entidades.Feedback;
-import entidades.Reserva;
-import entidades.Viaje;
-import entidades.Usuario;
+import entities.Feedback;
+import entities.Reserva;
+import entities.Viaje;
+import entities.Usuario;
 
 import java.util.ArrayList;
 import java.util.LinkedList;

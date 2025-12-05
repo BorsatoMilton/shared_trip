@@ -1,5 +1,5 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ page import="entidades.Reserva, entidades.Viaje, entidades.Usuario" %>
+<%@ page import="entities.Reserva, entities.Viaje, entities.Usuario" %>
 <%
     Reserva reserva = (Reserva) request.getAttribute("reserva");
     String token = (String) request.getAttribute("token");

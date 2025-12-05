@@ -12,9 +12,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import entidades.Usuario;
-import entidades.Viaje;
-import entidades.Reserva;
+import entities.Usuario;
+import entities.Viaje;
+import entities.Reserva;
 import logic.UserController;
 import logic.ViajeController;
 import logic.ReservaController;
