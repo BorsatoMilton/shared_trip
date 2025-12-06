@@ -107,9 +107,9 @@ public class CRUDreservas extends HttpServlet {
             if ("reserve".equals(action)) {
                 redirectPage = "/";
             } else if ("cancelar".equals(action)) {
-                redirectPage = "WEB-INF/misReservas.jsp";
+                redirectPage = "/reservas";
             } else if ("validate".equals(action)) {
-                redirectPage = "WEB-INF/misViajes.jsp";
+                redirectPage = "/viajes";
             }
         }
         response.sendRedirect(request.getContextPath() + redirectPage);

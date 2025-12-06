@@ -96,7 +96,7 @@ function mostrarReservas(reservas) {
         const pasajero = reserva.pasajero;
 
         const card = `
-            <div class="card mb-3 ${reserva.reserva_cancelada ? 'border-danger' : ''}">
+            <div class="card mb-3 ${reserva.estado === 'CANCELADA' ? 'border-danger' : ''}">
                 <div class="card-body">
                     <div class="row align-items-center">
                         <div class="col-md-1">

@@ -44,7 +44,7 @@ public class ReservaController {
             throw new Exception("No tiene permisos para cancelar esta reserva");
         }
 
-        if (reserva.isReserva_cancelada()) {
+        if ("CANCELADA".equals(reserva.getEstado())) {
             throw new Exception("La reserva ya está cancelada");
         }
 
@@ -123,7 +123,7 @@ public class ReservaController {
                 }
             }
         } while (repetido);
-        Reserva r = new Reserva(fechaString, cantPasajeros, false, viaje, usuario, codigo_verificacion);
+        Reserva r = new Reserva(fechaString, cantPasajeros, viaje, usuario, codigo_verificacion);
 
         reservaDAO.add(r);
 

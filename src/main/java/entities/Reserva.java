@@ -5,7 +5,6 @@ public class Reserva {
     private int idReserva;
     private String fecha_reserva;
     private int cantidad_pasajeros_reservada;
-    private boolean reserva_cancelada;
     private Usuario pasajero;
     private String estado;
     private Viaje viaje;
@@ -36,14 +35,6 @@ public class Reserva {
         this.cantidad_pasajeros_reservada = cantidad_pasajeros_reservada;
     }
 
-    public boolean isReserva_cancelada() {
-        return reserva_cancelada;
-    }
-
-    public void setReserva_cancelada(boolean reserva_cancelada) {
-        this.reserva_cancelada = reserva_cancelada;
-    }
-
     public Usuario getPasajero() {
         return pasajero;
     }
@@ -71,6 +62,7 @@ public class Reserva {
     public int getCodigo_reserva() {
         return codigo_reserva;
     }
+
     public void setCodigo_reserva(int codigo_reserva) {
         this.codigo_reserva = codigo_reserva;
     }
@@ -80,12 +72,11 @@ public class Reserva {
     public void setFeedback_token(String feedback_token) {this.feedback_token = feedback_token;}
 
 
-    public Reserva(String fecha, int cantidad_pasajeros_reservada, boolean reserva_cancelada, Viaje viaje,
+    public Reserva(String fecha, int cantidad_pasajeros_reservada, Viaje viaje,
                    Usuario pasajero, int codigo_reserva) {
         super();
         this.fecha_reserva = fecha;
         this.cantidad_pasajeros_reservada = cantidad_pasajeros_reservada;
-        this.reserva_cancelada = reserva_cancelada;
         this.viaje = viaje;
         this.pasajero = pasajero;
         this.estado = "EN PROCESO";

@@ -15,7 +15,7 @@ public class ReservaDAO {
     private static final Logger logger = LoggerFactory.getLogger(ReservaDAO.class);
     private String universalQuery = "SELECT " +
             "r.id_reserva, r.fecha_reserva, r.estado, r.cantidad_pasajeros_reservada, " +
-            "r.reserva_cancelada, r.codigo_reserva, r.feedback_token, " +
+            "r.codigo_reserva, r.feedback_token, " +
             "v.id_viaje, v.fecha, v.lugares_disponibles, v.origen, v.destino, " +
             "v.precio_unitario, v.cancelado, v.lugar_salida, v.id_vehiculo_viaje, " +
             "u_conductor.id_usuario as conductor_id, u_conductor.nombre as conductor_nombre, " +
@@ -111,35 +111,6 @@ public class ReservaDAO {
         return reserva;
     }
 
-    public int obtenerCantidad(int idReserva) {
-        logger.debug("Obteniendo cantidad de pasajeros para reserva ID: {}", idReserva);
-
-        String query = "SELECT cantidad_pasajeros_reservada FROM reservas WHERE id_reserva = ? AND activo = TRUE";
-
-        try (
-                Connection conn = ConnectionDB.getInstancia().getConn();
-                PreparedStatement stmt = conn.prepareStatement(query)
-        ) {
-            stmt.setInt(1, idReserva);
-
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    int cantidad = rs.getInt("cantidad_pasajeros_reservada");
-                    logger.debug("Cantidad obtenida: {} para reserva ID: {}", cantidad, idReserva);
-                    return cantidad;
-                } else {
-                    logger.warn("Reserva no encontrada: ID {}", idReserva);
-                    throw new DataAccessException("Reserva no encontrada con ID: " + idReserva);
-                }
-            }
-
-        } catch (SQLException e) {
-            logger.error("Error al obtener cantidad para reserva ID {} - Estado: {} - Código: {}",
-                    idReserva, e.getSQLState(), e.getErrorCode(), e);
-            throw new DataAccessException("Error al obtener cantidad para reserva", e);
-        }
-    }
-
     public LinkedList<Reserva> getByUser(Usuario usuario) {
         logger.debug("Obteniendo reservas para usuario ID: {}", usuario.getIdUsuario());
 
@@ -178,7 +149,7 @@ public class ReservaDAO {
                 "WHERE r.id_viaje = ?";
 
         if (!all) {
-            query += " AND r.reserva_cancelada = false";
+            query += " AND r.estado <> 'CANCELADA'";
         }
 
         try (
@@ -212,7 +183,6 @@ public class ReservaDAO {
                 "LEFT JOIN feedback f ON f.id_reserva = r.id_reserva " +
                 "WHERE v.fecha = ? " +
                 "AND r.estado = 'CONFIRMADA' " +
-                "AND r.reserva_cancelada = false " +
                 "AND f.id_reserva IS NULL";
 
         try (
@@ -273,8 +243,8 @@ public class ReservaDAO {
         logger.info("Creando nueva reserva para usuario ID: {}", reserva.getPasajero().getIdUsuario());
 
         String query = "INSERT INTO reservas(fecha_reserva, cantidad_pasajeros_reservada, " +
-                "reserva_cancelada, id_viaje, id_pasajero_reserva, codigo_reserva, estado) " +
-                "VALUES(?,?,?,?,?,?,?)";
+                "id_viaje, id_pasajero_reserva, codigo_reserva, estado) " +
+                "VALUES(?,?,?,?,?,?)";
 
         try (
                 Connection conn = ConnectionDB.getInstancia().getConn();
@@ -282,11 +252,10 @@ public class ReservaDAO {
         ) {
             stmt.setString(1, reserva.getFecha_reserva());
             stmt.setInt(2, reserva.getCantidad_pasajeros_reservada());
-            stmt.setBoolean(3, reserva.isReserva_cancelada());
-            stmt.setInt(4, reserva.getViaje().getIdViaje());
-            stmt.setInt(5, reserva.getPasajero().getIdUsuario());
-            stmt.setInt(6, reserva.getCodigo_reserva());
-            stmt.setString(7, reserva.getEstado());
+            stmt.setInt(3, reserva.getViaje().getIdViaje());
+            stmt.setInt(4, reserva.getPasajero().getIdUsuario());
+            stmt.setInt(5, reserva.getCodigo_reserva());
+            stmt.setString(6, reserva.getEstado());
 
             int affectedRows = stmt.executeUpdate();
 
@@ -335,7 +304,7 @@ public class ReservaDAO {
     public void update(Reserva reserva, int idReserva) {
         logger.info("Actualizando reserva ID: {}", idReserva);
 
-        String query = "UPDATE reservas SET cantidad_pasajeros_reservada = ?, reserva_cancelada = ?, " +
+        String query = "UPDATE reservas SET cantidad_pasajeros_reservada = ?, " +
                 "id_viaje = ?, id_pasajero_reserva = ? WHERE id_reserva = ? AND activo = TRUE";
 
         try (
@@ -343,10 +312,9 @@ public class ReservaDAO {
                 PreparedStatement stmt = conn.prepareStatement(query)
         ) {
             stmt.setInt(1, reserva.getCantidad_pasajeros_reservada());
-            stmt.setBoolean(2, reserva.isReserva_cancelada());
-            stmt.setInt(3, reserva.getViaje().getIdViaje());
-            stmt.setInt(4, reserva.getPasajero().getIdUsuario());
-            stmt.setInt(5, idReserva);
+            stmt.setInt(2, reserva.getViaje().getIdViaje());
+            stmt.setInt(3, reserva.getPasajero().getIdUsuario());
+            stmt.setInt(4, idReserva);
 
             int affected = stmt.executeUpdate();
             checkAffectedRows(affected, "actualizar");
@@ -385,7 +353,7 @@ public class ReservaDAO {
     public boolean cancelarReserva(int idReserva) {
         logger.info("Cancelando reserva ID: {}", idReserva);
 
-        String query = "UPDATE reservas SET reserva_cancelada = true, estado = 'CANCELADA' WHERE id_reserva = ? AND activo = TRUE";
+        String query = "UPDATE reservas SET estado = 'CANCELADA' WHERE id_reserva = ? AND activo = TRUE";
 
         try (
                 Connection conn = ConnectionDB.getInstancia().getConn();
@@ -443,7 +411,6 @@ public class ReservaDAO {
                        "FROM reservas r " +
                        "INNER JOIN viajes v ON r.id_viaje = v.id_viaje " +
                        "WHERE r.estado = 'CONFIRMADA' " +
-                       "AND r.reserva_cancelada = false " +
                        "AND r.activo = true " +
                        "AND v.activo = true";
 
@@ -475,7 +442,6 @@ public class ReservaDAO {
                        "FROM reservas r " +
                        "INNER JOIN viajes v ON r.id_viaje = v.id_viaje " +
                        "WHERE r.estado = 'CONFIRMADA' " +
-                       "AND r.reserva_cancelada = false " +
                        "AND r.activo = true " +
                        "AND v.cancelado = false " +
                        "AND MONTH(r.fecha_reserva) = MONTH(CURRENT_DATE()) " +
@@ -509,7 +475,6 @@ public class ReservaDAO {
                        "FROM reservas r " +
                        "INNER JOIN viajes v ON r.id_viaje = v.id_viaje " +
                        "WHERE r.estado = 'CONFIRMADA' " +
-                       "AND r.reserva_cancelada = false " +
                        "AND r.activo = true " +
                        "AND v.cancelado = false";
 
@@ -534,45 +499,6 @@ public class ReservaDAO {
         }
     }
 
-    public Map<String, Object> obtenerEstadisticasReservas() {
-        logger.debug("Obteniendo estadísticas generales de reservas");
-        
-        Map<String, Object> estadisticas = new HashMap<>();
-        
-        String query = "SELECT " +
-                       "COUNT(*) as total_reservas, " +
-                       "SUM(CASE WHEN estado = 'CONFIRMADA' AND reserva_cancelada = false THEN 1 ELSE 0 END) as reservas_confirmadas, " +
-                       "SUM(CASE WHEN reserva_cancelada = true THEN 1 ELSE 0 END) as reservas_canceladas, " +
-                       "SUM(CASE WHEN estado = 'CONFIRMADA' AND reserva_cancelada = false THEN cantidad_pasajeros_reservada ELSE 0 END) as total_pasajeros " +
-                       "FROM reservas " +
-                       "WHERE activo = true";
-
-        try (
-            Connection conn = ConnectionDB.getInstancia().getConn();
-            PreparedStatement stmt = conn.prepareStatement(query);
-            ResultSet rs = stmt.executeQuery()
-        ) {
-            if (rs.next()) {
-                estadisticas.put("totalReservas", rs.getInt("total_reservas"));
-                estadisticas.put("reservasConfirmadas", rs.getInt("reservas_confirmadas"));
-                estadisticas.put("reservasCanceladas", rs.getInt("reservas_canceladas"));
-                estadisticas.put("totalPasajeros", rs.getInt("total_pasajeros"));
-                
-                int totalReservas = rs.getInt("total_reservas");
-                
-                logger.info("Estadísticas de reservas obtenidas: total={}, confirmadas={}, canceladas={}",
-                        totalReservas, rs.getInt("reservas_confirmadas"));
-            }
-
-        } catch (SQLException e) {
-            logger.error("Error al obtener estadísticas de reservas - Estado: {} - Código: {}",
-                    e.getSQLState(), e.getErrorCode(), e);
-            throw new DataAccessException("Error al obtener estadísticas de reservas", e);
-        }
-        
-        return estadisticas;
-    }
-
 
     private Reserva mapFullReservaFromJoin(ResultSet rs) throws SQLException {
         Reserva reserva = new Reserva();
@@ -580,7 +506,6 @@ public class ReservaDAO {
         reserva.setIdReserva(rs.getInt("id_reserva"));
         reserva.setFecha_reserva(rs.getString("fecha_reserva"));
         reserva.setCantidad_pasajeros_reservada(rs.getInt("cantidad_pasajeros_reservada"));
-        reserva.setReserva_cancelada(rs.getBoolean("reserva_cancelada"));
         reserva.setEstado(rs.getString("estado"));
         reserva.setCodigo_reserva(rs.getInt("codigo_reserva"));
         reserva.setFeedback_token(rs.getString("feedback_token"));
