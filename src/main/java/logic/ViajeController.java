@@ -71,7 +71,7 @@ public class ViajeController {
                 throw new Exception("El vehículo seleccionado no existe");
             }
 
-            if (vehiculo.getUsuario_duenio_id() != usuario.getIdUsuario() &&
+            if (vehiculo.getPropietario().getIdUsuario() != usuario.getIdUsuario() &&
                     !"admin".equals(usuario.getNombreRol())) {
                 throw new Exception("El vehículo seleccionado no le pertenece");
             }
@@ -150,7 +150,7 @@ public class ViajeController {
             throw new Exception("El vehículo seleccionado no existe");
         }
 
-        if (vehiculo.getUsuario_duenio_id() != conductor.getIdUsuario()) {
+        if (vehiculo.getPropietario().getIdUsuario() != conductor.getIdUsuario()) {
             throw new Exception("El vehículo seleccionado no le pertenece");
         }
 

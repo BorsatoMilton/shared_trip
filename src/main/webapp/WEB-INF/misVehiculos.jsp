@@ -110,7 +110,7 @@
                                             data-patente="<%=vehiculo.getPatente()%>"
                                             data-modelo="<%=vehiculo.getModelo()%>"
                                             data-anio="<%=vehiculo.getAnio()%>"
-                                            data-usuario-duenio-id="<%=vehiculo.getUsuario_duenio_id()%>">
+                                            data-usuario-duenio-id="<%=vehiculo.getPropietario().getIdUsuario()%>">
                                         <i class="bi bi-pencil"></i>
                                     </button>
 

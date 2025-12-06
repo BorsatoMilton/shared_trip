@@ -5,7 +5,6 @@ public class Vehiculo {
     private String patente;
     private String modelo;
     private int anio;
-    private int usuario_duenio_id;
     private Usuario propietario;
 
 
@@ -41,14 +40,6 @@ public class Vehiculo {
         this.anio = anio;
     }
 
-    public int getUsuario_duenio_id() {
-        return usuario_duenio_id;
-    }
-
-    public void setUsuario_duenio_id(int usuario_duenio_id) {
-        this.usuario_duenio_id = usuario_duenio_id;
-    }
-
     public Usuario getPropietario() {
         return propietario;
     }
@@ -62,14 +53,12 @@ public class Vehiculo {
 
     }
 
-    public Vehiculo(int id_vehiculo, String patente, String modelo, int anio, int usuario_duenio_id) {
+    public Vehiculo(int id_vehiculo, String patente, String modelo, int anio) {
         super();
         this.id_vehiculo = id_vehiculo;
         this.patente = patente;
         this.modelo = modelo;
         this.anio = anio;
-        this.usuario_duenio_id = usuario_duenio_id;
-
     }
 
 }

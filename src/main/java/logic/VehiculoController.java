@@ -27,7 +27,7 @@ public class VehiculoController {
         }
 
         if (!"admin".equals(usuario.getNombreRol()) &&
-                v.getUsuario_duenio_id() != usuario.getIdUsuario()) {
+                v.getPropietario().getIdUsuario() != usuario.getIdUsuario()) {
             throw new Exception("No tiene permisos para modificar este vehículo");
         }
 
@@ -58,7 +58,7 @@ public class VehiculoController {
         }
 
         if (!"admin".equals(usuario.getNombreRol()) &&
-                v.getUsuario_duenio_id() != usuario.getIdUsuario()) {
+                v.getPropietario().getIdUsuario() != usuario.getIdUsuario()) {
             throw new Exception("No tiene permisos para eliminar este vehículo");
         }
 
@@ -84,9 +84,8 @@ public class VehiculoController {
         v.setPatente(patente);
         v.setModelo(modelo);
         v.setAnio(anio);
-        v.setUsuario_duenio_id(idUsuario);
 
-        vehiculoDAO.altaVehiculo(v);
+        vehiculoDAO.altaVehiculo(v, idUsuario);
     }
 
     private boolean tieneViajes(int idVehiculo) {

@@ -21,7 +21,7 @@ public class VehiculoDAO {
         LinkedList<Vehiculo> vehiculos = new LinkedList<>();
 
         String sql =
-                "SELECT v.id_vehiculo, v.patente, v.modelo, v.anio, v.usuario_duenio_id, " +
+                "SELECT v.id_vehiculo, v.patente, v.modelo, v.anio, u.id_usuario, " +
                         "u.nombre, u.apellido, u.correo " +
                         "FROM vehiculos v " +
                         "INNER JOIN usuarios u ON u.id_usuario = v.usuario_duenio_id " +
@@ -34,6 +34,7 @@ public class VehiculoDAO {
             while (rs.next()) {
 
                 Usuario propietario = new Usuario();
+                propietario.setIdUsuario(rs.getInt("id_usuario"));
                 propietario.setNombre(rs.getString("nombre"));
                 propietario.setApellido(rs.getString("apellido"));
                 propietario.setCorreo(rs.getString("correo"));
@@ -43,7 +44,6 @@ public class VehiculoDAO {
                 v.setPatente(rs.getString("patente"));
                 v.setModelo(rs.getString("modelo"));
                 v.setAnio(rs.getInt("anio"));
-                v.setUsuario_duenio_id(rs.getInt("usuario_duenio_id"));
                 v.setPropietario(propietario);
 
                 vehiculos.add(v);
@@ -72,12 +72,17 @@ public class VehiculoDAO {
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
+
+                    Usuario propietario = new Usuario();
+                    propietario.setIdUsuario(rs.getInt("usuario_duenio_id"));
+
                     Vehiculo v = new Vehiculo();
                     v.setId_vehiculo(rs.getInt("id_vehiculo"));
                     v.setPatente(rs.getString("patente"));
                     v.setModelo(rs.getString("modelo"));
                     v.setAnio(rs.getInt("anio"));
-                    v.setUsuario_duenio_id(rs.getInt("usuario_duenio_id"));
+                    v.setPropietario(propietario);
+
 
                     logger.debug("Vehículo encontrado: {} (ID: {})", v.getPatente(), id_vehiculo);
                     return v;
@@ -107,12 +112,15 @@ public class VehiculoDAO {
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
+                    Usuario propietario = new Usuario();
+                    propietario.setIdUsuario(rs.getInt("usuario_duenio_id"));
+
                     Vehiculo v = new Vehiculo();
                     v.setId_vehiculo(rs.getInt("id_vehiculo"));
                     v.setPatente(rs.getString("patente"));
                     v.setModelo(rs.getString("modelo"));
                     v.setAnio(rs.getInt("anio"));
-                    v.setUsuario_duenio_id(rs.getInt("usuario_duenio_id"));
+                    v.setPropietario(propietario);
                     logger.debug("Vehículo encontrado: {}", patente);
                     return v;
                 }
@@ -127,7 +135,7 @@ public class VehiculoDAO {
         }
     }
 
-    public void altaVehiculo(Vehiculo v) {
+    public void altaVehiculo(Vehiculo v, int idUsuario) {
         logger.info("Creando nuevo vehículo: {}", v.getPatente());
 
         String sql =
@@ -140,7 +148,7 @@ public class VehiculoDAO {
             stmt.setString(1, v.getPatente());
             stmt.setString(2, v.getModelo());
             stmt.setInt(3, v.getAnio());
-            stmt.setInt(4, v.getUsuario_duenio_id());
+            stmt.setInt(4, idUsuario);
 
             int rows = stmt.executeUpdate();
 
@@ -206,12 +214,15 @@ public class VehiculoDAO {
 
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
+                    Usuario propietario = new Usuario();
+                    propietario.setIdUsuario(rs.getInt("usuario_duenio_id"));
+
                     Vehiculo v = new Vehiculo();
                     v.setId_vehiculo(rs.getInt("id_vehiculo"));
                     v.setPatente(rs.getString("patente"));
                     v.setModelo(rs.getString("modelo"));
                     v.setAnio(rs.getInt("anio"));
-                    v.setUsuario_duenio_id(rs.getInt("usuario_duenio_id"));
+                    v.setPropietario(propietario);
                     lista.add(v);
                 }
             }
