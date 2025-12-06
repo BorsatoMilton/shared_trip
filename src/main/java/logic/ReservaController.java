@@ -160,19 +160,6 @@ public class ReservaController {
 
     }
 
-
-    public int obtenerCantidad(int idReserva) {
-        return this.reservaDAO.obtenerCantidad(idReserva);
-    }
-
-    public void actualizarEstado(int idReserva, String nuevoEstado) {
-        this.reservaDAO.actualizarEstado(idReserva, nuevoEstado);
-
-    }
-
-    public void updateEntity(Reserva reserva, int idReserva) {
-        this.reservaDAO.update(reserva, idReserva);
-    }
     
     public double getIngresosTotales() {
             return reservaDAO.calcularIngresosTotales();
@@ -185,17 +172,9 @@ public class ReservaController {
     public double getPromedioPorReserva() {
             return reservaDAO.calcularPromedioPorReserva();
         }
-    
-//    public void pruebaExtremaReservasConfirmadas() {
-//    	this.reservaDAO.pruebaExtremaReservasConfirmadas();
-//    }
+
     
     public LinkedList<Reserva> obtenerReservasRecientes(int limite) {
     	return reservaDAO.obtenerReservasRecientes(limite);
     }
-
-    public Map<String, Object> getEstadisticasReservas() {
-            return reservaDAO.obtenerEstadisticasReservas();
-    }
-    
 }

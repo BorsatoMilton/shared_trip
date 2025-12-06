@@ -18,14 +18,6 @@ public class VehiculoController {
 
     }
 
-    public Vehiculo getOne(int id_vehiculo) {
-        return this.vehiculoDAO.getById_vehiculo(id_vehiculo);
-    }
-
-    public Vehiculo getByPatente(String patente) {
-        return this.vehiculoDAO.getByPatente(patente);
-    }
-
     public void actualizarVehiculo(int idVehiculo, String patente, String modelo,
                                    int anio, Usuario usuario) throws Exception {
 
