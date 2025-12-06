@@ -377,9 +377,9 @@
 </div>
 
 
-<script src="../js/scriptUsuarios.js"></script>
-<script src="../js/notificacionesTiempo.js"></script>
-<script src="../js/buscadorUniversal.js"></script>
+<script src="<%= request.getContextPath() %>/js/scriptUsuarios.js"></script>
+<script src="<%= request.getContextPath() %>/js/notificacionesTiempo.js"></script>
+<script src="<%= request.getContextPath() %>/js/buscadorUniversal.js"></script>
 <script
         src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
