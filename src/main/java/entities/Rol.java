@@ -12,11 +12,11 @@ public class Rol {
         this.idRol = idRol;
     }
 
-    public String getNombre() {
+    public String getNombreRol() {
         return nombre;
     }
 
-    public void setNombre(String nombre) {
+    public void setNombreRol(String nombre) {
         this.nombre = nombre;
     }
 

@@ -43,7 +43,7 @@
                     <div>
                         <jsp:include page="buscadorUniversal.jsp"/>
                     </div>
-                    <% if ("usuario".equals(((Usuario)session.getAttribute("usuario")).getNombreRol())) { %>
+                    <% if ("usuario".equals(((Usuario)session.getAttribute("usuario")).getRol().getNombreRol())) { %>
                         <button type="button" class="btn btn-light" data-bs-toggle="modal"
                             data-bs-target="#nuevoViaje">
                         <i class="bi bi-plus-circle me-2"></i>Nuevo Viaje
@@ -85,7 +85,7 @@
                                 <th scope="col">Origen</th>
                                 <th scope="col">Destino</th>
                                 <th scope="col">Lugar de Salida</th>
-                                <% if("usuario".equals(((Usuario) session.getAttribute("usuario")).getNombreRol())) { %>
+                                <% if("usuario".equals(((Usuario) session.getAttribute("usuario")).getRol().getNombreRol())) { %>
                                     <th scope="col">Lugares</th>
                                     <th scope="col">Precio Unitario</th>
                                 <% } else {%>
@@ -113,7 +113,7 @@
                                 </td>
                                 <td><%= viaje.getLugar_salida() %>
                                 </td>
-                                <% if("usuario".equals(((Usuario) session.getAttribute("usuario")).getNombreRol())) { %>
+                                <% if("usuario".equals(((Usuario) session.getAttribute("usuario")).getRol().getNombreRol())) { %>
                                 <td><%= viaje.getLugares_disponibles() %>
                                 </td>
                                 <td>$<%= viaje.getPrecio_unitario() %>
@@ -169,7 +169,7 @@
                                             fechaViajeLocal = viaje.getFecha().toLocalDate();
                                         }
                                     %>
-                                    <% if (fechaViajeLocal != null && fechaViajeLocal.equals(LocalDate.now()) && !viaje.isCancelado() && ("usuario").equals(((Usuario) session.getAttribute("usuario")).getNombreRol())) { %>
+                                    <% if (fechaViajeLocal != null && fechaViajeLocal.equals(LocalDate.now()) && !viaje.isCancelado() && ("usuario").equals(((Usuario) session.getAttribute("usuario")).getRol().getNombreRol())) { %>
                                     <button type="button"
                                             class="btn btn-sm btn-primary btn-codigo"
                                             data-id="<%= viaje.getIdViaje() %>">
@@ -311,7 +311,7 @@
                                    id="editPrecioUnitario" required>
                         </div>
                     </div>
-                    <% if("usuario".equals(((Usuario)session.getAttribute("usuario")).getNombreRol())) { %>
+                    <% if("usuario".equals(((Usuario)session.getAttribute("usuario")).getRol().getNombreRol())) { %>
                         <div class="mb-3">
                             <label class="form-label" for="editIdVehiculo">Vehículo</label>
                             <select name="idVehiculo" id="editIdVehiculo" class="form-select w-100">

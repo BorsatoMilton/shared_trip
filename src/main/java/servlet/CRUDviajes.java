@@ -57,7 +57,7 @@ public class CRUDviajes extends HttpServlet {
         Usuario usuario = (Usuario) session.getAttribute("usuario");
 
 
-        String tipo = usuario.getNombreRol();
+        String tipo = usuario.getRol().getNombreRol();
 
         LinkedList<Viaje> viajes = new LinkedList<>();
         LinkedList<Usuario> usuarios = null;
@@ -291,7 +291,7 @@ public class CRUDviajes extends HttpServlet {
             throw new Exception("El lugar de salida es obligatorio");
         }
 
-        if("usuario".equals(((Usuario)session.getAttribute("usuario")).getNombreRol())) {
+        if("usuario".equals(((Usuario)session.getAttribute("usuario")).getRol().getNombreRol())) {
             if (vehiculoIdStr == null || vehiculoIdStr.trim().isEmpty()) {
                 throw new Exception("Debe seleccionar un vehículo");
             }

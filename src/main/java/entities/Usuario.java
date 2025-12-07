@@ -8,24 +8,15 @@ public class Usuario {
     private String apellido;
     private String correo;
     private String telefono;
-    private int rol;
-    private String nombreRol;
+    private Rol rol;
     private double promedio_puntuacion;
     private int cantidad_que_puntuaron;
 
-    public String getNombreRol() {
-        return nombreRol;
-    }
-
-    public void setNombreRol(String nombreRol) {
-        this.nombreRol = nombreRol;
-    }
-
-    public int getRol() {
+    public Rol getRol() {
         return rol;
     }
 
-    public void setRol(int rol) {
+    public void setRol(Rol rol) {
         this.rol = rol;
     }
 
@@ -106,7 +97,7 @@ public class Usuario {
     }
 
     public Usuario(int idUsuario, String usuario, String clave, String nombre, String apellido, String correo,
-                   String telefono, int rol) {
+                   String telefono, Rol rol) {
         super();
         this.idUsuario = idUsuario;
         this.usuario = usuario;

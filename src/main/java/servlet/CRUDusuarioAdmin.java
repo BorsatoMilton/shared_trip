@@ -45,7 +45,7 @@ public class CRUDusuarioAdmin extends HttpServlet {
 
         Usuario usuario = (Usuario) session.getAttribute("usuario");
 
-        if (usuario.getRol() != 1) {
+        if (usuario.getRol().getIdRol() != 1) {
             response.sendRedirect(request.getContextPath() + "/");
             return;
         }
@@ -56,11 +56,11 @@ public class CRUDusuarioAdmin extends HttpServlet {
 
             if (usuarioActualizado != null) {
 
-                if (usuarioActualizado.getNombreRol() == null) {
+                if (usuarioActualizado.getRol().getNombreRol() == null) {
                     LinkedList<Rol> roles = rolCtrl.getAll();
                     for (Rol r : roles) {
-                        if (usuarioActualizado.getRol() == r.getIdRol()) {
-                            usuarioActualizado.setNombreRol(r.getNombre());
+                        if (usuarioActualizado.getRol().getIdRol() == r.getIdRol()) {
+                            usuarioActualizado.getRol().setNombreRol(r.getNombreRol());
                             break;
                         }
                     }
@@ -74,8 +74,8 @@ public class CRUDusuarioAdmin extends HttpServlet {
 
             for (Usuario u : usuarios) {
                 for (Rol r : roles) {
-                    if (u.getRol() == r.getIdRol()) {
-                        u.setNombreRol(r.getNombre());
+                    if (u.getRol().getIdRol() == r.getIdRol()) {
+                        u.getRol().setNombreRol(r.getNombreRol());
                     }
                 }
             }
@@ -98,7 +98,7 @@ public class CRUDusuarioAdmin extends HttpServlet {
         HttpSession session = request.getSession();
         String action = request.getParameter("action");
         Usuario logueado = (Usuario) session.getAttribute("usuario");
-        String rol = (logueado == null ? null : logueado.getNombreRol());
+        String rol = (logueado == null ? null : logueado.getRol().getNombreRol());
         String redirectPage = "/";
 
         try {
@@ -165,7 +165,7 @@ public class CRUDusuarioAdmin extends HttpServlet {
 
     private void crearUsuario(HttpServletRequest request, Usuario admin) throws Exception {
 
-        if (admin == null || admin.getRol() != 1) {
+        if (admin == null || admin.getRol().getIdRol() != 1) {
             throw new Exception("No tiene permisos para crear usuarios");
         }
 
@@ -224,9 +224,9 @@ public class CRUDusuarioAdmin extends HttpServlet {
 
         Integer rol = null;
 
-        if (logueado.getRol() == 1 && logueado.getIdUsuario() != id) {
+        if (logueado.getRol().getIdRol() == 1 && logueado.getIdUsuario() != id) {
             rol = inputValidator.validarRol(request.getParameter("rol"));
-        } else if (logueado.getRol() == 1 && logueado.getIdUsuario() == id) {
+        } else if (logueado.getRol().getIdRol() == 1 && logueado.getIdUsuario() == id) {
             rol = inputValidator.validarRol(request.getParameter("rol"));
         } else if (logueado.getIdUsuario() == id) {
             rol = null; // No actualizar rol

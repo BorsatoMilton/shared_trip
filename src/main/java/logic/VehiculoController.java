@@ -26,7 +26,7 @@ public class VehiculoController {
             throw new Exception("El vehículo no existe");
         }
 
-        if (!"admin".equals(usuario.getNombreRol()) &&
+        if (!"admin".equals(usuario.getRol().getNombreRol()) &&
                 v.getPropietario().getIdUsuario() != usuario.getIdUsuario()) {
             throw new Exception("No tiene permisos para modificar este vehículo");
         }
@@ -57,7 +57,7 @@ public class VehiculoController {
             throw new Exception("El vehículo no existe");
         }
 
-        if (!"admin".equals(usuario.getNombreRol()) &&
+        if (!"admin".equals(usuario.getRol().getNombreRol()) &&
                 v.getPropietario().getIdUsuario() != usuario.getIdUsuario()) {
             throw new Exception("No tiene permisos para eliminar este vehículo");
         }

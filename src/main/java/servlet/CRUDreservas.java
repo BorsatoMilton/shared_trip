@@ -51,10 +51,10 @@ public class CRUDreservas extends HttpServlet {
         Usuario usuario = (Usuario) session.getAttribute("usuario");
 
         try {
-            if("admin".equals(usuario.getNombreRol())){
+            if("admin".equals(usuario.getRol().getNombreRol())){
                 LinkedList<Reserva> reservas = reservaController.getAllReservas();
                 session.setAttribute("reservas", reservas);
-            }else if("usuario".equals(usuario.getNombreRol())){
+            }else if("usuario".equals(usuario.getRol().getNombreRol())){
                 LinkedList<Reserva> reservas = reservaController.getReservasUsuario(usuario);
                 session.setAttribute("reservas", reservas);
             }else{
@@ -83,7 +83,7 @@ public class CRUDreservas extends HttpServlet {
 
         try {
             if ("reserve".equals(action)) {
-                if("admin".equals(usuario.getNombreRol())){
+                if("admin".equals(usuario.getRol().getNombreRol())){
                     throw new Exception("El admin no puede realizar reservas.");
                 }
                 reservar(request, usuario);

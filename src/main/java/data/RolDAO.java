@@ -69,7 +69,7 @@ public class RolDAO {
     private Rol mapearRol(ResultSet rs) throws SQLException {
         Rol rol = new Rol();
         rol.setIdRol(rs.getInt("id_rol"));
-        rol.setNombre(rs.getString("nombre"));
+        rol.setNombreRol(rs.getString("nombre"));
         return rol;
     }
 }

@@ -45,11 +45,11 @@ public class UpdatePerfil extends HttpServlet {
 
             Usuario usuarioNuevo = usuarioCtrl.getOneById(idUsuario);
 
-            if (usuarioNuevo != null && usuarioNuevo.getNombreRol() == null) {
+            if (usuarioNuevo != null && usuarioNuevo.getRol().getNombreRol() == null) {
                 LinkedList<Rol> roles = rolCtrl.getAll();
                 for (Rol r : roles) {
-                    if (usuarioNuevo.getRol() == r.getIdRol()) {
-                        usuarioNuevo.setNombreRol(r.getNombre());
+                    if (usuarioNuevo.getRol().getIdRol() == r.getIdRol()) {
+                        usuarioNuevo.getRol().setNombreRol(r.getNombreRol());
                         break;
                     }
                 }
@@ -85,11 +85,11 @@ public class UpdatePerfil extends HttpServlet {
             if (logueado != null) {
                 Usuario usuarioActualizado = usuarioCtrl.getOneById(logueado.getIdUsuario());
 
-                if (usuarioActualizado != null && usuarioActualizado.getNombreRol() == null) {
+                if (usuarioActualizado != null && usuarioActualizado.getRol().getNombreRol() == null) {
                     LinkedList<Rol> roles = rolCtrl.getAll();
                     for (Rol r : roles) {
-                        if (usuarioActualizado.getRol() == r.getIdRol()) {
-                            usuarioActualizado.setNombreRol(r.getNombre());
+                        if (usuarioActualizado.getRol().getIdRol() == r.getIdRol()) {
+                            usuarioActualizado.getRol().setNombreRol(r.getNombreRol());
                             break;
                         }
                     }

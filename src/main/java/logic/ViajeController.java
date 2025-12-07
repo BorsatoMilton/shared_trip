@@ -49,7 +49,7 @@ public class ViajeController {
             throw new Exception("El viaje no existe");
         }
 
-        if (!"admin".equals(usuario.getNombreRol()) &&
+        if (!"admin".equals(usuario.getRol().getNombreRol()) &&
                 viaje.getConductor().getIdUsuario() != usuario.getIdUsuario()) {
             throw new Exception("No tiene permisos para modificar este viaje");
         }
@@ -72,7 +72,7 @@ public class ViajeController {
             }
 
             if (vehiculo.getPropietario().getIdUsuario() != usuario.getIdUsuario() &&
-                    !"admin".equals(usuario.getNombreRol())) {
+                    !"admin".equals(usuario.getRol().getNombreRol())) {
                 throw new Exception("El vehículo seleccionado no le pertenece");
             }
         }else {
@@ -104,7 +104,7 @@ public class ViajeController {
         }
 
 
-        if (!"admin".equals(usuario.getNombreRol()) &&
+        if (!"admin".equals(usuario.getRol().getNombreRol()) &&
                 viaje.getConductor().getIdUsuario() != usuario.getIdUsuario()) {
             throw new Exception("No tiene permisos para eliminar este viaje");
         }
@@ -120,7 +120,7 @@ public class ViajeController {
             throw new Exception("El viaje no existe");
         }
 
-        if (!"admin".equals(usuario.getNombreRol()) &&
+        if (!"admin".equals(usuario.getRol().getNombreRol()) &&
                 viaje.getConductor().getIdUsuario() != usuario.getIdUsuario()) {
             throw new Exception("No tiene permisos para cancelar este viaje");
         }

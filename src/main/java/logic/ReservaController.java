@@ -40,7 +40,7 @@ public class ReservaController {
             throw new Exception("La reserva no existe");
         }
 
-        if (reserva.getPasajero().getIdUsuario() != usuario.getIdUsuario() && "usuario".equals(usuario.getNombreRol())) {
+        if (reserva.getPasajero().getIdUsuario() != usuario.getIdUsuario() && "usuario".equals(usuario.getRol().getNombreRol())) {
             throw new Exception("No tiene permisos para cancelar esta reserva");
         }
 
@@ -146,7 +146,7 @@ public class ReservaController {
             throw new Exception("La reserva no existe");
         }
 
-        if (reserva.getPasajero().getIdUsuario() != usuario.getIdUsuario() && "usuario".equals(usuario.getNombreRol())) {
+        if (reserva.getPasajero().getIdUsuario() != usuario.getIdUsuario() && "usuario".equals(usuario.getRol().getNombreRol())) {
             throw new Exception("No tiene permisos para eliminar esta reserva");
         }
 

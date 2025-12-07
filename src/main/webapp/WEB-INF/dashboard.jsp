@@ -321,7 +321,7 @@
                                             <h6 class="mb-1 small"><%= user.getNombre() %> <%= user.getApellido() %></h6>
                                             <p class="mb-1 small text-muted"><%= user.getCorreo() %></p>
                                         </div>
-                                        <span class="badge bg-secondary badge-kpi"><%= user.getNombreRol() %></span>
+                                        <span class="badge bg-secondary badge-kpi"><%= user.getRol().getNombreRol() %></span>
                                     </div>
                                 </div>
                                 <% } %>

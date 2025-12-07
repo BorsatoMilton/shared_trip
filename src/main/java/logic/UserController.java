@@ -41,7 +41,7 @@ public class UserController {
             throw new Exception("El usuario no existe");
         }
 
-        boolean esAdmin = (logueado.getRol() == 1);
+        boolean esAdmin = (logueado.getRol().getIdRol() == 1);
         boolean esElMismo = (logueado.getIdUsuario() == id);
 
         if (!esAdmin && !esElMismo) {
@@ -53,14 +53,14 @@ public class UserController {
                 throw new Exception("No tiene permisos para cambiar roles");
             }
 
-            if (u.getRol() == 1 && rol != 1) {
+            if (u.getRol().getIdRol() == 1 && rol != 1) {
                 int cantidadAdmins = usuarioDAO.contarAdmins();
                 if (cantidadAdmins <= 1) {
                     throw new Exception("No se puede quitar el rol admin al último administrador");
                 }
             }
 
-            u.setRol(rol);
+            u.getRol().setIdRol(rol);
         }
 
 
@@ -100,7 +100,7 @@ public class UserController {
 
     public void crearUsuario(String usuario, String clave, String nombre,
                              String apellido, String correo, String telefono,
-                             int rol) throws Exception {
+                             int idRol) throws Exception {
 
         Usuario existente = usuarioDAO.getOneByUserOrEmail(usuario, correo, null);
         if (existente != null) {
@@ -125,6 +125,8 @@ public class UserController {
         u.setApellido(apellido);
         u.setCorreo(correo);
         u.setTelefono(telefono);
+        Rol rol = new Rol();
+        rol.setIdRol(idRol);
         u.setRol(rol);
 
         boolean creado = usuarioDAO.add(u);
@@ -141,7 +143,7 @@ public class UserController {
             throw new Exception("El usuario no existe");
         }
 
-        if (logueado.getRol() != 1) {
+        if (logueado.getRol().getIdRol() != 1) {
             throw new Exception("No tiene permisos para eliminar usuarios");
         }
 
@@ -149,7 +151,7 @@ public class UserController {
             throw new Exception("No puede eliminarse a sí mismo");
         }
 
-        if (u.getRol() == 1) {
+        if (u.getRol().getIdRol() == 1) {
             int cantidadAdmins = usuarioDAO.contarAdmins();
             if (cantidadAdmins <= 1) {
                 throw new Exception("No se puede eliminar al último administrador del sistema");

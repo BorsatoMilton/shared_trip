@@ -190,7 +190,7 @@ public class UserDAO {
             stmt.setString(4, u.getApellido());
             stmt.setString(5, u.getCorreo());
             stmt.setString(6, u.getTelefono());
-            stmt.setInt(7, u.getRol());
+            stmt.setInt(7, u.getRol().getIdRol());
 
             int affectedRows = stmt.executeUpdate();
 
@@ -228,7 +228,7 @@ public class UserDAO {
             stmt.setString(3, u.getApellido());
             stmt.setString(4, u.getCorreo());
             stmt.setString(5, u.getTelefono());
-            stmt.setInt(6, u.getRol());
+            stmt.setInt(6, u.getRol().getIdRol());
             stmt.setInt(7, u.getIdUsuario());
 
             int rowsAffected = stmt.executeUpdate();
@@ -489,13 +489,15 @@ public class UserDAO {
         u.setApellido(rs.getString("apellido"));
         u.setCorreo(rs.getString("correo"));
         u.setTelefono(rs.getString("telefono"));
-        u.setRol(rs.getInt("id_rol"));
+        Rol rol = new Rol();
+        rol.setIdRol(rs.getInt("id_rol"));
+        u.setRol(rol);
         return u;
     }
 
     private Usuario mapUsuarioWithRol(ResultSet rs) throws SQLException {
         Usuario u = mapUsuario(rs);
-        u.setNombreRol(rs.getString("nombre_rol"));
+        u.getRol().setNombreRol(rs.getString("nombre_rol"));
         return u;
     }
 }

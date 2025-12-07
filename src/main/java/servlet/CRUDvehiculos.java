@@ -34,7 +34,7 @@ public class CRUDvehiculos extends HttpServlet {
         }
 
         Usuario usuario = (Usuario) session.getAttribute("usuario");
-        String tipo_usuario = usuario.getNombreRol();
+        String tipo_usuario = usuario.getRol().getNombreRol();
 
         try {
             LinkedList<Vehiculo> vehiculos;

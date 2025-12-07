@@ -97,7 +97,7 @@
                                 </td>
                                 <td><%=usuario.getTelefono()%>
                                 </td>
-                                <td><span class="badge rounded-pill bg-info"><%=usuario.getNombreRol()%></span></td>
+                                <td><span class="badge rounded-pill bg-info"><%=usuario.getRol().getNombreRol()%></span></td>
                                 <td class="text-end action-buttons">
 
                                     <button type="button"
@@ -108,7 +108,7 @@
                                             data-nombre="<%=usuario.getNombre()%>"
                                             data-correo="<%=usuario.getCorreo()%>"
                                             data-telefono="<%=usuario.getTelefono()%>"
-                                            data-rol="<%=usuario.getRol()%>">
+                                            data-rol="<%=usuario.getRol().getIdRol()%>">
                                         <i class="bi bi-pencil"></i>
                                     </button>
 
@@ -231,7 +231,7 @@
                         <%
                             for (Rol rol : (LinkedList<Rol>) request.getAttribute("roles")) {
                         %>
-                        <option value="<%=rol.getIdRol()%>"><%=rol.getNombre()%>
+                        <option value="<%=rol.getIdRol()%>"><%=rol.getNombreRol()%>
                         </option>
                         <%
                             }
@@ -355,7 +355,7 @@
                         <%
                             for (Rol rol : (LinkedList<Rol>) request.getAttribute("roles")) {
                         %>
-                        <option value="<%=rol.getIdRol()%>"><%=rol.getNombre()%>
+                        <option value="<%=rol.getIdRol()%>"><%=rol.getNombreRol()%>
                         </option>
                         <%
                             }

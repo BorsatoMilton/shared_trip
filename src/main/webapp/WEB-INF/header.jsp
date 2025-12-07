@@ -25,7 +25,7 @@
                 <ul class="navbar-nav me-auto">
                     <% if (request.getSession().getAttribute("usuario") != null) {
                         Usuario usuario = (Usuario) session.getAttribute("usuario");
-                        if ("admin".equals(usuario.getNombreRol())) {
+                        if ("admin".equals(usuario.getRol().getNombreRol())) {
                     %>
                     <li class="nav-item">
                         <a class="nav-link" href="<%= request.getContextPath() %>/usuarios">

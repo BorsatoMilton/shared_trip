@@ -32,7 +32,7 @@
             String mensaje = (String) session.getAttribute("mensaje");
             if (mensaje != null) {
         %>
-        <div class="alert alert-info alert-dismissible fade show"
+        <div class="alert alert-info alert-dismissible fade show mt-3"
              role="alert">
             <%=mensaje%>
             <button type="button" class="btn-close" data-bs-dismiss="alert"
@@ -45,7 +45,7 @@
             String error = (String) session.getAttribute("error");
             if (error != null) {
         %>
-        <div class="alert alert-danger alert-dismissible fade show"
+        <div class="alert alert-danger alert-dismissible fade show mt-3"
              role="alert">
             <%=error%>
             <button type="button" class="btn-close" data-bs-dismiss="alert"

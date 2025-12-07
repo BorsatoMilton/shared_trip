@@ -45,7 +45,7 @@ public class DashBoard extends HttpServlet {
 
         Usuario usuario = (Usuario) session.getAttribute("usuario");
 
-        if (!"admin".equalsIgnoreCase(usuario.getNombreRol())) {
+        if (!"admin".equalsIgnoreCase(usuario.getRol().getNombreRol())) {
             session.setAttribute("error", "Acceso denegado. Solo administradores pueden acceder al dashboard.");
             response.sendRedirect(request.getContextPath() + "/");
             return;
