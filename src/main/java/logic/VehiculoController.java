@@ -1,9 +1,10 @@
 package logic;
 
-import java.util.LinkedList;
+import data.VehiculoDAO;
+import entities.Usuario;
+import entities.Vehiculo;
 
-import data.*;
-import entities.*;
+import java.util.LinkedList;
 
 public class VehiculoController {
 

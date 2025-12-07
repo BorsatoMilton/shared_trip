@@ -41,9 +41,13 @@ public class Feedback {
         this.usuario_calificado = usuario_calificado;
     }
 
-    public String getToken() {return token;}
+    public String getToken() {
+        return token;
+    }
 
-    public void setToken(String token) {this.token = token;}
+    public void setToken(String token) {
+        this.token = token;
+    }
 
     //CHEQUEAR SI SE NECESITA ESTE CONSTRUCTOR
     public Feedback(int puntuacion, Date fecha_hora, Usuario usuario_calificado, Reserva reserva) {

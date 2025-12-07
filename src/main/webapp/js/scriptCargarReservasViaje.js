@@ -20,7 +20,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     modalElement.addEventListener('hidden.bs.modal', function () {
         if (window.reservasAbortController) {
-            try { window.reservasAbortController.abort(); } catch (e) {}
+            try {
+                window.reservasAbortController.abort();
+            } catch (e) {
+            }
             window.reservasAbortController = null;
         }
         resetearModal();
@@ -31,7 +34,10 @@ document.addEventListener('DOMContentLoaded', () => {
 async function cargarReservas(idViaje) {
 
     if (window.reservasAbortController) {
-        try { window.reservasAbortController.abort(); } catch (e) {}
+        try {
+            window.reservasAbortController.abort();
+        } catch (e) {
+        }
         window.reservasAbortController = null;
     }
 
@@ -46,7 +52,10 @@ async function cargarReservas(idViaje) {
 
     const TIMEOUT = 10000;
     const timeoutId = setTimeout(() => {
-        try { controller.abort(); } catch (e) {}
+        try {
+            controller.abort();
+        } catch (e) {
+        }
     }, TIMEOUT);
 
     try {

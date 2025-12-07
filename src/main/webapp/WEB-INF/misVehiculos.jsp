@@ -38,7 +38,7 @@
                     <div>
                         <jsp:include page="buscadorUniversal.jsp"/>
                     </div>
-                    <% if ("usuario".equals(((Usuario)session.getAttribute("usuario")).getRol().getNombreRol())) { %>
+                    <% if ("usuario".equals(((Usuario) session.getAttribute("usuario")).getRol().getNombreRol())) { %>
                     <button type="button" id="btnNuevoVehiculo" class="btn btn-light" data-bs-toggle="modal"
                             data-bs-target="#nuevoVehiculo">
                         <i class="bi bi-plus-circle me-2"></i>Nuevo Vehículo
@@ -80,7 +80,7 @@
                                 <th scope="col">Patente</th>
                                 <th scope="col">Modelo</th>
                                 <th scope="col">Año</th>
-                                <% if ("admin".equals(((Usuario)session.getAttribute("usuario")).getRol().getNombreRol())) { %>
+                                <% if ("admin".equals(((Usuario) session.getAttribute("usuario")).getRol().getNombreRol())) { %>
                                 <th scope="col">Propietario</th>
                                 <% } %>
                                 <th scope="col" class="text-end">Acciones</th>
@@ -93,12 +93,16 @@
                                     for (Vehiculo vehiculo : vehiculos) {
                             %>
                             <tr class="align-middle">
-                                <td><%= vehiculo.getPatente() %></td>
-                                <td><%= vehiculo.getModelo() %></td>
-                                <td><%= vehiculo.getAnio() %></td>
+                                <td><%= vehiculo.getPatente() %>
+                                </td>
+                                <td><%= vehiculo.getModelo() %>
+                                </td>
+                                <td><%= vehiculo.getAnio() %>
+                                </td>
 
-                                <% if ("admin".equals(((Usuario)session.getAttribute("usuario")).getRol().getNombreRol())) { %>
-                                <td><%= vehiculo.getPropietario().getNombre() + " " + vehiculo.getPropietario().getApellido() %><br>
+                                <% if ("admin".equals(((Usuario) session.getAttribute("usuario")).getRol().getNombreRol())) { %>
+                                <td><%= vehiculo.getPropietario().getNombre() + " " + vehiculo.getPropietario().getApellido() %>
+                                    <br>
                                     <%= vehiculo.getPropietario().getCorreo() %>
                                 </td>
                                 <% } %>

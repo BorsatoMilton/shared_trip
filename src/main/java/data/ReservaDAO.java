@@ -1,19 +1,20 @@
 package data;
 
-import java.sql.*;
-import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
-
+import data.exceptions.DataAccessException;
+import entities.Reserva;
+import entities.Usuario;
+import entities.Vehiculo;
+import entities.Viaje;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import entities.*;
-import data.exceptions.DataAccessException;
+
+import java.sql.*;
+import java.time.LocalDate;
+import java.util.LinkedList;
 
 public class ReservaDAO {
     private static final Logger logger = LoggerFactory.getLogger(ReservaDAO.class);
-    private String universalQuery = "SELECT " +
+    private final String universalQuery = "SELECT " +
             "r.id_reserva, r.fecha_reserva, r.estado, r.cantidad_pasajeros_reservada, " +
             "r.codigo_reserva, r.feedback_token, " +
             "v.id_viaje, v.fecha, v.lugares_disponibles, v.origen, v.destino, " +
@@ -96,13 +97,13 @@ public class ReservaDAO {
         try (Connection conn = ConnectionDB.getInstancia().getConn();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
-                stmt.setString(1, token);
+            stmt.setString(1, token);
 
-                try (ResultSet rs = stmt.executeQuery()) {
-                    if (rs.next()) {
-                        reserva = mapFullReservaFromJoin(rs);
-                    }
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    reserva = mapFullReservaFromJoin(rs);
                 }
+            }
 
         } catch (SQLException e) {
             logger.error("Error al obtener Reserva con token: {}", token, e);
@@ -403,21 +404,21 @@ public class ReservaDAO {
             throw new DataAccessException("Error al eliminar reserva", e);
         }
     }
-    
+
     public double calcularIngresosTotales() {
         logger.debug("Calculando ingresos totales");
-        
+
         String query = "SELECT SUM(v.precio_unitario * r.cantidad_pasajeros_reservada) as ingresos_totales " +
-                       "FROM reservas r " +
-                       "INNER JOIN viajes v ON r.id_viaje = v.id_viaje " +
-                       "WHERE r.estado = 'CONFIRMADA' " +
-                       "AND r.activo = true " +
-                       "AND v.activo = true";
+                "FROM reservas r " +
+                "INNER JOIN viajes v ON r.id_viaje = v.id_viaje " +
+                "WHERE r.estado = 'CONFIRMADA' " +
+                "AND r.activo = true " +
+                "AND v.activo = true";
 
         try (
-            Connection conn = ConnectionDB.getInstancia().getConn();
-            PreparedStatement stmt = conn.prepareStatement(query);
-            ResultSet rs = stmt.executeQuery()
+                Connection conn = ConnectionDB.getInstancia().getConn();
+                PreparedStatement stmt = conn.prepareStatement(query);
+                ResultSet rs = stmt.executeQuery()
         ) {
             if (rs.next()) {
                 double ingresos = rs.getDouble("ingresos_totales");
@@ -437,20 +438,20 @@ public class ReservaDAO {
 
     public double calcularIngresosMesActual() {
         logger.debug("Calculando ingresos del mes actual");
-        
+
         String query = "SELECT SUM(v.precio_unitario * r.cantidad_pasajeros_reservada) as ingresos_mes " +
-                       "FROM reservas r " +
-                       "INNER JOIN viajes v ON r.id_viaje = v.id_viaje " +
-                       "WHERE r.estado = 'CONFIRMADA' " +
-                       "AND r.activo = true " +
-                       "AND v.cancelado = false " +
-                       "AND MONTH(r.fecha_reserva) = MONTH(CURRENT_DATE()) " +
-                       "AND YEAR(r.fecha_reserva) = YEAR(CURRENT_DATE())";
+                "FROM reservas r " +
+                "INNER JOIN viajes v ON r.id_viaje = v.id_viaje " +
+                "WHERE r.estado = 'CONFIRMADA' " +
+                "AND r.activo = true " +
+                "AND v.cancelado = false " +
+                "AND MONTH(r.fecha_reserva) = MONTH(CURRENT_DATE()) " +
+                "AND YEAR(r.fecha_reserva) = YEAR(CURRENT_DATE())";
 
         try (
-            Connection conn = ConnectionDB.getInstancia().getConn();
-            PreparedStatement stmt = conn.prepareStatement(query);
-            ResultSet rs = stmt.executeQuery()
+                Connection conn = ConnectionDB.getInstancia().getConn();
+                PreparedStatement stmt = conn.prepareStatement(query);
+                ResultSet rs = stmt.executeQuery()
         ) {
             if (rs.next()) {
                 double ingresos = rs.getDouble("ingresos_mes");
@@ -470,18 +471,18 @@ public class ReservaDAO {
 
     public double calcularPromedioPorReserva() {
         logger.debug("Calculando promedio por reserva");
-        
+
         String query = "SELECT AVG(v.precio_unitario * r.cantidad_pasajeros_reservada) as promedio_reserva " +
-                       "FROM reservas r " +
-                       "INNER JOIN viajes v ON r.id_viaje = v.id_viaje " +
-                       "WHERE r.estado = 'CONFIRMADA' " +
-                       "AND r.activo = true " +
-                       "AND v.cancelado = false";
+                "FROM reservas r " +
+                "INNER JOIN viajes v ON r.id_viaje = v.id_viaje " +
+                "WHERE r.estado = 'CONFIRMADA' " +
+                "AND r.activo = true " +
+                "AND v.cancelado = false";
 
         try (
-            Connection conn = ConnectionDB.getInstancia().getConn();
-            PreparedStatement stmt = conn.prepareStatement(query);
-            ResultSet rs = stmt.executeQuery()
+                Connection conn = ConnectionDB.getInstancia().getConn();
+                PreparedStatement stmt = conn.prepareStatement(query);
+                ResultSet rs = stmt.executeQuery()
         ) {
             if (rs.next()) {
                 double promedio = rs.getDouble("promedio_reserva");

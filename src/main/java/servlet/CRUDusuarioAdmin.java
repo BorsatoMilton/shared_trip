@@ -1,15 +1,5 @@
 package servlet;
 
-import java.io.IOException;
-import java.util.LinkedList;
-
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 import entities.Rol;
 import entities.Usuario;
 import logic.RolController;
@@ -17,6 +7,15 @@ import logic.UserController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.InputValidator;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.util.LinkedList;
 
 @WebServlet("/usuarios")
 public class CRUDusuarioAdmin extends HttpServlet {
@@ -123,40 +122,40 @@ public class CRUDusuarioAdmin extends HttpServlet {
 
         } catch (Exception e) {
 
-                preservarDatosFormulario(request, session);
-                String error = e.getMessage();
+            preservarDatosFormulario(request, session);
+            String error = e.getMessage();
 
-                switch (error) {
+            switch (error) {
 
-                    case "USER_AND_EMAIL_EXISTS":
-                        session.setAttribute("error", "El usuario y el correo ya están registrados.");
-                        session.removeAttribute("usuarioFormRegister");
-                        session.removeAttribute("correo");
-                        break;
+                case "USER_AND_EMAIL_EXISTS":
+                    session.setAttribute("error", "El usuario y el correo ya están registrados.");
+                    session.removeAttribute("usuarioFormRegister");
+                    session.removeAttribute("correo");
+                    break;
 
-                    case "USERNAME_EXISTS":
-                        session.setAttribute("error", "El nombre de usuario ya está en uso.");
-                        session.removeAttribute("usuarioFormRegister");
-                        break;
+                case "USERNAME_EXISTS":
+                    session.setAttribute("error", "El nombre de usuario ya está en uso.");
+                    session.removeAttribute("usuarioFormRegister");
+                    break;
 
-                    case "EMAIL_EXISTS":
-                        session.setAttribute("error", "El correo electrónico ya está registrado.");
-                        session.removeAttribute("correo");
-                        break;
+                case "EMAIL_EXISTS":
+                    session.setAttribute("error", "El correo electrónico ya está registrado.");
+                    session.removeAttribute("correo");
+                    break;
 
-                    default:
-                        session.setAttribute("error", e.getMessage());
-                }
+                default:
+                    session.setAttribute("error", e.getMessage());
+            }
 
-                if ("register".equals(action)) {
-                    redirectPage = "/register.jsp";
-                }else if (logueado == null) {
-                    redirectPage = "/login.jsp";
-                }else if ("admin".equals(rol)) {
-                    redirectPage = "/usuarios";
-                }else {
-                    redirectPage = "/";
-                }
+            if ("register".equals(action)) {
+                redirectPage = "/register.jsp";
+            } else if (logueado == null) {
+                redirectPage = "/login.jsp";
+            } else if ("admin".equals(rol)) {
+                redirectPage = "/usuarios";
+            } else {
+                redirectPage = "/";
+            }
 
         }
         response.sendRedirect(request.getContextPath() + redirectPage);

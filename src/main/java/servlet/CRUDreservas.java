@@ -9,8 +9,8 @@ import logic.ReservaController;
 import logic.ViajeController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import utils.Formatters;
 import services.MailService;
+import utils.Formatters;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -51,13 +51,13 @@ public class CRUDreservas extends HttpServlet {
         Usuario usuario = (Usuario) session.getAttribute("usuario");
 
         try {
-            if("admin".equals(usuario.getRol().getNombreRol())){
+            if ("admin".equals(usuario.getRol().getNombreRol())) {
                 LinkedList<Reserva> reservas = reservaController.getAllReservas();
                 session.setAttribute("reservas", reservas);
-            }else if("usuario".equals(usuario.getRol().getNombreRol())){
+            } else if ("usuario".equals(usuario.getRol().getNombreRol())) {
                 LinkedList<Reserva> reservas = reservaController.getReservasUsuario(usuario);
                 session.setAttribute("reservas", reservas);
-            }else{
+            } else {
                 throw new DataAccessException("Rol no admitido");
             }
         } catch (Exception e) {
@@ -83,7 +83,7 @@ public class CRUDreservas extends HttpServlet {
 
         try {
             if ("reserve".equals(action)) {
-                if("admin".equals(usuario.getRol().getNombreRol())){
+                if ("admin".equals(usuario.getRol().getNombreRol())) {
                     throw new Exception("El admin no puede realizar reservas.");
                 }
                 reservar(request, usuario);
@@ -287,7 +287,7 @@ public class CRUDreservas extends HttpServlet {
                     totalReservas
             );
 
-        }catch (Exception e) {
+        } catch (Exception e) {
             logger.error("Error al enviar las notificaciones de reserva: {}", e.getMessage());
         }
     }

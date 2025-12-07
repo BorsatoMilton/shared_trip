@@ -19,8 +19,8 @@ import java.util.Map;
 @WebServlet("/obtenerReservas")
 public class ReservasViaje extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private ReservaController reservaController = new ReservaController();
-    private Gson gson = new Gson();
+    private final ReservaController reservaController = new ReservaController();
+    private final Gson gson = new Gson();
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {

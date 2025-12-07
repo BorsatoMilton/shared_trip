@@ -1,12 +1,12 @@
 package services;
 
-import utils.Generators;
 import data.FeedbackDAO;
 import data.ReservaDAO;
 import entities.Feedback;
 import entities.Reserva;
-import entities.Viaje;
 import entities.Usuario;
+import entities.Viaje;
+import utils.Generators;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -14,8 +14,8 @@ import java.util.List;
 
 public class FeedbackService {
     MailService mailService = MailService.getInstance();
-    private FeedbackDAO feedbackDAO = new FeedbackDAO();
-    private Generators generators = new Generators();
+    private final FeedbackDAO feedbackDAO = new FeedbackDAO();
+    private final Generators generators = new Generators();
 
 
     public void procesarFeedbackPendiente() throws Exception {
@@ -50,7 +50,7 @@ public class FeedbackService {
                     pasajero,
                     datosViaje,
                     token
-                    );
+            );
 
         } catch (Exception e) {
             System.err.println("Error preparando notificaciones de feedback: " + e.getMessage());

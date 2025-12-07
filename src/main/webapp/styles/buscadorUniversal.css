@@ -2,9 +2,11 @@
     min-width: 350px;
     margin: 10px auto 10px auto;
 }
+
 .search-wrapper {
     position: relative;
 }
+
 .search-wrapper svg {
     position: absolute;
     top: 50%;
@@ -15,6 +17,7 @@
     pointer-events: none;
     color: gray;
 }
+
 .search-input {
     width: 100%;
     padding: 10px 10px 10px 35px;

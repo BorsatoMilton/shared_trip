@@ -1,11 +1,14 @@
 package logic;
 
+import data.VehiculoDAO;
+import data.ViajeDAO;
+import entities.Usuario;
+import entities.Vehiculo;
+import entities.Viaje;
+
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.LinkedList;
-
-import data.*;
-import entities.*;
 
 public class ViajeController {
     private final ViajeDAO viajeDAO;
@@ -65,7 +68,7 @@ public class ViajeController {
 
         Vehiculo vehiculo = null;
 
-        if(vehiculoId != -1){
+        if (vehiculoId != -1) {
             vehiculo = vehiculoDAO.getById_vehiculo(vehiculoId);
             if (vehiculo == null) {
                 throw new Exception("El vehículo seleccionado no existe");
@@ -75,7 +78,7 @@ public class ViajeController {
                     !"admin".equals(usuario.getRol().getNombreRol())) {
                 throw new Exception("El vehículo seleccionado no le pertenece");
             }
-        }else {
+        } else {
             vehiculo = viaje.getVehiculo();
         }
 
@@ -174,8 +177,8 @@ public class ViajeController {
         viajeDAO.add(viaje);
 
     }
-    
+
     public LinkedList<Viaje> obtenerViajesProximos(int limite) {
-    	return viajeDAO.obtenerViajesProximos(limite);
+        return viajeDAO.obtenerViajesProximos(limite);
     }
 }

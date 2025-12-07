@@ -182,7 +182,7 @@ function actualizarFocoVisual(items, index) {
     const el = items[index];
     if (el) {
         el.classList.add('active');
-        el.scrollIntoView({ block: 'nearest' });
+        el.scrollIntoView({block: 'nearest'});
     }
 }
 

@@ -50,7 +50,7 @@
 
                         <%
                             Object token = request.getAttribute("token");
-                            if(token == null){
+                            if (token == null) {
                                 session.setAttribute("error", "Token inexistente");
                                 response.sendRedirect(request.getContextPath() + "/");
                                 return;

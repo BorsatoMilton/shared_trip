@@ -1,18 +1,18 @@
 package data;
 
-import java.sql.*;
-import java.time.LocalDateTime;
-
+import data.exceptions.DataAccessException;
+import entities.PasswordReset;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import entities.*;
-import data.exceptions.DataAccessException;
+
+import java.sql.*;
+import java.time.LocalDateTime;
 
 public class PasswordResetDAO {
 
     private static final Logger logger = LoggerFactory.getLogger(PasswordResetDAO.class);
     private static final int EXPIRACION_HORAS = 24;
-    private UserDAO userDAO = new UserDAO();
+    private final UserDAO userDAO = new UserDAO();
 
     public void guardarToken(int idUsuario, String token) {
         logger.info("Guardando token de recuperación para usuario ID: {}", idUsuario);

@@ -50,7 +50,7 @@
                             <i class="bi bi-journal-check me-1"></i>Reservas
                         </a>
                     </li>
-                    
+
                     <li class="nav-item">
                         <a class="nav-link" href="<%= request.getContextPath() %>/dashboard">
                             <i class="bi bi-speedometer me-1"></i>Estadísticas
@@ -69,7 +69,7 @@
                             <i class="bi bi-journal-check me-1"></i>Mis Reservas
                         </a>
                     </li>
-                    
+
                     <li class="nav-item">
                         <a class="nav-link" href="<%= request.getContextPath() %>/vehiculos">
                             <i class="bi bi-truck me-1"></i>Mis Vehículos

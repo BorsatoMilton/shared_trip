@@ -1,11 +1,12 @@
 package logic;
 
+import data.UserDAO;
+import entities.Rol;
+import entities.Usuario;
+import utils.Generators;
+
 import java.util.LinkedList;
 import java.util.Map;
-
-import data.*;
-import entities.*;
-import utils.Generators;
 
 public class UserController {
     private final UserDAO usuarioDAO;
@@ -176,11 +177,11 @@ public class UserController {
 
 
     public Map<String, Integer> getEstadisticasUsuarios() {
-            return usuarioDAO.obtenerEstadisticasUsuarios();
+        return usuarioDAO.obtenerEstadisticasUsuarios();
     }
 
     public LinkedList<Usuario> getUsuariosRecientes(int limite) {
-            return usuarioDAO.obtenerUsuariosRecientes(limite);
+        return usuarioDAO.obtenerUsuariosRecientes(limite);
     }
 
 }

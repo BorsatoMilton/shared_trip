@@ -1,17 +1,13 @@
 package data;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.LinkedList;
-
+import data.exceptions.DataAccessException;
 import entities.Usuario;
 import entities.Vehiculo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import data.exceptions.DataAccessException;
+
+import java.sql.*;
+import java.util.LinkedList;
 
 public class VehiculoDAO {
     private static final Logger logger = LoggerFactory.getLogger(VehiculoDAO.class);

@@ -1,9 +1,9 @@
 package logic;
 
-import java.util.LinkedList;
-
 import data.RolDAO;
 import entities.Rol;
+
+import java.util.LinkedList;
 
 public class RolController {
 

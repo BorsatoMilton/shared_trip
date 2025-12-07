@@ -97,7 +97,8 @@
                                 </td>
                                 <td><%=usuario.getTelefono()%>
                                 </td>
-                                <td><span class="badge rounded-pill bg-info"><%=usuario.getRol().getNombreRol()%></span></td>
+                                <td><span class="badge rounded-pill bg-info"><%=usuario.getRol().getNombreRol()%></span>
+                                </td>
                                 <td class="text-end action-buttons">
 
                                     <button type="button"
@@ -135,7 +136,7 @@
                             %>
                             <tr id="noResultados" style="display:none;">
                                 <td colspan="8" style="padding:10px; color:dodgerblue; font-size:large;">
-                                No existen resultados.
+                                    No existen resultados.
                                 </td>
                             </tr>
                             </tbody>

@@ -1,20 +1,19 @@
 package logic;
 
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.Map;
-
 import data.ReservaDAO;
 import entities.Reserva;
 import entities.Usuario;
 import entities.Viaje;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.util.Date;
+import java.util.LinkedList;
+
 public class ReservaController {
     private final ReservaDAO reservaDAO;
     private final ViajeController viajeController;
-    
+
     public ReservaController() {
         this.reservaDAO = new ReservaDAO();
         this.viajeController = new ViajeController();
@@ -160,21 +159,21 @@ public class ReservaController {
 
     }
 
-    
+
     public double getIngresosTotales() {
-            return reservaDAO.calcularIngresosTotales();
-        }
+        return reservaDAO.calcularIngresosTotales();
+    }
 
     public double getIngresosMesActual() {
-            return reservaDAO.calcularIngresosMesActual();
+        return reservaDAO.calcularIngresosMesActual();
     }
 
     public double getPromedioPorReserva() {
-            return reservaDAO.calcularPromedioPorReserva();
-        }
+        return reservaDAO.calcularPromedioPorReserva();
+    }
 
-    
+
     public LinkedList<Reserva> obtenerReservasRecientes(int limite) {
-    	return reservaDAO.obtenerReservasRecientes(limite);
+        return reservaDAO.obtenerReservasRecientes(limite);
     }
 }

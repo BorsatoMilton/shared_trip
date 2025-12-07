@@ -80,21 +80,21 @@
                 </div>
                 <div class="mb-4">
                     <label class="form-label">Credenciales</label>
-                            <input type="email"
-                                   class="form-control mb-2"
-                                   placeholder="Correo electrónico"
-                                   name="correo"
-                                   minlength="10"
-                                   maxlength="100"
-                                   value="<%= usuario.getCorreo() %>" required>
-                            <input type="text"
-                                   class="form-control"
-                                   placeholder="Usuario"
-                                   name="usuario"
-                                   minlength="3"
-                                   maxlength="20"
-                                   value="<%= usuario.getUsuario() %>"
-                                   required>
+                    <input type="email"
+                           class="form-control mb-2"
+                           placeholder="Correo electrónico"
+                           name="correo"
+                           minlength="10"
+                           maxlength="100"
+                           value="<%= usuario.getCorreo() %>" required>
+                    <input type="text"
+                           class="form-control"
+                           placeholder="Usuario"
+                           name="usuario"
+                           minlength="3"
+                           maxlength="20"
+                           value="<%= usuario.getUsuario() %>"
+                           required>
                 </div>
                 <div class="mb-4">
                     <label class="form-label">Información de contacto</label> <input

@@ -1,15 +1,17 @@
 package data;
 
+import data.exceptions.DataAccessException;
+import entities.Feedback;
+import entities.Reserva;
+import entities.Usuario;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.sql.*;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import entities.*;
-import data.exceptions.DataAccessException;
 
 public class FeedbackDAO {
 
@@ -58,7 +60,7 @@ public class FeedbackDAO {
 
         try (
                 Connection conn = ConnectionDB.getInstancia().getConn();
-                PreparedStatement stmt = conn.prepareStatement(query);
+                PreparedStatement stmt = conn.prepareStatement(query)
         ) {
             stmt.setInt(1, u.getIdUsuario());
 

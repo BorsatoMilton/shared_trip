@@ -1,19 +1,5 @@
 package servlet;
 
-import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.util.Date;
-import java.util.LinkedList;
-
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 import entities.Reserva;
 import entities.Usuario;
 import entities.Vehiculo;
@@ -25,8 +11,21 @@ import logic.VehiculoController;
 import logic.ViajeController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import utils.Formatters;
 import services.MailService;
+import utils.Formatters;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.util.Date;
+import java.util.LinkedList;
 
 @WebServlet("/viajes")
 public class CRUDviajes extends HttpServlet {
@@ -291,7 +290,7 @@ public class CRUDviajes extends HttpServlet {
             throw new Exception("El lugar de salida es obligatorio");
         }
 
-        if("usuario".equals(((Usuario)session.getAttribute("usuario")).getRol().getNombreRol())) {
+        if ("usuario".equals(((Usuario) session.getAttribute("usuario")).getRol().getNombreRol())) {
             if (vehiculoIdStr == null || vehiculoIdStr.trim().isEmpty()) {
                 throw new Exception("Debe seleccionar un vehículo");
             }
@@ -314,7 +313,7 @@ public class CRUDviajes extends HttpServlet {
         }
 
         try {
-            if(vehiculoIdStr != null) {
+            if (vehiculoIdStr != null) {
                 vehiculoId = Integer.parseInt(vehiculoIdStr);
             }
         } catch (NumberFormatException e) {

@@ -11,12 +11,29 @@
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
-.stat-card.primary { border-left-color: #3B71CA; }
-.stat-card.success { border-left-color: #14A44D; }
-.stat-card.warning { border-left-color: #E4A11B; }
-.stat-card.danger { border-left-color: #DC4C64; }
-.stat-card.info { border-left-color: #54B4D3; }
-.stat-card.dark { border-left-color: #332D2D; }
+.stat-card.primary {
+    border-left-color: #3B71CA;
+}
+
+.stat-card.success {
+    border-left-color: #14A44D;
+}
+
+.stat-card.warning {
+    border-left-color: #E4A11B;
+}
+
+.stat-card.danger {
+    border-left-color: #DC4C64;
+}
+
+.stat-card.info {
+    border-left-color: #54B4D3;
+}
+
+.stat-card.dark {
+    border-left-color: #332D2D;
+}
 
 .stat-icon {
     font-size: 2rem;

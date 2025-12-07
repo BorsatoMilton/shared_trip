@@ -146,7 +146,8 @@
 
                                 <div class="lugares-badge <%=badgeClass%>">
                                     <i class="fas fa-chair me-2"></i>
-                                    <%=lugaresDisponibles%> lugar<%=lugaresDisponibles != 1 ? "es" : ""%> disponible<%=lugaresDisponibles != 1 ? "s" : ""%>
+                                    <%=lugaresDisponibles%> lugar<%=lugaresDisponibles != 1 ? "es" : ""%>
+                                    disponible<%=lugaresDisponibles != 1 ? "s" : ""%>
                                 </div>
 
                                 <div class="mt-auto">

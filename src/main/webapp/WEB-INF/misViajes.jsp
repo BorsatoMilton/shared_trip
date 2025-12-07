@@ -43,8 +43,8 @@
                     <div>
                         <jsp:include page="buscadorUniversal.jsp"/>
                     </div>
-                    <% if ("usuario".equals(((Usuario)session.getAttribute("usuario")).getRol().getNombreRol())) { %>
-                        <button type="button" class="btn btn-light" data-bs-toggle="modal"
+                    <% if ("usuario".equals(((Usuario) session.getAttribute("usuario")).getRol().getNombreRol())) { %>
+                    <button type="button" class="btn btn-light" data-bs-toggle="modal"
                             data-bs-target="#nuevoViaje">
                         <i class="bi bi-plus-circle me-2"></i>Nuevo Viaje
                     </button>
@@ -85,12 +85,12 @@
                                 <th scope="col">Origen</th>
                                 <th scope="col">Destino</th>
                                 <th scope="col">Lugar de Salida</th>
-                                <% if("usuario".equals(((Usuario) session.getAttribute("usuario")).getRol().getNombreRol())) { %>
-                                    <th scope="col">Lugares</th>
-                                    <th scope="col">Precio Unitario</th>
+                                <% if ("usuario".equals(((Usuario) session.getAttribute("usuario")).getRol().getNombreRol())) { %>
+                                <th scope="col">Lugares</th>
+                                <th scope="col">Precio Unitario</th>
                                 <% } else {%>
-                                    <th scope="col">Conductor</th>
-                                    <th scope="col">Patente</th>
+                                <th scope="col">Conductor</th>
+                                <th scope="col">Patente</th>
                                 <% } %>
                                 <th scope="col">Cancelado</th>
                                 <th scope="col" class="text-end">Acciones</th>
@@ -113,17 +113,19 @@
                                 </td>
                                 <td><%= viaje.getLugar_salida() %>
                                 </td>
-                                <% if("usuario".equals(((Usuario) session.getAttribute("usuario")).getRol().getNombreRol())) { %>
+                                <% if ("usuario".equals(((Usuario) session.getAttribute("usuario")).getRol().getNombreRol())) { %>
                                 <td><%= viaje.getLugares_disponibles() %>
                                 </td>
                                 <td>$<%= viaje.getPrecio_unitario() %>
                                 </td>
                                 <% } else { %>
                                 <td>
-                                    <%= viaje.getConductor().getNombre() + " " + viaje.getConductor().getApellido()%><br>
+                                    <%= viaje.getConductor().getNombre() + " " + viaje.getConductor().getApellido()%>
+                                    <br>
                                     <%= viaje.getConductor().getCorreo()%>
                                 </td>
-                                <td> <%= viaje.getVehiculo().getPatente() %></td>
+                                <td><%= viaje.getVehiculo().getPatente() %>
+                                </td>
                                 <% } %>
                                 <td><%= viaje.isCancelado() ? "Sí" : "No" %>
                                 </td>
@@ -311,18 +313,18 @@
                                    id="editPrecioUnitario" required>
                         </div>
                     </div>
-                    <% if("usuario".equals(((Usuario)session.getAttribute("usuario")).getRol().getNombreRol())) { %>
-                        <div class="mb-3">
-                            <label class="form-label" for="editIdVehiculo">Vehículo</label>
-                            <select name="idVehiculo" id="editIdVehiculo" class="form-select w-100">
-                                <% if (vehiculos != null && !vehiculos.isEmpty()) {
-                                    for (Vehiculo v : vehiculos) { %>
-                                <option value="<%=v.getId_vehiculo()%>"><%=v.getPatente()%>
-                                </option>
-                                <% }
-                                } %>
-                            </select>
-                        </div>
+                    <% if ("usuario".equals(((Usuario) session.getAttribute("usuario")).getRol().getNombreRol())) { %>
+                    <div class="mb-3">
+                        <label class="form-label" for="editIdVehiculo">Vehículo</label>
+                        <select name="idVehiculo" id="editIdVehiculo" class="form-select w-100">
+                            <% if (vehiculos != null && !vehiculos.isEmpty()) {
+                                for (Vehiculo v : vehiculos) { %>
+                            <option value="<%=v.getId_vehiculo()%>"><%=v.getPatente()%>
+                            </option>
+                            <% }
+                            } %>
+                        </select>
+                    </div>
                     <% } %>
                 </div>
 
@@ -451,7 +453,8 @@
                                 <select name="idVehiculo" id="idVehiculoNuevo" class="form-select w-100" required>
                                     <% if (vehiculos != null && !vehiculos.isEmpty()) { %>
                                     <% for (Vehiculo v : vehiculos) { %>
-                                    <option value="<%= v.getId_vehiculo() %>"><%= v.getPatente() %></option>
+                                    <option value="<%= v.getId_vehiculo() %>"><%= v.getPatente() %>
+                                    </option>
                                     <% } %>
                                     <% } else { %>
                                     <option value="">-- No hay vehículos cargados. Agregue uno. --</option>
@@ -518,7 +521,6 @@
         </div>
     </div>
 </div>
-
 
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"

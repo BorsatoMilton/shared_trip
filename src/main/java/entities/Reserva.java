@@ -67,9 +67,13 @@ public class Reserva {
         this.codigo_reserva = codigo_reserva;
     }
 
-    public String getFeedback_token() {return feedback_token;}
+    public String getFeedback_token() {
+        return feedback_token;
+    }
 
-    public void setFeedback_token(String feedback_token) {this.feedback_token = feedback_token;}
+    public void setFeedback_token(String feedback_token) {
+        this.feedback_token = feedback_token;
+    }
 
 
     public Reserva(String fecha, int cantidad_pasajeros_reservada, Viaje viaje,

@@ -75,17 +75,17 @@
                                 <th scope="col">Destino</th>
                                 <th scope="col">Fecha de Viaje</th>
                                 <th scope="col">Pasajeros</th>
-                                <% if("usuario".equals(((Usuario) session.getAttribute("usuario")).getRol().getNombreRol())) {%>
+                                <% if ("usuario".equals(((Usuario) session.getAttribute("usuario")).getRol().getNombreRol())) {%>
                                 <th scope="col">Total</th>
                                 <% } %>
 
                                 <th scope="col">Estado</th>
 
-                                <% if("usuario".equals(((Usuario) session.getAttribute("usuario")).getRol().getNombreRol())) {%>
+                                <% if ("usuario".equals(((Usuario) session.getAttribute("usuario")).getRol().getNombreRol())) {%>
                                 <th scope="col">Código Reserva</th>
                                 <% } %>
 
-                                <% if("admin".equals(((Usuario) session.getAttribute("usuario")).getRol().getNombreRol())) {%>
+                                <% if ("admin".equals(((Usuario) session.getAttribute("usuario")).getRol().getNombreRol())) {%>
                                 <th scope="col">Reservante</th>
                                 <th scope="col">Conductor</th>
                                 <% } %>
@@ -100,37 +100,46 @@
                                     for (Reserva reserva : reservas) {
                             %>
                             <tr class="align-middle">
-                                <td><%= reserva.getViaje().getOrigen() %></td>
-                                <td><%= reserva.getViaje().getDestino() %></td>
-                                <td><%= reserva.getViaje().getFecha() %></td>
-                                <td><%= reserva.getCantidad_pasajeros_reservada()%></td>
-                                <% if("usuario".equals(((Usuario) session.getAttribute("usuario")).getRol().getNombreRol())) {%>
-                                    <td>
-                                        $<%= reserva.getViaje().getPrecio_unitario() * reserva.getCantidad_pasajeros_reservada()%>
-                                    </td>
+                                <td><%= reserva.getViaje().getOrigen() %>
+                                </td>
+                                <td><%= reserva.getViaje().getDestino() %>
+                                </td>
+                                <td><%= reserva.getViaje().getFecha() %>
+                                </td>
+                                <td><%= reserva.getCantidad_pasajeros_reservada()%>
+                                </td>
+                                <% if ("usuario".equals(((Usuario) session.getAttribute("usuario")).getRol().getNombreRol())) {%>
+                                <td>
+                                    $<%= reserva.getViaje().getPrecio_unitario() * reserva.getCantidad_pasajeros_reservada()%>
+                                </td>
                                 <% } %>
 
-                                <td><%= reserva.getEstado() %></td>
+                                <td><%= reserva.getEstado() %>
+                                </td>
 
-                                <% if("usuario".equals(((Usuario) session.getAttribute("usuario")).getRol().getNombreRol())) {%>
-                                    <td><%= reserva.getCodigo_reserva()%></td>
+                                <% if ("usuario".equals(((Usuario) session.getAttribute("usuario")).getRol().getNombreRol())) {%>
+                                <td><%= reserva.getCodigo_reserva()%>
+                                </td>
                                 <% } %>
 
-                                <% if("admin".equals(((Usuario) session.getAttribute("usuario")).getRol().getNombreRol())) {%>
-                                <td><%= reserva.getPasajero().getNombre() + " " + reserva.getPasajero().getApellido()%><br>
+                                <% if ("admin".equals(((Usuario) session.getAttribute("usuario")).getRol().getNombreRol())) {%>
+                                <td><%= reserva.getPasajero().getNombre() + " " + reserva.getPasajero().getApellido()%>
+                                    <br>
                                     <%= reserva.getPasajero().getCorreo()%>
                                 </td>
-                                <td><%= reserva.getViaje().getConductor().getNombre() + " " + reserva.getViaje().getConductor().getApellido()%><br>
+                                <td><%= reserva.getViaje().getConductor().getNombre() + " " + reserva.getViaje().getConductor().getApellido()%>
+                                    <br>
                                     <%= reserva.getViaje().getConductor().getCorreo()%>
                                 </td>
                                 <% } %>
                                 <td class="text-end action-buttons">
-                                    <% if("EN PROCESO".equals(reserva.getEstado())) { %>
+                                    <% if ("EN PROCESO".equals(reserva.getEstado())) { %>
                                     <button type="button" class="btn btn-sm btn-danger btn-cancelar"
                                             data-id="<%=reserva.getIdReserva()%>">
                                         <i class="bi bi-x-circle-fill"></i>
                                     </button>
-                                    <% }if("CONFIRMADA".equals(reserva.getEstado()) || "CANCELADA".equals(reserva.getEstado())) { %>
+                                    <% }
+                                        if ("CONFIRMADA".equals(reserva.getEstado()) || "CANCELADA".equals(reserva.getEstado())) { %>
                                     <button type="button" class="btn btn-sm btn-danger btn-eliminar"
                                             data-id="<%=reserva.getIdReserva()%>">
                                         <i class="bi bi-trash"></i>

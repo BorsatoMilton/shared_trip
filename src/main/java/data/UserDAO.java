@@ -1,15 +1,16 @@
 package data;
 
-import entities.*;
+import data.exceptions.DataAccessException;
+import entities.Rol;
+import entities.Usuario;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import utils.Generators;
+
 import java.sql.*;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import data.exceptions.DataAccessException;
-import utils.Generators;
 
 public class UserDAO {
     private static final Logger logger = LoggerFactory.getLogger(UserDAO.class);
@@ -383,19 +384,19 @@ public class UserDAO {
             throw new DataAccessException("Error al verificar reservas activas del usuario", e);
         }
     }
-    
+
     public Map<String, Integer> obtenerEstadisticasUsuarios() {
         logger.debug("Obteniendo estadísticas detalladas de usuarios");
-        
+
         String query = "SELECT " +
-                       "r.nombre as rol_base, " +
-                       "COUNT(*) as total_por_rol, " +
-                       "SUM(CASE WHEN EXISTS (SELECT 1 FROM viajes v WHERE v.id_conductor = u.id_usuario) THEN 1 ELSE 0 END) as conductores, " +
-                       "SUM(CASE WHEN EXISTS (SELECT 1 FROM reservas r WHERE r.id_pasajero_reserva = u.id_usuario) THEN 1 ELSE 0 END) as pasajeros " +
-                       "FROM usuarios u " +
-                       "INNER JOIN roles r ON u.id_rol = r.id_rol " +
-                       "WHERE u.fecha_baja IS NULL " +
-                       "GROUP BY r.nombre";
+                "r.nombre as rol_base, " +
+                "COUNT(*) as total_por_rol, " +
+                "SUM(CASE WHEN EXISTS (SELECT 1 FROM viajes v WHERE v.id_conductor = u.id_usuario) THEN 1 ELSE 0 END) as conductores, " +
+                "SUM(CASE WHEN EXISTS (SELECT 1 FROM reservas r WHERE r.id_pasajero_reserva = u.id_usuario) THEN 1 ELSE 0 END) as pasajeros " +
+                "FROM usuarios u " +
+                "INNER JOIN roles r ON u.id_rol = r.id_rol " +
+                "WHERE u.fecha_baja IS NULL " +
+                "GROUP BY r.nombre";
 
         Map<String, Integer> estadisticas = new HashMap<>();
         int totalConductores = 0;
@@ -403,18 +404,18 @@ public class UserDAO {
         int totalAdmins = 0;
         int totalUsuarios = 0;
         int totalUsuariosBase = 0;
-        
+
         try (
-            Connection conn = ConnectionDB.getInstancia().getConn();
-            PreparedStatement stmt = conn.prepareStatement(query);
-            ResultSet rs = stmt.executeQuery()
+                Connection conn = ConnectionDB.getInstancia().getConn();
+                PreparedStatement stmt = conn.prepareStatement(query);
+                ResultSet rs = stmt.executeQuery()
         ) {
             while (rs.next()) {
                 String rol = rs.getString("rol_base");
                 int totalRol = rs.getInt("total_por_rol");
                 int conductores = rs.getInt("conductores");
                 int pasajeros = rs.getInt("pasajeros");
-                
+
                 if ("admin".equalsIgnoreCase(rol)) {
                     totalAdmins = totalRol;
                 } else if ("usuario".equalsIgnoreCase(rol)) {
@@ -422,21 +423,21 @@ public class UserDAO {
                     totalPasajeros = pasajeros;
                     totalUsuariosBase = totalRol;
                 }
-                
-                
-                logger.debug("Rol: {}, Total: {}, Conductores: {}, Pasajeros: {}", 
-                            rol, totalRol, conductores, pasajeros);
+
+
+                logger.debug("Rol: {}, Total: {}, Conductores: {}, Pasajeros: {}",
+                        rol, totalRol, conductores, pasajeros);
             }
             totalUsuarios = totalAdmins + totalConductores + totalPasajeros;
-            
+
             estadisticas.put("totalConductores", totalConductores);
             estadisticas.put("totalPasajeros", totalPasajeros);
             estadisticas.put("totalAdmins", totalAdmins);
             estadisticas.put("totalUsuarios", totalUsuarios);
             estadisticas.put("totalUsuariosBase", totalUsuariosBase);
-            
-            logger.info("Estadísticas detalladas obtenidas: Conductores={}, Pasajeros={}, Admins={}", 
-                       totalConductores, totalPasajeros, totalAdmins);
+
+            logger.info("Estadísticas detalladas obtenidas: Conductores={}, Pasajeros={}, Admins={}",
+                    totalConductores, totalPasajeros, totalAdmins);
             return estadisticas;
 
         } catch (SQLException e) {
@@ -448,28 +449,28 @@ public class UserDAO {
 
     public LinkedList<Usuario> obtenerUsuariosRecientes(int limite) {
         logger.debug("Obteniendo {} usuarios más recientes", limite);
-        
+
         String query = "SELECT u.id_usuario, u.usuario, u.nombre, u.apellido, u.correo, u.telefono, u.id_rol, " +
-                       "r.nombre as nombre_rol " +  
-                       "FROM usuarios u " +
-                       "INNER JOIN roles r ON u.id_rol = r.id_rol " +  
-                       "WHERE u.fecha_baja IS NULL " +
-                       "ORDER BY u.id_usuario DESC LIMIT ?";
+                "r.nombre as nombre_rol " +
+                "FROM usuarios u " +
+                "INNER JOIN roles r ON u.id_rol = r.id_rol " +
+                "WHERE u.fecha_baja IS NULL " +
+                "ORDER BY u.id_usuario DESC LIMIT ?";
 
         LinkedList<Usuario> usuarios = new LinkedList<>();
-        
+
         try (
-            Connection conn = ConnectionDB.getInstancia().getConn();
-            PreparedStatement stmt = conn.prepareStatement(query)
+                Connection conn = ConnectionDB.getInstancia().getConn();
+                PreparedStatement stmt = conn.prepareStatement(query)
         ) {
             stmt.setInt(1, limite);
 
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    usuarios.add(mapUsuarioWithRol(rs)); 
+                    usuarios.add(mapUsuarioWithRol(rs));
                 }
             }
-            
+
             logger.info("Obtenidos {} usuarios recientes", usuarios.size());
             return usuarios;
 

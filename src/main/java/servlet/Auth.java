@@ -4,9 +4,9 @@ import entities.PasswordReset;
 import entities.Usuario;
 import logic.PasswordResetController;
 import logic.UserController;
+import services.MailService;
 import utils.Generators;
 import utils.InputValidator;
-import services.MailService;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;

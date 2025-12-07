@@ -1,19 +1,21 @@
 package data;
 
-import java.sql.*;
-import java.util.LinkedList;
-import java.util.Map;
-
+import data.exceptions.DataAccessException;
+import entities.Usuario;
 import entities.Vehiculo;
+import entities.Viaje;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import entities.Usuario;
-import entities.Viaje;
-import data.exceptions.DataAccessException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.LinkedList;
+import java.util.Map;
 
 public class ViajeDAO {
-    private FeedbackDAO fDAO = new FeedbackDAO();
+    private final FeedbackDAO fDAO = new FeedbackDAO();
     private static final Logger logger = LoggerFactory.getLogger(ViajeDAO.class);
 
     public LinkedList<Viaje> getAll(boolean all) {
@@ -358,10 +360,10 @@ public class ViajeDAO {
             throw new DataAccessException("Error al eliminar viaje", e);
         }
     }
-    
+
     public LinkedList<Viaje> obtenerViajesProximos(int limite) {
         logger.debug("Obteniendo {} viajes próximos", limite);
-        
+
         String query = "SELECT v.*, " +
                 "u.id_usuario as conductor_id, u.nombre as conductor_nombre, " +
                 "u.apellido as conductor_apellido, u.correo as conductor_correo, " +
@@ -377,10 +379,10 @@ public class ViajeDAO {
                 "ORDER BY v.fecha ASC LIMIT ?";
 
         LinkedList<Viaje> viajes = new LinkedList<>();
-        
+
         try (
-            Connection conn = ConnectionDB.getInstancia().getConn();
-            PreparedStatement stmt = conn.prepareStatement(query)
+                Connection conn = ConnectionDB.getInstancia().getConn();
+                PreparedStatement stmt = conn.prepareStatement(query)
         ) {
             stmt.setInt(1, limite);
 
@@ -389,7 +391,7 @@ public class ViajeDAO {
                     viajes.add(mapViajeFromJoin(rs, true));
                 }
             }
-            
+
             logger.info("Obtenidos {} viajes próximos", viajes.size());
             return viajes;
 

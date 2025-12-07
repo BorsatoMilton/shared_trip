@@ -1,16 +1,16 @@
 package servlet;
 
-import java.io.IOException;
-import java.util.LinkedList;
+import entities.Viaje;
+import logic.ViajeController;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
-import entities.Viaje;
-import logic.ViajeController;
+import java.io.IOException;
+import java.util.LinkedList;
 
 /**
  * Servlet implementation class ViajesListado
@@ -22,7 +22,8 @@ public class ViajesListadoInicio extends HttpServlet {
 
 
     @Override
-    public void init() throws ServletException {}
+    public void init() throws ServletException {
+    }
 
     public ViajesListadoInicio() {
         super();

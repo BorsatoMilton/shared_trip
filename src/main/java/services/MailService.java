@@ -1,7 +1,12 @@
 package services;
 
+import entities.Usuario;
+import io.github.cdimascio.dotenv.Dotenv;
 import jakarta.mail.*;
-import jakarta.mail.internet.*;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,11 +15,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.*;
-
-import io.github.cdimascio.dotenv.Dotenv;
-import entities.Usuario;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public final class MailService {
 

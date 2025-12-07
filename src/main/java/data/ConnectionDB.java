@@ -9,7 +9,7 @@ import java.sql.SQLException;
 public class ConnectionDB {
 
     private static ConnectionDB instancia;
-    private HikariDataSource dataSource;
+    private final HikariDataSource dataSource;
 
     private ConnectionDB() {
         try {
