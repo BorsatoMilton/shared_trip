@@ -144,7 +144,6 @@
                                             data-destino="<%=viaje.getDestino()%>"
                                             data-precio_unitario="<%=viaje.getPrecio_unitario()%>"
                                             data-cancelado="<%=viaje.isCancelado()%>"
-                                            data-id_conductor="<%=viaje.getConductor()%>"
                                             data-lugar_salida="<%=viaje.getLugar_salida()%>">
                                         <i class="bi bi-pencil"></i>
                                     </button>

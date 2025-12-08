@@ -30,8 +30,8 @@ public class ViajeDAO {
                     "u.telefono as conductor_telefono, " +
                     "veh.id_vehiculo, veh.patente, veh.modelo, veh.anio " +
                     "FROM viajes v " +
-                    "INNER JOIN usuarios u ON u.id_usuario = v.id_conductor " +
                     "INNER JOIN vehiculos veh ON veh.id_vehiculo = v.id_vehiculo_viaje " +
+                    "INNER JOIN usuarios u ON u.id_usuario = veh.usuario_duenio_id " +
                     "WHERE u.fecha_baja IS NULL AND v.activo = TRUE " +
                     "ORDER BY v.fecha DESC";
         } else {
@@ -41,8 +41,8 @@ public class ViajeDAO {
                     "u.telefono as conductor_telefono, " +
                     "veh.id_vehiculo, veh.patente, veh.modelo, veh.anio " +
                     "FROM viajes v " +
-                    "INNER JOIN usuarios u ON u.id_usuario = v.id_conductor " +
                     "INNER JOIN vehiculos veh ON veh.id_vehiculo = v.id_vehiculo_viaje " +
+                    "INNER JOIN usuarios u ON u.id_usuario = veh.usuario_duenio_id " +
                     "WHERE v.fecha >= CURRENT_DATE AND u.fecha_baja IS NULL AND v.cancelado = 0 AND v.activo = TRUE " +
                     "ORDER BY v.fecha DESC";
         }
@@ -91,8 +91,8 @@ public class ViajeDAO {
                         "u.telefono as conductor_telefono, " +
                         "veh.id_vehiculo, veh.patente, veh.modelo, veh.anio " +
                         "FROM viajes v " +
-                        "INNER JOIN usuarios u ON u.id_usuario = v.id_conductor " +
                         "INNER JOIN vehiculos veh ON veh.id_vehiculo = v.id_vehiculo_viaje " +
+                        "INNER JOIN usuarios u ON u.id_usuario = veh.usuario_duenio_id " +
                         "WHERE v.origen COLLATE utf8mb4_general_ci LIKE ? " +
                         "AND v.destino COLLATE utf8mb4_general_ci LIKE ? " +
                         "AND v.fecha = ? " +
@@ -107,8 +107,8 @@ public class ViajeDAO {
                         "u.telefono as conductor_telefono, " +
                         "veh.id_vehiculo, veh.patente, veh.modelo, veh.anio " +
                         "FROM viajes v " +
-                        "INNER JOIN usuarios u ON u.id_usuario = v.id_conductor " +
                         "INNER JOIN vehiculos veh ON veh.id_vehiculo = v.id_vehiculo_viaje " +
+                        "INNER JOIN usuarios u ON u.id_usuario = veh.usuario_duenio_id " +
                         "WHERE v.origen COLLATE utf8mb4_general_ci LIKE ? " +
                         "AND v.destino COLLATE utf8mb4_general_ci LIKE ? " +
                         "AND v.fecha >= CURRENT_DATE " +
@@ -153,8 +153,8 @@ public class ViajeDAO {
                 "u.telefono as conductor_telefono, " +
                 "veh.id_vehiculo, veh.patente, veh.modelo, veh.anio " +
                 "FROM viajes v " +
-                "INNER JOIN usuarios u ON u.id_usuario = v.id_conductor " +
                 "INNER JOIN vehiculos veh ON veh.id_vehiculo = v.id_vehiculo_viaje " +
+                "INNER JOIN usuarios u ON u.id_usuario = veh.usuario_duenio_id " +
                 "WHERE v.id_viaje = ? AND v.activo = TRUE";
 
         try (Connection conn = ConnectionDB.getInstancia().getConn();
@@ -189,14 +189,13 @@ public class ViajeDAO {
                 "u_conductor.telefono as conductor_telefono, " +
                 "veh.id_vehiculo, veh.patente, veh.modelo, veh.anio " +
                 "FROM viajes v " +
-                "INNER JOIN usuarios u_conductor ON u_conductor.id_usuario = v.id_conductor " +
                 "INNER JOIN vehiculos veh ON veh.id_vehiculo = v.id_vehiculo_viaje " +
-                "WHERE v.id_conductor = ? AND v.activo = TRUE " +
+                "INNER JOIN usuarios u_conductor ON u_conductor.id_usuario = veh.usuario_duenio_id " +
+                "WHERE veh.usuario_duenio_id = ? AND v.activo = TRUE " +
                 "ORDER BY v.fecha DESC";
 
         try (Connection conn = ConnectionDB.getInstancia().getConn();
              PreparedStatement stmt = conn.prepareStatement(query)) {
-
             stmt.setInt(1, u.getIdUsuario());
 
             try (ResultSet rs = stmt.executeQuery()) {
@@ -270,7 +269,7 @@ public class ViajeDAO {
         logger.info("Actualizando viaje ID: {}", id_viaje);
 
         String sql = "UPDATE viajes SET fecha=?, lugares_disponibles=?, origen=?, destino=?, " +
-                "precio_unitario=?, cancelado=?, id_conductor=?, lugar_salida=?, id_vehiculo_viaje=? " +
+                "precio_unitario=?, cancelado=?, lugar_salida=?, id_vehiculo_viaje=? " +
                 "WHERE id_viaje=? AND activo = TRUE";
 
         try (Connection conn = ConnectionDB.getInstancia().getConn();
@@ -282,10 +281,9 @@ public class ViajeDAO {
             stmt.setString(4, v.getDestino());
             stmt.setDouble(5, v.getPrecio_unitario());
             stmt.setBoolean(6, v.isCancelado());
-            stmt.setInt(7, v.getConductor().getIdUsuario());
-            stmt.setString(8, v.getLugar_salida());
-            stmt.setInt(9, v.getVehiculo().getId_vehiculo());
-            stmt.setInt(10, id_viaje);
+            stmt.setString(7, v.getLugar_salida());
+            stmt.setInt(8, v.getVehiculo().getId_vehiculo());
+            stmt.setInt(9, id_viaje);
 
             int rowsAffected = stmt.executeUpdate();
             if (rowsAffected > 0) {
@@ -304,7 +302,7 @@ public class ViajeDAO {
         logger.info("Creando nuevo viaje para conductor ID: {}", v.getConductor().getIdUsuario());
 
         String sql = "INSERT INTO viajes(fecha, lugares_disponibles, origen, destino, precio_unitario, " +
-                "cancelado, id_conductor, lugar_salida, id_vehiculo_viaje) VALUES (?,?,?,?,?,?,?,?,?)";
+                "cancelado, lugar_salida, id_vehiculo_viaje) VALUES (?,?,?,?,?,?,?,?)";
 
         try (Connection conn = ConnectionDB.getInstancia().getConn();
              PreparedStatement stmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
@@ -315,9 +313,8 @@ public class ViajeDAO {
             stmt.setString(4, v.getDestino());
             stmt.setDouble(5, v.getPrecio_unitario());
             stmt.setBoolean(6, false);
-            stmt.setInt(7, v.getConductor().getIdUsuario());
-            stmt.setString(8, v.getLugar_salida());
-            stmt.setInt(9, v.getVehiculo().getId_vehiculo());
+            stmt.setString(7, v.getLugar_salida());
+            stmt.setInt(8, v.getVehiculo().getId_vehiculo());
 
             int affectedRows = stmt.executeUpdate();
             if (affectedRows > 0) {
@@ -370,8 +367,8 @@ public class ViajeDAO {
                 "u.telefono as conductor_telefono, " +
                 "veh.id_vehiculo, veh.patente, veh.modelo, veh.anio " +
                 "FROM viajes v " +
-                "INNER JOIN usuarios u ON u.id_usuario = v.id_conductor " +
                 "INNER JOIN vehiculos veh ON veh.id_vehiculo = v.id_vehiculo_viaje " +
+                "INNER JOIN usuarios u ON u.id_usuario = veh.usuario_duenio_id " +
                 "WHERE v.fecha >= CURRENT_DATE " +
                 "AND v.cancelado = 0 " +
                 "AND u.fecha_baja IS NULL " +

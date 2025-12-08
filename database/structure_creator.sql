@@ -52,7 +52,7 @@ CREATE TABLE `password_reset` (
   PRIMARY KEY (`idpassword_reset`),
   KEY `id_usuario_reset_clave_idx` (`id_usuario`),
   CONSTRAINT `id_usuario_reset_clave` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id_usuario`)
-) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -153,16 +153,13 @@ CREATE TABLE `viajes` (
   `destino` varchar(100) NOT NULL,
   `precio_unitario` decimal(10,2) NOT NULL,
   `cancelado` tinyint NOT NULL,
-  `id_conductor` int NOT NULL,
   `lugar_salida` varchar(150) NOT NULL,
   `id_vehiculo_viaje` int NOT NULL,
   `activo` tinyint NOT NULL DEFAULT '1',
   PRIMARY KEY (`id_viaje`),
-  KEY `fk_conductor_idx` (`id_conductor`),
   KEY `fk_vehiculo_viaje_idx` (`id_vehiculo_viaje`),
-  CONSTRAINT `fk_conductor` FOREIGN KEY (`id_conductor`) REFERENCES `usuarios` (`id_usuario`) ON DELETE RESTRICT,
   CONSTRAINT `fk_vehiculo_viaje` FOREIGN KEY (`id_vehiculo_viaje`) REFERENCES `vehiculos` (`id_vehiculo`)
-) ENGINE=InnoDB AUTO_INCREMENT=100 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=101 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -174,4 +171,4 @@ CREATE TABLE `viajes` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-12-08 10:32:22
+-- Dump completed on 2025-12-08 13:19:42

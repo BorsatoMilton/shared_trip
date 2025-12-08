@@ -81,7 +81,7 @@ UNLOCK TABLES;
 
 LOCK TABLES `viajes` WRITE;
 /*!40000 ALTER TABLE `viajes` DISABLE KEYS */;
-INSERT INTO `viajes` VALUES (96,'2025-12-11',3,'Rosario','La Plata',10000.00,0,48,'Moreno y Pellegrini',40,1),(97,'2025-12-13',3,'La Plata','Rosario',10000.00,0,48,'Plaza central',40,1),(98,'2025-12-07',1,'Rosario','Villa Cañás',15000.00,0,49,'Moreno 1829',42,1),(99,'2025-12-18',3,'Villa Gobernador Gálvez','Santa Fe',18000.00,0,49,'Centro',42,1);
+INSERT INTO `viajes` VALUES (96,'2025-12-11',3,'Rosario','La Plata',10000.00,0,'Moreno y Pellegrini',40,1),(97,'2025-12-13',3,'La Plata','Rosario',10000.00,0,'Plaza central',40,1),(98,'2025-12-07',1,'Rosario','Villa Cañás',15000.00,0,'Moreno 1829',42,1),(99,'2025-12-18',3,'Villa Gobernador Gálvez','Santa Fe',18000.00,0,'Centro',42,1);
 /*!40000 ALTER TABLE `viajes` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;

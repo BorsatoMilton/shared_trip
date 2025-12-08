@@ -145,8 +145,7 @@ public class ViajeController {
     }
 
     public void crearViaje(Date fecha, int lugares, String origen, String destino,
-                           double precio, String lugarSalida, int vehiculoId,
-                           Usuario conductor) throws Exception {
+                           double precio, String lugarSalida, int vehiculoId, Usuario conductor) throws Exception {
 
         Vehiculo vehiculo = vehiculoDAO.getById_vehiculo(vehiculoId);
         if (vehiculo == null) {

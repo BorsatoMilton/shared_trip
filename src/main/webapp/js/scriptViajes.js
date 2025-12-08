@@ -39,7 +39,6 @@ const initCRUDOperations = () => {
                 editOrigen: this.dataset.origen,
                 editDestino: this.dataset.destino,
                 editPrecioUnitario: this.dataset.precio_unitario,
-                editConductor: this.dataset.id_conductor,
                 editCancelado: this.dataset.cancelado,
                 editLugarSalida: this.dataset.lugar_salida
             });

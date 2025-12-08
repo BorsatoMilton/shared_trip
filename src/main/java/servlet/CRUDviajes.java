@@ -59,27 +59,17 @@ public class CRUDviajes extends HttpServlet {
         String tipo = usuario.getRol().getNombreRol();
 
         LinkedList<Viaje> viajes = new LinkedList<>();
-        LinkedList<Usuario> usuarios = null;
         LinkedList<Vehiculo> vehiculos = null;
 
         try {
             if ("admin".equalsIgnoreCase(tipo)) {
                 viajes = viajeCtrl.getAll(true);
-                usuarios = usuarioCtrl.getAll();
             } else if ("usuario".equalsIgnoreCase(tipo)) {
                 viajes = viajeCtrl.getViajesUsuario(usuario);
                 vehiculos = vehiculoCtrl.getVehiculosUsuario(usuario);
             }
 
-            for (Viaje v : viajes) {
-                if (v.getConductor() != null && v.getConductor().getIdUsuario() > 0) {
-                    Usuario u = usuarioCtrl.getOneById(v.getConductor().getIdUsuario());
-                    v.setConductor(u);
-                }
-            }
-
             request.setAttribute("viajes", viajes);
-            request.setAttribute("usuarios", usuarios);
             request.setAttribute("vehiculos", vehiculos);
 
             request.getRequestDispatcher("WEB-INF/misViajes.jsp").forward(request, response);
