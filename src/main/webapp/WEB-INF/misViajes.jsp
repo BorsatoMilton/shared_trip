@@ -150,7 +150,7 @@
                                     </button>
                                     <% } %>
 
-                                    <% if (viaje.isCancelado() || fechaViajeLocalDateTime.isBefore(LocalDateTime.now())) { %>
+                                    <% if (viaje.isCancelado() || fechaViajeLocalDateTime.isBefore(LocalDate.now().atStartOfDay())) { %>
                                     <button type="button"
                                             class="btn btn-sm btn-danger btn-eliminar me-1"
                                             data-id="<%=viaje.getIdViaje()%>">
@@ -158,7 +158,7 @@
                                     </button>
                                     <% } %>
 
-                                    <% if (!viaje.isCancelado() && fechaViajeLocalDateTime.isAfter(LocalDateTime.now())) { %>
+                                    <% if (!viaje.isCancelado() && fechaViajeLocalDateTime.isAfter(LocalDate.now().atStartOfDay())) { %>
                                     <button type="button" class="btn btn-sm btn-danger btn-cancelar me-1"
                                             data-id="<%=viaje.getIdViaje()%>">
                                         <i class="bi bi-x-circle-fill"></i>
