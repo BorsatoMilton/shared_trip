@@ -30,7 +30,7 @@ public class Auth extends HttpServlet {
 
         String token = request.getParameter("t");
         HttpSession session = request.getSession();
-        String redirectPage = "/index.jsp";
+        String redirectPage = "/";
 
         if (token == null || token.trim().isEmpty()) {
             session.setAttribute("error", "Token inválido");
