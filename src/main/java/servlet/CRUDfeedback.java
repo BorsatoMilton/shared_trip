@@ -30,7 +30,7 @@ public class CRUDfeedback extends HttpServlet {
 
         if (token == null || token.trim().isEmpty()) {
             session.setAttribute("error", "Token inválido");
-            request.getRequestDispatcher("/index.jsp").forward(request, response);
+            response.sendRedirect(request.getContextPath() + "/");
             return;
         }
 
@@ -40,7 +40,7 @@ public class CRUDfeedback extends HttpServlet {
 
             if (validationError != null) {
                 session.setAttribute("error", validationError);
-                request.getRequestDispatcher("/index.jsp").forward(request, response);
+                response.sendRedirect(request.getContextPath() + "/");
                 return;
             }
 
@@ -51,7 +51,7 @@ public class CRUDfeedback extends HttpServlet {
         } catch (Exception e) {
             logger.error("Error al obtener los feedback del usuario: {}", e.getMessage());
             session.setAttribute("error", "Error al buscar la reserva");
-            request.getRequestDispatcher("/index.jsp").forward(request, response);
+            response.sendRedirect(request.getContextPath() + "/");
         }
     }
 
@@ -84,13 +84,13 @@ public class CRUDfeedback extends HttpServlet {
 
             if (validationError != null) {
                 session.setAttribute("error", validationError);
-                request.getRequestDispatcher("/index.jsp").forward(request, response);
+                response.sendRedirect(request.getContextPath() + "/");
                 return;
             }
 
             feedbackController.guardarFeedback(puntuacion, token);
             session.setAttribute("mensaje", "Feedback otorgado exitosamente!");
-            response.sendRedirect(request.getContextPath() + "/index.jsp");
+            response.sendRedirect(request.getContextPath() + "/");
 
         } catch (Exception e) {
             logger.error("Error al guardar el feedback: {}", e.getMessage());

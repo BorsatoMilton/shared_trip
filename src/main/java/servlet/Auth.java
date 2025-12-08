@@ -146,17 +146,22 @@ public class Auth extends HttpServlet {
         if (email == null || email.trim().isEmpty()) {
             throw new Exception("Email requerido");
         }
+        try {
+            Usuario u = userController.getOneByEmail(email);
 
-        Usuario u = userController.getOneByEmail(email);
-        if (u == null) {
-            throw new Exception("Usuario no existente");
+            if (u != null) {
+                String token = generators.generarToken();
+                passwordResetController.guardarToken(u.getIdUsuario(), token);
+                mailService.recuperarClave(u, token);
+            }
+
+            session.setAttribute("mensaje",
+                    "Si el correo existe en el sistema, recibirá un email para recuperar su cuenta.");
+
+        } catch (Exception e) {
+            session.setAttribute("mensaje",
+                    "Si el correo existe en el sistema, recibirá un email para recuperar su cuenta.");
         }
-
-        String token = generators.generarToken();
-        passwordResetController.guardarToken(u.getIdUsuario(), token);
-        mailService.recuperarClave(u, token);
-
-        session.setAttribute("mensaje", "Se envió un mail a su casilla de correo para recuperar su cuenta");
         return "/login.jsp";
     }
 

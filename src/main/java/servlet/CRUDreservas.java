@@ -19,7 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.LinkedList;
 
 @WebServlet("/reservas")
@@ -210,8 +210,12 @@ public class CRUDreservas extends HttpServlet {
             throw new Exception("No existen reservas para este viaje");
         }
 
-        Date ahora = new Date();
-        if (viaje.getFecha().before(ahora)) {
+        LocalDate fechaViaje = viaje.getFecha().toLocalDate();
+        LocalDate hoy = LocalDate.now();
+
+        LocalDate fechaConMargen = fechaViaje.plusDays(1);
+
+        if (fechaConMargen.isBefore(hoy)) {
             throw new Exception("El viaje ya se realizó.");
         }
 
@@ -225,7 +229,6 @@ public class CRUDreservas extends HttpServlet {
                     throw new Exception("Esta reserva esta cancelada");
                 }
                 reservaEncontrada = true;
-
                 reserva.setEstado("CONFIRMADA");
                 reservaController.actualizarEstadoReserva(reserva);
 
