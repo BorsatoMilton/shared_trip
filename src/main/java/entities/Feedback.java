@@ -7,7 +7,6 @@ public class Feedback {
     private Date fecha_hora;
     private Usuario usuario_calificado;
     private Reserva reserva;
-    private String token;
 
     public Reserva getReserva() {
         return reserva;
@@ -40,29 +39,12 @@ public class Feedback {
     public void setUsuario_calificado(Usuario usuario_calificado) {
         this.usuario_calificado = usuario_calificado;
     }
+    
 
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    //CHEQUEAR SI SE NECESITA ESTE CONSTRUCTOR
-    public Feedback(int puntuacion, Date fecha_hora, Usuario usuario_calificado, Reserva reserva) {
-        super();
-        this.puntuacion = puntuacion;
-        this.fecha_hora = fecha_hora;
-        this.usuario_calificado = usuario_calificado;
-        this.reserva = reserva;
-    }
-
-    public Feedback(Usuario usuario_calificado, Reserva reserva, String token) {
+    public Feedback(Usuario usuario_calificado, Reserva reserva) {
         super();
         this.usuario_calificado = usuario_calificado;
         this.reserva = reserva;
-        this.token = token;
     }
 
     public Feedback() {

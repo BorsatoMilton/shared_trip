@@ -28,9 +28,9 @@ public class ReservaDAO {
             "veh.id_vehiculo, veh.patente, veh.modelo, veh.anio " +
             "FROM reservas r " +
             "INNER JOIN viajes v ON r.id_viaje = v.id_viaje " +
-            "INNER JOIN usuarios u_conductor ON u_conductor.id_usuario = v.id_conductor " +
-            "INNER JOIN usuarios u_pasajero ON u_pasajero.id_usuario = r.id_pasajero_reserva " +
-            "INNER JOIN vehiculos veh ON veh.id_vehiculo = v.id_vehiculo_viaje ";
+            "INNER JOIN vehiculos veh ON veh.id_vehiculo = v.id_vehiculo_viaje " +
+            "INNER JOIN usuarios u_conductor ON u_conductor.id_usuario = veh.usuario_duenio_id " +
+            "INNER JOIN usuarios u_pasajero ON u_pasajero.id_usuario = r.id_pasajero_reserva ";
 
     public ReservaDAO() {
     }

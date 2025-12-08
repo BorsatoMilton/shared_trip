@@ -30,7 +30,7 @@ public class FeedbackService {
             Usuario chofer = viaje.getConductor();
 
             String token = generators.generarToken();
-            Feedback feedback = new Feedback(chofer, reserva, token);
+            Feedback feedback = new Feedback(chofer, reserva);
             listaFeedbacks.add(feedback);
 
             reservaDAO.guardarToken(reserva.getIdReserva(), token);

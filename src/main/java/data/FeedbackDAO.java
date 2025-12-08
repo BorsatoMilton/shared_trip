@@ -20,7 +20,7 @@ public class FeedbackDAO {
     public LinkedList<Feedback> getAll() {
         logger.debug("Obteniendo todos los feedbacks");
 
-        String query = "SELECT f.fecha_hora_feedback, f.id_usuario_calificado, f.puntuacion, f.id_reserva, f.token, " +
+        String query = "SELECT f.fecha_hora_feedback, f.id_usuario_calificado, f.puntuacion, f.id_reserva, " +
                 "u.id_usuario, u.nombre, u.apellido, " +
                 "r.id_reserva AS reserva_id, r.fecha_reserva, r.estado, r.id_viaje " +
                 "FROM feedback f " +
@@ -91,7 +91,7 @@ public class FeedbackDAO {
     public Feedback getByReserva(Reserva r) {
         logger.debug("Obteniendo feedback para reserva ID: {}", r.getIdReserva());
 
-        String query = "SELECT fecha_hora_feedback, id_usuario_calificado, puntuacion, id_reserva, token " +
+        String query = "SELECT fecha_hora_feedback, id_usuario_calificado, puntuacion, id_reserva " +
                 "FROM feedback WHERE id_reserva = ?";
 
         try (
@@ -117,10 +117,10 @@ public class FeedbackDAO {
         }
     }
 
-    public void guardarFeedback(int puntuacion, String token) {
-        logger.info("Guardando feedback con token: {}", token);
+    public void guardarFeedback(int puntuacion, int id_reserva) {
+        logger.info("Guardando feedback con token: {}", id_reserva);
 
-        String query = "UPDATE feedback SET fecha_hora_feedback=?, puntuacion=? WHERE token=?";
+        String query = "UPDATE feedback SET fecha_hora_feedback=?, puntuacion=? WHERE id_reserva=?";
 
         try (
                 Connection conn = ConnectionDB.getInstancia().getConn();
@@ -128,26 +128,26 @@ public class FeedbackDAO {
         ) {
             stmt.setTimestamp(1, new Timestamp(System.currentTimeMillis()));
             stmt.setInt(2, puntuacion);
-            stmt.setString(3, token);
+            stmt.setInt(3, id_reserva);
 
             int rowsAffected = stmt.executeUpdate();
 
             if (rowsAffected > 0) {
-                logger.info("Feedback guardado exitosamente para token: {}", token);
+                logger.info("Feedback guardado exitosamente para token: {}", id_reserva);
             } else {
-                logger.warn("No se encontró feedback con token: {}", token);
+                logger.warn("No se encontró feedback con token: {}", id_reserva);
                 throw new DataAccessException("No se encontró feedback con el token proporcionado");
             }
 
         } catch (SQLException e) {
-            logger.error("Error al guardar feedback con token {} - Estado: {} - Código: {}",
-                    token, e.getSQLState(), e.getErrorCode());
+            logger.error("Error al guardar feedback con ID reserva {} - Estado: {} - Código: {}",
+                    id_reserva, e.getSQLState(), e.getErrorCode());
             throw new DataAccessException("Error al guardar feedback", e);
         }
     }
 
     public void addAll(List<Feedback> lista) {
-        String query = "INSERT INTO feedback(id_usuario_calificado, id_reserva, token) VALUES (?, ?, ?)";
+        String query = "INSERT INTO feedback(id_usuario_calificado, id_reserva) VALUES (?, ?, ?)";
 
         try (
                 Connection conn = ConnectionDB.getInstancia().getConn();
@@ -158,7 +158,6 @@ public class FeedbackDAO {
             for (Feedback f : lista) {
                 stmt.setInt(1, f.getUsuario_calificado().getIdUsuario());
                 stmt.setInt(2, f.getReserva().getIdReserva());
-                stmt.setString(3, f.getToken());
                 stmt.addBatch();
             }
 
@@ -176,7 +175,6 @@ public class FeedbackDAO {
     private Feedback mappingFeedback(ResultSet rs, Feedback f) throws SQLException {
         f.setFecha_hora(rs.getDate("fecha_hora_feedback"));
         f.setPuntuacion(rs.getInt("puntuacion"));
-        f.setToken(rs.getString("token"));
         return f;
     }
 

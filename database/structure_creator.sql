@@ -27,7 +27,6 @@ CREATE TABLE `feedback` (
   `id_usuario_calificado` int NOT NULL,
   `puntuacion` int DEFAULT NULL,
   `id_reserva` int NOT NULL,
-  `token` varchar(64) NOT NULL,
   PRIMARY KEY (`id_reserva`),
   KEY `fk_usuario_calificado_idx` (`id_usuario_calificado`),
   KEY `fk_reserva_feedback_idx` (`id_reserva`),

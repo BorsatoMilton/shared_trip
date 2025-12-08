@@ -88,7 +88,7 @@ public class CRUDfeedback extends HttpServlet {
                 return;
             }
 
-            feedbackController.guardarFeedback(puntuacion, token);
+            feedbackController.guardarFeedback(puntuacion, reserva.getIdReserva());
             session.setAttribute("mensaje", "Feedback otorgado exitosamente!");
             response.sendRedirect(request.getContextPath() + "/");
 

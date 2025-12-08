@@ -16,7 +16,7 @@ public class FeedbackController {
         return feedbackDAO.getByReserva(reserva);
     }
 
-    public void guardarFeedback(int puntuacion, String token) throws Exception {
-        feedbackDAO.guardarFeedback(puntuacion, token);
+    public void guardarFeedback(int puntuacion, int id_reserva) throws Exception {
+        feedbackDAO.guardarFeedback(puntuacion, id_reserva);
     }
 }
