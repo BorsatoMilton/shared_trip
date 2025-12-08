@@ -391,7 +391,7 @@ public class UserDAO {
         String query = "SELECT " +
                 "r.nombre as rol_base, " +
                 "COUNT(*) as total_por_rol, " +
-                "SUM(CASE WHEN EXISTS (SELECT 1 FROM viajes v WHERE v.id_conductor = u.id_usuario) THEN 1 ELSE 0 END) as conductores, " +
+                "SUM(CASE WHEN EXISTS (SELECT 1 FROM viajes v INNER JOIN vehiculos veh ON v.id_vehiculo_viaje = veh.id_vehiculo WHERE veh.usuario_duenio_id = u.id_usuario) THEN 1 ELSE 0 END) as conductores, " +
                 "SUM(CASE WHEN EXISTS (SELECT 1 FROM reservas r WHERE r.id_pasajero_reserva = u.id_usuario) THEN 1 ELSE 0 END) as pasajeros " +
                 "FROM usuarios u " +
                 "INNER JOIN roles r ON u.id_rol = r.id_rol " +
