@@ -147,7 +147,7 @@ public class FeedbackDAO {
     }
 
     public void addAll(List<Feedback> lista) {
-        String query = "INSERT INTO feedback(id_usuario_calificado, id_reserva) VALUES (?, ?, ?)";
+        String query = "INSERT INTO feedback(id_usuario_calificado, id_reserva) VALUES (?, ?)";
 
         try (
                 Connection conn = ConnectionDB.getInstancia().getConn();
