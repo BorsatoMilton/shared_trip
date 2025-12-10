@@ -11,41 +11,33 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.Map;
 
 public class ViajeDAO {
     private final FeedbackDAO fDAO = new FeedbackDAO();
     private static final Logger logger = LoggerFactory.getLogger(ViajeDAO.class);
+    private static final String BASE_VIAJE_QUERY = "SELECT v.id_viaje, v.fecha, v.lugares_disponibles, " +
+            "v.origen, v.destino, v.precio_unitario, v.cancelado, v.lugar_salida, " +
+            "u.id_usuario as conductor_id, u.nombre as conductor_nombre, " +
+            "u.apellido as conductor_apellido, u.correo as conductor_correo, " +
+            "u.telefono as conductor_telefono, " +
+            "veh.id_vehiculo, veh.patente, veh.modelo, veh.anio " +
+            "FROM viajes v " +
+            "INNER JOIN vehiculos veh ON veh.id_vehiculo = v.id_vehiculo_viaje " +
+            "INNER JOIN usuarios u ON u.id_usuario = veh.usuario_duenio_id ";
 
     public LinkedList<Viaje> getAll(boolean all) {
-        logger.debug("Obteniendo todos los viajes activos con detalles");
+        logger.debug("Obteniendo todos los viajes - todos: {}", all);
         LinkedList<Viaje> viajes = new LinkedList<>();
 
-        String query;
-        if (all) {
-            query = "SELECT v.*, " +
-                    "u.id_usuario as conductor_id, u.nombre as conductor_nombre, " +
-                    "u.apellido as conductor_apellido, u.correo as conductor_correo, " +
-                    "u.telefono as conductor_telefono, " +
-                    "veh.id_vehiculo, veh.patente, veh.modelo, veh.anio " +
-                    "FROM viajes v " +
-                    "INNER JOIN vehiculos veh ON veh.id_vehiculo = v.id_vehiculo_viaje " +
-                    "INNER JOIN usuarios u ON u.id_usuario = veh.usuario_duenio_id " +
-                    "WHERE u.fecha_baja IS NULL AND v.activo = TRUE " +
-                    "ORDER BY v.fecha DESC";
-        } else {
-            query = "SELECT v.*, " +
-                    "u.id_usuario as conductor_id, u.nombre as conductor_nombre, " +
-                    "u.apellido as conductor_apellido, u.correo as conductor_correo, " +
-                    "u.telefono as conductor_telefono, " +
-                    "veh.id_vehiculo, veh.patente, veh.modelo, veh.anio " +
-                    "FROM viajes v " +
-                    "INNER JOIN vehiculos veh ON veh.id_vehiculo = v.id_vehiculo_viaje " +
-                    "INNER JOIN usuarios u ON u.id_usuario = veh.usuario_duenio_id " +
-                    "WHERE v.fecha >= CURRENT_DATE AND u.fecha_baja IS NULL AND v.cancelado = 0 AND v.activo = TRUE " +
-                    "ORDER BY v.fecha DESC";
+        String query = BASE_VIAJE_QUERY + "WHERE u.fecha_baja IS NULL AND v.activo = TRUE";
+
+        if (!all) {
+            query += " AND v.fecha >= CURRENT_DATE AND v.cancelado = 0";
         }
+        query += " ORDER BY v.fecha DESC";
 
         try (Connection conn = ConnectionDB.getInstancia().getConn();
              PreparedStatement stmt = conn.prepareStatement(query);
@@ -54,10 +46,11 @@ public class ViajeDAO {
             while (rs.next()) {
                 viajes.add(mapViajeFromJoin(rs, true));
             }
-            logger.info("Obtenidos {} viajes activos", viajes.size());
+            logger.info("Obtenidos {} viajes", viajes.size());
 
         } catch (SQLException e) {
-            logger.error("Error al obtener todos los viajes", e);
+            logger.error("Error al obtener todos los viajes - Estado: {} - Código: {}",
+                    e.getSQLState(), e.getErrorCode(), e);
             throw new DataAccessException("Error al obtener todos los viajes", e);
         }
         return viajes;
@@ -84,44 +77,26 @@ public class ViajeDAO {
             }
         }
 
-        String query = tieneFecha && fechaSql != null ?
-                "SELECT v.*, " +
-                        "u.id_usuario as conductor_id, u.nombre as conductor_nombre, " +
-                        "u.apellido as conductor_apellido, u.correo as conductor_correo, " +
-                        "u.telefono as conductor_telefono, " +
-                        "veh.id_vehiculo, veh.patente, veh.modelo, veh.anio " +
-                        "FROM viajes v " +
-                        "INNER JOIN vehiculos veh ON veh.id_vehiculo = v.id_vehiculo_viaje " +
-                        "INNER JOIN usuarios u ON u.id_usuario = veh.usuario_duenio_id " +
-                        "WHERE v.origen COLLATE utf8mb4_general_ci LIKE ? " +
-                        "AND v.destino COLLATE utf8mb4_general_ci LIKE ? " +
-                        "AND v.fecha = ? " +
-                        "AND v.cancelado = 0 " +
-                        "AND u.fecha_baja IS NULL " +
-                        "AND v.activo = TRUE " +
-                        "ORDER BY v.fecha DESC, v.lugares_disponibles DESC"
-                :
-                "SELECT v.*, " +
-                        "u.id_usuario as conductor_id, u.nombre as conductor_nombre, " +
-                        "u.apellido as conductor_apellido, u.correo as conductor_correo, " +
-                        "u.telefono as conductor_telefono, " +
-                        "veh.id_vehiculo, veh.patente, veh.modelo, veh.anio " +
-                        "FROM viajes v " +
-                        "INNER JOIN vehiculos veh ON veh.id_vehiculo = v.id_vehiculo_viaje " +
-                        "INNER JOIN usuarios u ON u.id_usuario = veh.usuario_duenio_id " +
-                        "WHERE v.origen COLLATE utf8mb4_general_ci LIKE ? " +
-                        "AND v.destino COLLATE utf8mb4_general_ci LIKE ? " +
-                        "AND v.fecha >= CURRENT_DATE " +
-                        "AND v.cancelado = 0 " +
-                        "AND u.fecha_baja IS NULL " +
-                        "AND v.activo = TRUE " +
-                        "ORDER BY v.fecha DESC, v.lugares_disponibles DESC";
+        String query = BASE_VIAJE_QUERY +
+                "WHERE v.origen COLLATE utf8mb4_general_ci LIKE ? " +
+                "AND v.destino COLLATE utf8mb4_general_ci LIKE ? " +
+                "AND v.cancelado = 0 " +
+                "AND u.fecha_baja IS NULL " +
+                "AND v.activo = TRUE ";
+
+        if (tieneFecha && fechaSql != null) {
+            query += "AND v.fecha = ? ";
+        } else {
+            query += "AND v.fecha >= CURRENT_DATE ";
+        }
+
+        query += "ORDER BY v.fecha DESC, v.lugares_disponibles DESC";
 
         try (Connection conn = ConnectionDB.getInstancia().getConn();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
-            stmt.setString(1, origen.trim());
-            stmt.setString(2, destino.trim());
+            stmt.setString(1, "%" + origen.trim() + "%");
+            stmt.setString(2, "%" + destino.trim() + "%");
 
             if (tieneFecha && fechaSql != null) {
                 stmt.setDate(3, fechaSql);
@@ -133,11 +108,11 @@ public class ViajeDAO {
                 }
             }
 
-            logger.info("Búsqueda completada - origen: {}, destino: {}, fecha: {}. Resultados: {}",
-                    origen, destino, fecha, viajes.size());
+            logger.info("Búsqueda completada. Resultados: {}", viajes.size());
 
         } catch (SQLException e) {
-            logger.error("Error al buscar viajes - origen: {}, destino: {}, fecha: {}", origen, destino, fecha, e);
+            logger.error("Error al buscar viajes - origen: {}, destino: {}, fecha: {} - Estado: {} - Código: {}",
+                    origen, destino, fecha, e.getSQLState(), e.getErrorCode(), e);
             throw new DataAccessException("Error al buscar viajes", e);
         }
 
@@ -147,15 +122,7 @@ public class ViajeDAO {
     public Viaje getByViaje(int id_viaje) {
         logger.debug("Buscando viaje con ID: {}", id_viaje);
 
-        String query = "SELECT v.*, " +
-                "u.id_usuario as conductor_id, u.nombre as conductor_nombre, " +
-                "u.apellido as conductor_apellido, u.correo as conductor_correo, " +
-                "u.telefono as conductor_telefono, " +
-                "veh.id_vehiculo, veh.patente, veh.modelo, veh.anio " +
-                "FROM viajes v " +
-                "INNER JOIN vehiculos veh ON veh.id_vehiculo = v.id_vehiculo_viaje " +
-                "INNER JOIN usuarios u ON u.id_usuario = veh.usuario_duenio_id " +
-                "WHERE v.id_viaje = ? AND v.activo = TRUE";
+        String query = BASE_VIAJE_QUERY + "WHERE v.id_viaje = ? AND v.activo = TRUE";
 
         try (Connection conn = ConnectionDB.getInstancia().getConn();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -164,9 +131,8 @@ public class ViajeDAO {
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    Viaje viaje = mapViajeFromJoin(rs, false);
                     logger.debug("Viaje encontrado: ID {}", id_viaje);
-                    return viaje;
+                    return mapViajeFromJoin(rs, false);
                 } else {
                     logger.warn("Viaje no encontrado: ID {}", id_viaje);
                     return null;
@@ -174,7 +140,8 @@ public class ViajeDAO {
             }
 
         } catch (SQLException e) {
-            logger.error("Error al obtener viaje ID {}", id_viaje, e);
+            logger.error("Error al obtener viaje ID {} - Estado: {} - Código: {}",
+                    id_viaje, e.getSQLState(), e.getErrorCode(), e);
             throw new DataAccessException("Error al obtener viaje", e);
         }
     }
@@ -183,14 +150,7 @@ public class ViajeDAO {
         logger.debug("Obteniendo viajes del usuario ID: {}", u.getIdUsuario());
         LinkedList<Viaje> viajes = new LinkedList<>();
 
-        String query = "SELECT v.*, " +
-                "u_conductor.id_usuario as conductor_id, u_conductor.nombre as conductor_nombre, " +
-                "u_conductor.apellido as conductor_apellido, u_conductor.correo as conductor_correo, " +
-                "u_conductor.telefono as conductor_telefono, " +
-                "veh.id_vehiculo, veh.patente, veh.modelo, veh.anio " +
-                "FROM viajes v " +
-                "INNER JOIN vehiculos veh ON veh.id_vehiculo = v.id_vehiculo_viaje " +
-                "INNER JOIN usuarios u_conductor ON u_conductor.id_usuario = veh.usuario_duenio_id " +
+        String query = BASE_VIAJE_QUERY +
                 "WHERE veh.usuario_duenio_id = ? AND v.activo = TRUE " +
                 "ORDER BY v.fecha DESC";
 
@@ -207,7 +167,8 @@ public class ViajeDAO {
             logger.info("Encontrados {} viajes para usuario ID: {}", viajes.size(), u.getIdUsuario());
 
         } catch (SQLException e) {
-            logger.error("Error al obtener viajes del usuario ID {}", u.getIdUsuario(), e);
+            logger.error("Error al obtener viajes del usuario ID {} - Estado: {} - Código: {}",
+                    u.getIdUsuario(), e.getSQLState(), e.getErrorCode(), e);
             throw new DataAccessException("Error al obtener viajes del usuario", e);
         }
 
@@ -226,14 +187,15 @@ public class ViajeDAO {
             stmt.setInt(2, idViaje);
 
             int rowsAffected = stmt.executeUpdate();
-            if (rowsAffected > 0) {
-                logger.info("Lugares actualizados exitosamente para viaje ID: {}", idViaje);
-            } else {
+            if (rowsAffected == 0) {
                 logger.warn("No se encontró viaje con ID: {}", idViaje);
+                throw new DataAccessException("Viaje no encontrado con ID: " + idViaje);
             }
+            logger.info("Lugares actualizados exitosamente para viaje ID: {}", idViaje);
 
         } catch (SQLException e) {
-            logger.error("Error al actualizar lugares del viaje ID {}", idViaje, e);
+            logger.error("Error al actualizar lugares del viaje ID {} - Estado: {} - Código: {}",
+                    idViaje, e.getSQLState(), e.getErrorCode(), e);
             throw new DataAccessException("Error al actualizar lugares del viaje", e);
         }
     }
@@ -241,7 +203,7 @@ public class ViajeDAO {
     public boolean cancelarViaje(int id_viaje) {
         logger.info("Cancelando viaje ID: {}", id_viaje);
 
-        String sql = "UPDATE viajes SET cancelado = true WHERE id_viaje = ? AND activo = TRUE";
+        String sql = "UPDATE viajes SET cancelado = TRUE WHERE id_viaje = ? AND activo = TRUE";
 
         try (Connection conn = ConnectionDB.getInstancia().getConn();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -249,18 +211,18 @@ public class ViajeDAO {
             stmt.setInt(1, id_viaje);
 
             int rowsAffected = stmt.executeUpdate();
-            boolean cancelada = rowsAffected > 0;
 
-            if (cancelada) {
+            if (rowsAffected > 0) {
                 logger.info("Viaje cancelado exitosamente: ID {}", id_viaje);
+                return true;
             } else {
                 logger.warn("No se pudo cancelar el viaje ID: {}", id_viaje);
+                return false;
             }
 
-            return cancelada;
-
         } catch (SQLException e) {
-            logger.error("Error al cancelar viaje ID {}", id_viaje, e);
+            logger.error("Error al cancelar viaje ID {} - Estado: {} - Código: {}",
+                    id_viaje, e.getSQLState(), e.getErrorCode(), e);
             throw new DataAccessException("Error al cancelar viaje", e);
         }
     }
@@ -286,14 +248,15 @@ public class ViajeDAO {
             stmt.setInt(9, id_viaje);
 
             int rowsAffected = stmt.executeUpdate();
-            if (rowsAffected > 0) {
-                logger.info("Viaje actualizado exitosamente: ID {}", id_viaje);
-            } else {
+            if (rowsAffected == 0) {
                 logger.warn("No se encontró viaje con ID: {}", id_viaje);
+                throw new DataAccessException("Viaje no encontrado con ID: " + id_viaje);
             }
+            logger.info("Viaje actualizado exitosamente: ID {}", id_viaje);
 
         } catch (SQLException e) {
-            logger.error("Error al actualizar viaje ID {}", id_viaje, e);
+            logger.error("Error al actualizar viaje ID {} - Estado: {} - Código: {}",
+                    id_viaje, e.getSQLState(), e.getErrorCode(), e);
             throw new DataAccessException("Error al actualizar viaje", e);
         }
     }
@@ -330,7 +293,8 @@ public class ViajeDAO {
             }
 
         } catch (SQLException e) {
-            logger.error("Error al crear nuevo viaje", e);
+            logger.error("Error al crear nuevo viaje - Estado: {} - Código: {}",
+                    e.getSQLState(), e.getErrorCode(), e);
             throw new DataAccessException("Error al crear nuevo viaje", e);
         }
     }
@@ -346,14 +310,15 @@ public class ViajeDAO {
             stmt.setInt(1, v.getIdViaje());
 
             int rowsAffected = stmt.executeUpdate();
-            if (rowsAffected > 0) {
-                logger.info("Viaje eliminado exitosamente: ID {}", v.getIdViaje());
-            } else {
+            if (rowsAffected == 0) {
                 logger.warn("No se encontró viaje con ID: {}", v.getIdViaje());
+                throw new DataAccessException("Viaje no encontrado con ID: " + v.getIdViaje());
             }
+            logger.info("Viaje eliminado exitosamente: ID {}", v.getIdViaje());
 
         } catch (SQLException e) {
-            logger.error("Error al eliminar viaje ID {}", v.getIdViaje(), e);
+            logger.error("Error al eliminar viaje ID {} - Estado: {} - Código: {}",
+                    v.getIdViaje(), e.getSQLState(), e.getErrorCode(), e);
             throw new DataAccessException("Error al eliminar viaje", e);
         }
     }
@@ -361,14 +326,7 @@ public class ViajeDAO {
     public LinkedList<Viaje> obtenerViajesProximos(int limite) {
         logger.debug("Obteniendo {} viajes próximos", limite);
 
-        String query = "SELECT v.*, " +
-                "u.id_usuario as conductor_id, u.nombre as conductor_nombre, " +
-                "u.apellido as conductor_apellido, u.correo as conductor_correo, " +
-                "u.telefono as conductor_telefono, " +
-                "veh.id_vehiculo, veh.patente, veh.modelo, veh.anio " +
-                "FROM viajes v " +
-                "INNER JOIN vehiculos veh ON veh.id_vehiculo = v.id_vehiculo_viaje " +
-                "INNER JOIN usuarios u ON u.id_usuario = veh.usuario_duenio_id " +
+        String query = BASE_VIAJE_QUERY +
                 "WHERE v.fecha >= CURRENT_DATE " +
                 "AND v.cancelado = 0 " +
                 "AND u.fecha_baja IS NULL " +
@@ -377,10 +335,9 @@ public class ViajeDAO {
 
         LinkedList<Viaje> viajes = new LinkedList<>();
 
-        try (
-                Connection conn = ConnectionDB.getInstancia().getConn();
-                PreparedStatement stmt = conn.prepareStatement(query)
-        ) {
+        try (Connection conn = ConnectionDB.getInstancia().getConn();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
             stmt.setInt(1, limite);
 
             try (ResultSet rs = stmt.executeQuery()) {
@@ -400,7 +357,6 @@ public class ViajeDAO {
     }
 
     private Viaje mapViajeFromJoin(ResultSet rs, boolean puntuar) throws SQLException {
-
         Viaje v = new Viaje();
         v.setIdViaje(rs.getInt("id_viaje"));
         v.setFecha(rs.getDate("fecha"));
@@ -426,26 +382,26 @@ public class ViajeDAO {
         conductor.setTelefono(rs.getString("conductor_telefono"));
 
         if (puntuar) {
-            Usuario conductorPuntuado = calcularPromedioPuntuacion(conductor);
-            v.setConductor(conductorPuntuado);
-        } else {
-            v.setConductor(conductor);
+            conductor = calcularPromedioPuntuacion(conductor);
         }
 
+        v.setConductor(conductor);
         return v;
     }
 
     private Usuario calcularPromedioPuntuacion(Usuario conductor) {
         try {
-            Map<String, Object> puntuacion_cantidad = fDAO.getUserRating(conductor);
-            double promedio = (double) puntuacion_cantidad.get("promedio");
-            int cantidad = (int) puntuacion_cantidad.get("cantidad");
-
-            conductor.setPromedio_puntuacion(promedio);
-            conductor.setCantidad_que_puntuaron(cantidad);
+            Map<String, Object> puntuacion = fDAO.getUserRating(conductor);
+            if (puntuacion != null) {
+                double promedio = (double) puntuacion.get("promedio");
+                int cantidad = (int) puntuacion.get("cantidad");
+                conductor.setPromedio_puntuacion(promedio);
+                conductor.setCantidad_que_puntuaron(cantidad);
+            }
             return conductor;
         } catch (Exception e) {
-            logger.error("Error al calcular puntuación para conductor ID {}", conductor.getIdUsuario(), e);
+            logger.warn("Error al calcular puntuación para conductor ID {} - continuando sin calificar",
+                    conductor.getIdUsuario(), e);
             return conductor;
         }
     }
