@@ -12,44 +12,34 @@ import java.util.LinkedList;
 public class VehiculoDAO {
     private static final Logger logger = LoggerFactory.getLogger(VehiculoDAO.class);
 
+    private static final String BASE_QUERY = "SELECT v.id_vehiculo, v.patente, v.modelo, v.anio, " +
+            "u.id_usuario, u.nombre, u.apellido, u.correo " +
+            "FROM vehiculos v " +
+            "INNER JOIN usuarios u ON u.id_usuario = v.usuario_duenio_id ";
+
+    private static final String BASE_QUERY_LIGHT = "SELECT id_vehiculo, patente, modelo, anio, usuario_duenio_id " +
+            "FROM vehiculos ";
+
     public LinkedList<Vehiculo> getAll() {
         logger.debug("Obteniendo todos los vehículos");
         LinkedList<Vehiculo> vehiculos = new LinkedList<>();
 
-        String sql =
-                "SELECT v.id_vehiculo, v.patente, v.modelo, v.anio, u.id_usuario, " +
-                        "u.nombre, u.apellido, u.correo " +
-                        "FROM vehiculos v " +
-                        "INNER JOIN usuarios u ON u.id_usuario = v.usuario_duenio_id " +
-                        "WHERE u.fecha_baja IS NULL AND v.activo = TRUE";
+        String sql = BASE_QUERY + "WHERE u.fecha_baja IS NULL AND v.activo = TRUE";
 
         try (Connection conn = ConnectionDB.getInstancia().getConn();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
-
-                Usuario propietario = new Usuario();
-                propietario.setIdUsuario(rs.getInt("id_usuario"));
-                propietario.setNombre(rs.getString("nombre"));
-                propietario.setApellido(rs.getString("apellido"));
-                propietario.setCorreo(rs.getString("correo"));
-
-                Vehiculo v = new Vehiculo();
-                v.setId_vehiculo(rs.getInt("id_vehiculo"));
-                v.setPatente(rs.getString("patente"));
-                v.setModelo(rs.getString("modelo"));
-                v.setAnio(rs.getInt("anio"));
-                v.setPropietario(propietario);
-
-                vehiculos.add(v);
+                vehiculos.add(mapVehiculoWithUsuario(rs));
             }
 
             logger.info("Obtenidos {} vehículos", vehiculos.size());
             return vehiculos;
 
         } catch (SQLException e) {
-            logger.error("Error al obtener todos los vehículos", e);
+            logger.error("Error al obtener todos los vehículos - Estado: {} - Código: {}",
+                    e.getSQLState(), e.getErrorCode(), e);
             throw new DataAccessException("Error al obtener todos los vehículos", e);
         }
     }
@@ -57,9 +47,7 @@ public class VehiculoDAO {
     public Vehiculo getById_vehiculo(int id_vehiculo) {
         logger.debug("Buscando vehículo con ID: {}", id_vehiculo);
 
-        String sql =
-                "SELECT id_vehiculo, patente, modelo, anio, usuario_duenio_id " +
-                        "FROM vehiculos WHERE id_vehiculo = ? AND activo = TRUE";
+        String sql = BASE_QUERY_LIGHT + "WHERE id_vehiculo = ? AND activo = TRUE";
 
         try (Connection conn = ConnectionDB.getInstancia().getConn();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -68,20 +56,8 @@ public class VehiculoDAO {
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-
-                    Usuario propietario = new Usuario();
-                    propietario.setIdUsuario(rs.getInt("usuario_duenio_id"));
-
-                    Vehiculo v = new Vehiculo();
-                    v.setId_vehiculo(rs.getInt("id_vehiculo"));
-                    v.setPatente(rs.getString("patente"));
-                    v.setModelo(rs.getString("modelo"));
-                    v.setAnio(rs.getInt("anio"));
-                    v.setPropietario(propietario);
-
-
-                    logger.debug("Vehículo encontrado: {} (ID: {})", v.getPatente(), id_vehiculo);
-                    return v;
+                    logger.debug("Vehículo encontrado: ID {}", id_vehiculo);
+                    return mapVehiculo(rs);
                 }
             }
 
@@ -89,7 +65,8 @@ public class VehiculoDAO {
             return null;
 
         } catch (SQLException e) {
-            logger.error("Error al obtener vehículo por ID {}", id_vehiculo, e);
+            logger.error("Error al obtener vehículo por ID {} - Estado: {} - Código: {}",
+                    id_vehiculo, e.getSQLState(), e.getErrorCode(), e);
             throw new DataAccessException("Error al obtener vehículo por ID", e);
         }
     }
@@ -97,9 +74,7 @@ public class VehiculoDAO {
     public Vehiculo getByPatente(String patente) {
         logger.debug("Buscando vehículo con patente: {}", patente);
 
-        String sql =
-                "SELECT id_vehiculo, patente, modelo, anio, usuario_duenio_id " +
-                        "FROM vehiculos WHERE patente = ? AND activo = TRUE";
+        String sql = BASE_QUERY_LIGHT + "WHERE patente = ? AND activo = TRUE";
 
         try (Connection conn = ConnectionDB.getInstancia().getConn();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -108,17 +83,8 @@ public class VehiculoDAO {
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    Usuario propietario = new Usuario();
-                    propietario.setIdUsuario(rs.getInt("usuario_duenio_id"));
-
-                    Vehiculo v = new Vehiculo();
-                    v.setId_vehiculo(rs.getInt("id_vehiculo"));
-                    v.setPatente(rs.getString("patente"));
-                    v.setModelo(rs.getString("modelo"));
-                    v.setAnio(rs.getInt("anio"));
-                    v.setPropietario(propietario);
                     logger.debug("Vehículo encontrado: {}", patente);
-                    return v;
+                    return mapVehiculo(rs);
                 }
             }
 
@@ -126,7 +92,8 @@ public class VehiculoDAO {
             return null;
 
         } catch (SQLException e) {
-            logger.error("Error al obtener vehículo patente {}", patente, e);
+            logger.error("Error al obtener vehículo patente {} - Estado: {} - Código: {}",
+                    patente, e.getSQLState(), e.getErrorCode(), e);
             throw new DataAccessException("Error al obtener vehículo por patente", e);
         }
     }
@@ -134,9 +101,7 @@ public class VehiculoDAO {
     public void altaVehiculo(Vehiculo v, int idUsuario) {
         logger.info("Creando nuevo vehículo: {}", v.getPatente());
 
-        String sql =
-                "INSERT INTO vehiculos(patente, modelo, anio, usuario_duenio_id) " +
-                        "VALUES(?,?,?,?)";
+        String sql = "INSERT INTO vehiculos(patente, modelo, anio, usuario_duenio_id) VALUES(?,?,?,?)";
 
         try (Connection conn = ConnectionDB.getInstancia().getConn();
              PreparedStatement stmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
@@ -156,11 +121,13 @@ public class VehiculoDAO {
                     }
                 }
             } else {
-                logger.warn("No se pudo crear vehículo {}", v.getPatente());
+                logger.error("No se pudo crear vehículo {}", v.getPatente());
+                throw new DataAccessException("No se pudo crear vehículo");
             }
 
         } catch (SQLException e) {
-            logger.error("Error al crear vehículo {}", v.getPatente(), e);
+            logger.error("Error al crear vehículo {} - Estado: {} - Código: {}",
+                    v.getPatente(), e.getSQLState(), e.getErrorCode(), e);
             throw new DataAccessException("Error al crear vehículo", e);
         }
     }
@@ -168,9 +135,7 @@ public class VehiculoDAO {
     public void update(Vehiculo v, int id_vehiculo) {
         logger.info("Actualizando vehículo ID: {}", id_vehiculo);
 
-        String sql =
-                "UPDATE vehiculos SET patente = ?, modelo = ?, anio = ? " +
-                        "WHERE id_vehiculo = ? AND activo = TRUE";
+        String sql = "UPDATE vehiculos SET patente = ?, modelo = ?, anio = ? WHERE id_vehiculo = ? AND activo = TRUE";
 
         try (Connection conn = ConnectionDB.getInstancia().getConn();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -182,14 +147,15 @@ public class VehiculoDAO {
 
             int rows = stmt.executeUpdate();
 
-            if (rows > 0) {
-                logger.info("Vehículo actualizado (ID: {})", id_vehiculo);
-            } else {
+            if (rows == 0) {
                 logger.warn("No se encontró vehículo ID {}", id_vehiculo);
+                throw new DataAccessException("Vehículo no encontrado con ID: " + id_vehiculo);
             }
+            logger.info("Vehículo actualizado (ID: {})", id_vehiculo);
 
         } catch (SQLException e) {
-            logger.error("Error al actualizar vehículo ID {}", id_vehiculo, e);
+            logger.error("Error al actualizar vehículo ID {} - Estado: {} - Código: {}",
+                    id_vehiculo, e.getSQLState(), e.getErrorCode(), e);
             throw new DataAccessException("Error al actualizar vehículo", e);
         }
     }
@@ -199,9 +165,7 @@ public class VehiculoDAO {
 
         LinkedList<Vehiculo> lista = new LinkedList<>();
 
-        String sql =
-                "SELECT id_vehiculo, patente, modelo, anio, usuario_duenio_id " +
-                        "FROM vehiculos WHERE usuario_duenio_id = ? AND activo = TRUE";
+        String sql = BASE_QUERY_LIGHT + "WHERE usuario_duenio_id = ? AND activo = TRUE";
 
         try (Connection conn = ConnectionDB.getInstancia().getConn();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -210,24 +174,16 @@ public class VehiculoDAO {
 
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    Usuario propietario = new Usuario();
-                    propietario.setIdUsuario(rs.getInt("usuario_duenio_id"));
-
-                    Vehiculo v = new Vehiculo();
-                    v.setId_vehiculo(rs.getInt("id_vehiculo"));
-                    v.setPatente(rs.getString("patente"));
-                    v.setModelo(rs.getString("modelo"));
-                    v.setAnio(rs.getInt("anio"));
-                    v.setPropietario(propietario);
-                    lista.add(v);
+                    lista.add(mapVehiculo(rs));
                 }
             }
 
-            logger.debug("Encontrados {} vehículos para usuario ID {}", lista.size(), u.getIdUsuario());
+            logger.info("Encontrados {} vehículos para usuario ID {}", lista.size(), u.getIdUsuario());
             return lista;
 
         } catch (SQLException e) {
-            logger.error("Error al obtener vehículos del usuario {}", u.getIdUsuario(), e);
+            logger.error("Error al obtener vehículos del usuario {} - Estado: {} - Código: {}",
+                    u.getIdUsuario(), e.getSQLState(), e.getErrorCode(), e);
             throw new DataAccessException("Error al obtener vehículos del usuario", e);
         }
     }
@@ -243,18 +199,17 @@ public class VehiculoDAO {
             stmt.setInt(1, id_vehiculo);
 
             int rows = stmt.executeUpdate();
-            boolean eliminado = rows > 0;
 
-            if (eliminado) {
-                logger.info("Vehículo eliminado ID {}", id_vehiculo);
-            } else {
+            if (rows == 0) {
                 logger.warn("No se encontró vehículo ID {}", id_vehiculo);
+                return false;
             }
-
-            return eliminado;
+            logger.info("Vehículo eliminado ID {}", id_vehiculo);
+            return true;
 
         } catch (SQLException e) {
-            logger.error("Error al eliminar vehículo ID {}", id_vehiculo, e);
+            logger.error("Error al eliminar vehículo ID {} - Estado: {} - Código: {}",
+                    id_vehiculo, e.getSQLState(), e.getErrorCode(), e);
             throw new DataAccessException("Error al eliminar vehículo", e);
         }
     }
@@ -270,12 +225,49 @@ public class VehiculoDAO {
             stmt.setInt(1, idVehiculo);
 
             try (ResultSet rs = stmt.executeQuery()) {
-                return rs.next() && rs.getInt("total") > 0;
+                if (rs.next()) {
+                    boolean tieneViajes = rs.getInt("total") > 0;
+                    logger.debug("Vehículo ID {} {} tiene viajes", idVehiculo, tieneViajes ? "sí" : "no");
+                    return tieneViajes;
+                }
             }
 
         } catch (SQLException e) {
-            logger.error("Error al verificar viajes del vehículo ID {}", idVehiculo, e);
+            logger.error("Error al verificar viajes del vehículo ID {} - Estado: {} - Código: {}",
+                    idVehiculo, e.getSQLState(), e.getErrorCode(), e);
             throw new DataAccessException("Error al verificar viajes del vehículo", e);
         }
+        return false;
+    }
+
+    private Vehiculo mapVehiculoWithUsuario(ResultSet rs) throws SQLException {
+        Usuario propietario = new Usuario();
+        propietario.setIdUsuario(rs.getInt("id_usuario"));
+        propietario.setNombre(rs.getString("nombre"));
+        propietario.setApellido(rs.getString("apellido"));
+        propietario.setCorreo(rs.getString("correo"));
+
+        Vehiculo v = new Vehiculo();
+        v.setId_vehiculo(rs.getInt("id_vehiculo"));
+        v.setPatente(rs.getString("patente"));
+        v.setModelo(rs.getString("modelo"));
+        v.setAnio(rs.getInt("anio"));
+        v.setPropietario(propietario);
+
+        return v;
+    }
+
+    private Vehiculo mapVehiculo(ResultSet rs) throws SQLException {
+        Usuario propietario = new Usuario();
+        propietario.setIdUsuario(rs.getInt("usuario_duenio_id"));
+
+        Vehiculo v = new Vehiculo();
+        v.setId_vehiculo(rs.getInt("id_vehiculo"));
+        v.setPatente(rs.getString("patente"));
+        v.setModelo(rs.getString("modelo"));
+        v.setAnio(rs.getInt("anio"));
+        v.setPropietario(propietario);
+
+        return v;
     }
 }
