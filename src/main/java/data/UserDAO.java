@@ -15,18 +15,23 @@ import java.util.Map;
 public class UserDAO {
     private static final Logger logger = LoggerFactory.getLogger(UserDAO.class);
 
+    private static final String BASE_QUERY = "SELECT id_usuario, usuario, nombre, apellido, correo, telefono, id_rol " +
+            "FROM usuarios WHERE fecha_baja IS NULL";
+
+    private static final String BASE_QUERY_WITH_ROL = "SELECT u.id_usuario, u.usuario, u.nombre, u.apellido, " +
+            "u.correo, u.telefono, u.id_rol, r.nombre as nombre_rol " +
+            "FROM usuarios u " +
+            "INNER JOIN roles r ON u.id_rol = r.id_rol " +
+            "WHERE u.fecha_baja IS NULL";
+
     public LinkedList<Usuario> getAll() {
         logger.debug("Obteniendo todos los usuarios");
         LinkedList<Usuario> users = new LinkedList<>();
 
-        String query = "SELECT id_usuario, usuario, nombre, apellido, correo, telefono, id_rol " +
-                "FROM usuarios WHERE fecha_baja IS NULL";
+        try (Connection conn = ConnectionDB.getInstancia().getConn();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(BASE_QUERY)) {
 
-        try (
-                Connection conn = ConnectionDB.getInstancia().getConn();
-                Statement stmt = conn.createStatement();
-                ResultSet rs = stmt.executeQuery(query)
-        ) {
             while (rs.next()) {
                 users.add(mapUsuario(rs));
             }
@@ -43,16 +48,15 @@ public class UserDAO {
     public Usuario login(Usuario user) {
         logger.debug("Intentando login para usuario: {}", user.getUsuario());
 
-        String sql = "SELECT u.id_usuario, u.usuario, u.nombre AS nombre, u.apellido, " +
-                "u.correo, u.telefono, u.id_rol, u.clave, r.nombre AS nombre_rol " +
+        String sql = "SELECT u.id_usuario, u.usuario, u.nombre, u.apellido, " +
+                "u.correo, u.telefono, u.id_rol, u.clave, r.nombre as nombre_rol " +
                 "FROM usuarios u " +
                 "INNER JOIN roles r ON r.id_rol = u.id_rol " +
                 "WHERE u.usuario = ? AND u.fecha_baja IS NULL";
 
-        try (
-                Connection conn = ConnectionDB.getInstancia().getConn();
-                PreparedStatement stmt = conn.prepareStatement(sql)
-        ) {
+        try (Connection conn = ConnectionDB.getInstancia().getConn();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
             stmt.setString(1, user.getUsuario().trim());
 
             try (ResultSet rs = stmt.executeQuery()) {
@@ -62,11 +66,11 @@ public class UserDAO {
                         logger.info("Usuario logueado exitosamente: {}", user.getUsuario());
                         return mapUsuarioWithRol(rs);
                     } else {
-                        logger.warn("Login fallido para usuario: {}", user.getUsuario());
+                        logger.warn("Login fallido para usuario: {} - contraseña incorrecta", user.getUsuario());
                         return null;
                     }
                 } else {
-                    logger.warn("Usuario no encontrado: {}", user.getUsuario());
+                    logger.warn("Login fallido - usuario no encontrado: {}", user.getUsuario());
                     return null;
                 }
             }
@@ -81,13 +85,11 @@ public class UserDAO {
     public Usuario getById(int id_usuario) {
         logger.debug("Buscando usuario con ID: {}", id_usuario);
 
-        String query = "SELECT id_usuario, usuario, nombre, apellido, correo, telefono, id_rol " +
-                "FROM usuarios WHERE id_usuario = ? AND fecha_baja IS NULL";
+        String query = BASE_QUERY + " AND id_usuario = ?";
 
-        try (
-                Connection conn = ConnectionDB.getInstancia().getConn();
-                PreparedStatement stmt = conn.prepareStatement(query)
-        ) {
+        try (Connection conn = ConnectionDB.getInstancia().getConn();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
             stmt.setInt(1, id_usuario);
 
             try (ResultSet rs = stmt.executeQuery()) {
@@ -110,13 +112,11 @@ public class UserDAO {
     public Usuario getOneUserByEmail(String correo) {
         logger.debug("Buscando usuario por email: {}", correo);
 
-        String query = "SELECT id_usuario, usuario, nombre, apellido, correo, telefono, id_rol " +
-                "FROM usuarios WHERE correo = ? AND fecha_baja IS NULL";
+        String query = BASE_QUERY + " AND correo = ?";
 
-        try (
-                Connection conn = ConnectionDB.getInstancia().getConn();
-                PreparedStatement stmt = conn.prepareStatement(query)
-        ) {
+        try (Connection conn = ConnectionDB.getInstancia().getConn();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
             stmt.setString(1, correo);
 
             try (ResultSet rs = stmt.executeQuery()) {
@@ -139,18 +139,15 @@ public class UserDAO {
     public Usuario getOneByUserOrEmail(String user, String correo, Integer idExcluir) {
         logger.debug("Buscando usuario por user: {} o email: {}", user, correo);
 
-        String query = "SELECT id_usuario, usuario, nombre, apellido, correo, telefono, id_rol " +
-                "FROM usuarios WHERE (usuario = ? OR correo = ?) AND fecha_baja IS NULL";
-
+        String query = BASE_QUERY + " AND (usuario = ? OR correo = ?)";
 
         if (idExcluir != null) {
             query += " AND id_usuario <> ?";
         }
 
-        try (
-                Connection conn = ConnectionDB.getInstancia().getConn();
-                PreparedStatement stmt = conn.prepareStatement(query)
-        ) {
+        try (Connection conn = ConnectionDB.getInstancia().getConn();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
             stmt.setString(1, user);
             stmt.setString(2, correo);
 
@@ -181,10 +178,9 @@ public class UserDAO {
         String query = "INSERT INTO usuarios(usuario, clave, nombre, apellido, correo, telefono, id_rol) " +
                 "VALUES(?,?,?,?,?,?,?)";
 
-        try (
-                Connection conn = ConnectionDB.getInstancia().getConn();
-                PreparedStatement stmt = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS)
-        ) {
+        try (Connection conn = ConnectionDB.getInstancia().getConn();
+             PreparedStatement stmt = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS)) {
+
             stmt.setString(1, u.getUsuario());
             stmt.setString(2, u.getClave());
             stmt.setString(3, u.getNombre());
@@ -220,10 +216,9 @@ public class UserDAO {
         String query = "UPDATE usuarios SET usuario = ?, nombre = ?, apellido = ?, correo = ?, telefono = ?, id_rol = ? " +
                 "WHERE id_usuario = ?";
 
-        try (
-                Connection conn = ConnectionDB.getInstancia().getConn();
-                PreparedStatement stmt = conn.prepareStatement(query)
-        ) {
+        try (Connection conn = ConnectionDB.getInstancia().getConn();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
             stmt.setString(1, u.getUsuario());
             stmt.setString(2, u.getNombre());
             stmt.setString(3, u.getApellido());
@@ -233,13 +228,12 @@ public class UserDAO {
             stmt.setInt(7, u.getIdUsuario());
 
             int rowsAffected = stmt.executeUpdate();
-            if (rowsAffected > 0) {
-                logger.info("Usuario actualizado exitosamente: ID {}", u.getIdUsuario());
-                return true;
-            } else {
+            if (rowsAffected == 0) {
                 logger.warn("No se encontró usuario con ID: {}", u.getIdUsuario());
-                return false;
+                throw new DataAccessException("Usuario no encontrado con ID: " + u.getIdUsuario());
             }
+            logger.info("Usuario actualizado exitosamente: ID {}", u.getIdUsuario());
+            return true;
 
         } catch (SQLException e) {
             logger.error("Error al actualizar usuario ID {} - Estado: {} - Código: {}",
@@ -253,21 +247,19 @@ public class UserDAO {
 
         String query = "UPDATE usuarios SET clave = ? WHERE id_usuario = ?";
 
-        try (
-                Connection conn = ConnectionDB.getInstancia().getConn();
-                PreparedStatement stmt = conn.prepareStatement(query)
-        ) {
+        try (Connection conn = ConnectionDB.getInstancia().getConn();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
             stmt.setString(1, clave);
             stmt.setInt(2, id);
 
             int rowsAffected = stmt.executeUpdate();
-            if (rowsAffected > 0) {
-                logger.info("Contraseña actualizada exitosamente para usuario ID: {}", id);
-                return true;
-            } else {
+            if (rowsAffected == 0) {
                 logger.warn("No se encontró usuario con ID: {}", id);
-                return false;
+                throw new DataAccessException("Usuario no encontrado con ID: " + id);
             }
+            logger.info("Contraseña actualizada exitosamente para usuario ID: {}", id);
+            return true;
 
         } catch (SQLException e) {
             logger.error("Error al actualizar contraseña para usuario ID {} - Estado: {} - Código: {}",
@@ -279,22 +271,20 @@ public class UserDAO {
     public boolean eliminarUsuario(int idUsuario) {
         logger.info("Eliminando usuario ID: {}", idUsuario);
 
-        String query = "UPDATE usuarios SET fecha_baja = current_date WHERE id_usuario = ?";
+        String query = "UPDATE usuarios SET fecha_baja = CURRENT_DATE WHERE id_usuario = ?";
 
-        try (
-                Connection conn = ConnectionDB.getInstancia().getConn();
-                PreparedStatement stmt = conn.prepareStatement(query)
-        ) {
+        try (Connection conn = ConnectionDB.getInstancia().getConn();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
             stmt.setInt(1, idUsuario);
             int rowsAffected = stmt.executeUpdate();
 
-            if (rowsAffected > 0) {
-                logger.info("Usuario eliminado exitosamente: ID {}", idUsuario);
-                return true;
-            } else {
+            if (rowsAffected == 0) {
                 logger.warn("No se encontró usuario con ID: {}", idUsuario);
-                return false;
+                throw new DataAccessException("Usuario no encontrado con ID: " + idUsuario);
             }
+            logger.info("Usuario eliminado exitosamente: ID {}", idUsuario);
+            return true;
 
         } catch (SQLException e) {
             logger.error("Error al eliminar usuario ID {} - Estado: {} - Código: {}",
@@ -308,11 +298,10 @@ public class UserDAO {
 
         String query = "SELECT COUNT(*) FROM usuarios WHERE id_rol = 1 AND fecha_baja IS NULL";
 
-        try (
-                Connection conn = ConnectionDB.getInstancia().getConn();
-                PreparedStatement stmt = conn.prepareStatement(query);
-                ResultSet rs = stmt.executeQuery()
-        ) {
+        try (Connection conn = ConnectionDB.getInstancia().getConn();
+             PreparedStatement stmt = conn.prepareStatement(query);
+             ResultSet rs = stmt.executeQuery()) {
+
             if (rs.next()) {
                 int count = rs.getInt(1);
                 logger.debug("Total de administradores: {}", count);
@@ -330,16 +319,13 @@ public class UserDAO {
     public boolean tieneViajesActivos(int idUsuario) {
         logger.debug("Verificando si usuario ID {} tiene viajes activos", idUsuario);
 
-        String query = "SELECT COUNT(*) AS total " +
-                "FROM viajes " +
-                "WHERE id_conductor = ? " +
-                "AND fecha > CURRENT_DATE " +
-                "AND cancelado = 0";
+        String query = "SELECT COUNT(*) AS total FROM viajes WHERE id_vehiculo_viaje IN " +
+                "(SELECT id_vehiculo FROM vehiculos WHERE usuario_duenio_id = ?) " +
+                "AND fecha > CURRENT_DATE AND cancelado = 0 AND activo = TRUE";
 
-        try (
-                Connection conn = ConnectionDB.getInstancia().getConn();
-                PreparedStatement stmt = conn.prepareStatement(query)
-        ) {
+        try (Connection conn = ConnectionDB.getInstancia().getConn();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
             stmt.setInt(1, idUsuario);
 
             try (ResultSet rs = stmt.executeQuery()) {
@@ -348,7 +334,6 @@ public class UserDAO {
                     logger.debug("Usuario ID {} - Tiene viajes activos: {}", idUsuario, tieneViajes);
                     return tieneViajes;
                 }
-                return false;
             }
 
         } catch (SQLException e) {
@@ -356,17 +341,18 @@ public class UserDAO {
                     idUsuario, e.getSQLState(), e.getErrorCode(), e);
             throw new DataAccessException("Error al verificar viajes activos del usuario", e);
         }
+        return false;
     }
 
     public boolean tieneReservasActivas(int idUsuario) {
         logger.debug("Verificando si usuario ID {} tiene reservas activas", idUsuario);
 
-        String query = "SELECT COUNT(*) as total FROM reservas WHERE id_pasajero_reserva = ? AND estado <> 'EN PROCESO'";
+        String query = "SELECT COUNT(*) as total FROM reservas WHERE id_pasajero_reserva = ? " +
+                "AND estado NOT IN ('CANCELADA','CONFIRMADA') AND activo = TRUE";
 
-        try (
-                Connection conn = ConnectionDB.getInstancia().getConn();
-                PreparedStatement stmt = conn.prepareStatement(query)
-        ) {
+        try (Connection conn = ConnectionDB.getInstancia().getConn();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
             stmt.setInt(1, idUsuario);
 
             try (ResultSet rs = stmt.executeQuery()) {
@@ -375,7 +361,6 @@ public class UserDAO {
                     logger.debug("Usuario ID {} - Tiene reservas activas: {}", idUsuario, tieneReservas);
                     return tieneReservas;
                 }
-                return false;
             }
 
         } catch (SQLException e) {
@@ -383,61 +368,40 @@ public class UserDAO {
                     idUsuario, e.getSQLState(), e.getErrorCode(), e);
             throw new DataAccessException("Error al verificar reservas activas del usuario", e);
         }
+        return false;
     }
 
     public Map<String, Integer> obtenerEstadisticasUsuarios() {
         logger.debug("Obteniendo estadísticas detalladas de usuarios");
 
         String query = "SELECT " +
-                "r.nombre as rol_base, " +
-                "COUNT(*) as total_por_rol, " +
-                "SUM(CASE WHEN EXISTS (SELECT 1 FROM viajes v INNER JOIN vehiculos veh ON v.id_vehiculo_viaje = veh.id_vehiculo WHERE veh.usuario_duenio_id = u.id_usuario) THEN 1 ELSE 0 END) as conductores, " +
-                "SUM(CASE WHEN EXISTS (SELECT 1 FROM reservas r WHERE r.id_pasajero_reserva = u.id_usuario) THEN 1 ELSE 0 END) as pasajeros " +
+                "COUNT(DISTINCT u.id_usuario) as total_usuarios, " +
+                "COUNT(DISTINCT CASE WHEN EXISTS (SELECT 1 FROM viajes v INNER JOIN vehiculos veh ON v.id_vehiculo_viaje = veh.id_vehiculo WHERE veh.usuario_duenio_id = u.id_usuario AND v.activo = TRUE) THEN u.id_usuario END) as conductores, " +
+                "COUNT(DISTINCT CASE WHEN EXISTS (SELECT 1 FROM reservas r WHERE r.id_pasajero_reserva = u.id_usuario AND r.activo = TRUE) THEN u.id_usuario END) as pasajeros, " +
+                "SUM(CASE WHEN u.id_rol = 1 THEN 1 ELSE 0 END) as total_admins " +
                 "FROM usuarios u " +
-                "INNER JOIN roles r ON u.id_rol = r.id_rol " +
-                "WHERE u.fecha_baja IS NULL " +
-                "GROUP BY r.nombre";
+                "WHERE u.fecha_baja IS NULL";
 
         Map<String, Integer> estadisticas = new HashMap<>();
-        int totalConductores = 0;
-        int totalPasajeros = 0;
-        int totalAdmins = 0;
-        int totalUsuarios = 0;
-        int totalUsuariosBase = 0;
 
-        try (
-                Connection conn = ConnectionDB.getInstancia().getConn();
-                PreparedStatement stmt = conn.prepareStatement(query);
-                ResultSet rs = stmt.executeQuery()
-        ) {
-            while (rs.next()) {
-                String rol = rs.getString("rol_base");
-                int totalRol = rs.getInt("total_por_rol");
-                int conductores = rs.getInt("conductores");
-                int pasajeros = rs.getInt("pasajeros");
+        try (Connection conn = ConnectionDB.getInstancia().getConn();
+             PreparedStatement stmt = conn.prepareStatement(query);
+             ResultSet rs = stmt.executeQuery()) {
 
-                if ("admin".equalsIgnoreCase(rol)) {
-                    totalAdmins = totalRol;
-                } else if ("usuario".equalsIgnoreCase(rol)) {
-                    totalConductores = conductores;
-                    totalPasajeros = pasajeros;
-                    totalUsuariosBase = totalRol;
-                }
+            if (rs.next()) {
+                int totalUsuarios = rs.getInt("total_usuarios");
+                int totalConductores = rs.getInt("conductores");
+                int totalPasajeros = rs.getInt("pasajeros");
+                int totalAdmins = rs.getInt("total_admins");
 
+                estadisticas.put("totalConductores", totalConductores);
+                estadisticas.put("totalPasajeros", totalPasajeros);
+                estadisticas.put("totalAdmins", totalAdmins);
+                estadisticas.put("totalUsuarios", totalUsuarios);
 
-                logger.debug("Rol: {}, Total: {}, Conductores: {}, Pasajeros: {}",
-                        rol, totalRol, conductores, pasajeros);
+                logger.info("Estadísticas obtenidas: Total={}, Conductores={}, Pasajeros={}, Admins={}",
+                        totalUsuarios, totalConductores, totalPasajeros, totalAdmins);
             }
-            totalUsuarios = totalAdmins + totalConductores + totalPasajeros;
-
-            estadisticas.put("totalConductores", totalConductores);
-            estadisticas.put("totalPasajeros", totalPasajeros);
-            estadisticas.put("totalAdmins", totalAdmins);
-            estadisticas.put("totalUsuarios", totalUsuarios);
-            estadisticas.put("totalUsuariosBase", totalUsuariosBase);
-
-            logger.info("Estadísticas detalladas obtenidas: Conductores={}, Pasajeros={}, Admins={}",
-                    totalConductores, totalPasajeros, totalAdmins);
             return estadisticas;
 
         } catch (SQLException e) {
@@ -450,19 +414,13 @@ public class UserDAO {
     public LinkedList<Usuario> obtenerUsuariosRecientes(int limite) {
         logger.debug("Obteniendo {} usuarios más recientes", limite);
 
-        String query = "SELECT u.id_usuario, u.usuario, u.nombre, u.apellido, u.correo, u.telefono, u.id_rol, " +
-                "r.nombre as nombre_rol " +
-                "FROM usuarios u " +
-                "INNER JOIN roles r ON u.id_rol = r.id_rol " +
-                "WHERE u.fecha_baja IS NULL " +
-                "ORDER BY u.id_usuario DESC LIMIT ?";
+        String query = BASE_QUERY_WITH_ROL + " ORDER BY u.id_usuario DESC LIMIT ?";
 
         LinkedList<Usuario> usuarios = new LinkedList<>();
 
-        try (
-                Connection conn = ConnectionDB.getInstancia().getConn();
-                PreparedStatement stmt = conn.prepareStatement(query)
-        ) {
+        try (Connection conn = ConnectionDB.getInstancia().getConn();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
             stmt.setInt(1, limite);
 
             try (ResultSet rs = stmt.executeQuery()) {
@@ -481,7 +439,6 @@ public class UserDAO {
         }
     }
 
-
     private Usuario mapUsuario(ResultSet rs) throws SQLException {
         Usuario u = new Usuario();
         u.setIdUsuario(rs.getInt("id_usuario"));
@@ -490,9 +447,11 @@ public class UserDAO {
         u.setApellido(rs.getString("apellido"));
         u.setCorreo(rs.getString("correo"));
         u.setTelefono(rs.getString("telefono"));
+
         Rol rol = new Rol();
         rol.setIdRol(rs.getInt("id_rol"));
         u.setRol(rol);
+
         return u;
     }
 
