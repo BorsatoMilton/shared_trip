@@ -14,7 +14,8 @@ import java.util.LinkedList;
 
 public class ReservaDAO {
     private static final Logger logger = LoggerFactory.getLogger(ReservaDAO.class);
-    private final String universalQuery = "SELECT " +
+
+    private static final String BASE_QUERY = "SELECT " +
             "r.id_reserva, r.fecha_reserva, r.estado, r.cantidad_pasajeros_reservada, " +
             "r.codigo_reserva, r.feedback_token, " +
             "v.id_viaje, v.fecha, v.lugares_disponibles, v.origen, v.destino, " +
@@ -39,14 +40,12 @@ public class ReservaDAO {
         logger.debug("Obteniendo todas las reservas");
         LinkedList<Reserva> reservas = new LinkedList<>();
 
-        String query = universalQuery +
-                "WHERE r.activo = TRUE";
+        String query = BASE_QUERY + "WHERE r.activo = TRUE";
 
-        try (
-                Connection conn = ConnectionDB.getInstancia().getConn();
-                Statement stmt = conn.createStatement();
-                ResultSet rs = stmt.executeQuery(query)
-        ) {
+        try (Connection conn = ConnectionDB.getInstancia().getConn();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+
             while (rs.next()) {
                 reservas.add(mapFullReservaFromJoin(rs));
             }
@@ -63,13 +62,11 @@ public class ReservaDAO {
     public Reserva getByReserva(int id_reserva) {
         logger.debug("Buscando reserva con ID: {}", id_reserva);
 
-        String query = universalQuery +
-                "WHERE r.id_reserva = ? AND r.activo = TRUE";
+        String query = BASE_QUERY + "WHERE r.id_reserva = ? AND r.activo = TRUE";
 
-        try (
-                Connection conn = ConnectionDB.getInstancia().getConn();
-                PreparedStatement stmt = conn.prepareStatement(query)
-        ) {
+        try (Connection conn = ConnectionDB.getInstancia().getConn();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
             stmt.setInt(1, id_reserva);
 
             try (ResultSet rs = stmt.executeQuery()) {
@@ -90,9 +87,9 @@ public class ReservaDAO {
     }
 
     public Reserva getByToken(String token) {
-        Reserva reserva = null;
-        String query = universalQuery +
-                "WHERE r.feedback_token = ?";
+        logger.debug("Buscando reserva por token");
+
+        String query = BASE_QUERY + "WHERE r.feedback_token = ?";
 
         try (Connection conn = ConnectionDB.getInstancia().getConn();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -101,15 +98,17 @@ public class ReservaDAO {
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    reserva = mapFullReservaFromJoin(rs);
+                    logger.debug("Reserva encontrada por token");
+                    return mapFullReservaFromJoin(rs);
                 }
             }
 
         } catch (SQLException e) {
-            logger.error("Error al obtener Reserva con token: {}", token, e);
+            logger.error("Error al obtener reserva con token - Estado: {} - Código: {}",
+                    e.getSQLState(), e.getErrorCode(), e);
             throw new DataAccessException("Error al obtener la reserva por token", e);
         }
-        return reserva;
+        return null;
     }
 
     public LinkedList<Reserva> getByUser(Usuario usuario) {
@@ -117,13 +116,11 @@ public class ReservaDAO {
 
         LinkedList<Reserva> reservas = new LinkedList<>();
 
-        String query = universalQuery +
-                "WHERE r.id_pasajero_reserva = ? AND r.activo = TRUE";
+        String query = BASE_QUERY + "WHERE r.id_pasajero_reserva = ? AND r.activo = TRUE";
 
-        try (
-                Connection conn = ConnectionDB.getInstancia().getConn();
-                PreparedStatement stmt = conn.prepareStatement(query)
-        ) {
+        try (Connection conn = ConnectionDB.getInstancia().getConn();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
             stmt.setInt(1, usuario.getIdUsuario());
 
             try (ResultSet rs = stmt.executeQuery()) {
@@ -146,17 +143,16 @@ public class ReservaDAO {
         logger.debug("Obteniendo reservas para viaje ID: {}", idViaje);
 
         LinkedList<Reserva> reservas = new LinkedList<>();
-        String query = universalQuery +
-                "WHERE r.id_viaje = ?";
+
+        String query = BASE_QUERY + "WHERE r.id_viaje = ?";
 
         if (!all) {
             query += " AND r.estado <> 'CANCELADA'";
         }
 
-        try (
-                Connection conn = ConnectionDB.getInstancia().getConn();
-                PreparedStatement stmt = conn.prepareStatement(query)
-        ) {
+        try (Connection conn = ConnectionDB.getInstancia().getConn();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
             stmt.setInt(1, idViaje);
 
             try (ResultSet rs = stmt.executeQuery()) {
@@ -180,16 +176,14 @@ public class ReservaDAO {
 
         LinkedList<Reserva> reservas = new LinkedList<>();
 
-        String query = universalQuery +
-                "LEFT JOIN feedback f ON f.id_reserva = r.id_reserva " +
+        String query = BASE_QUERY +
                 "WHERE v.fecha = ? " +
                 "AND r.estado = 'CONFIRMADA' " +
-                "AND f.id_reserva IS NULL";
+                "AND NOT EXISTS (SELECT 1 FROM feedback f WHERE f.id_reserva = r.id_reserva)";
 
-        try (
-                Connection conn = ConnectionDB.getInstancia().getConn();
-                PreparedStatement stmt = conn.prepareStatement(query)
-        ) {
+        try (Connection conn = ConnectionDB.getInstancia().getConn();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
             LocalDate ayer = LocalDate.now().minusDays(1);
             stmt.setDate(1, java.sql.Date.valueOf(ayer));
 
@@ -212,16 +206,15 @@ public class ReservaDAO {
     public LinkedList<Reserva> obtenerReservasRecientes(int limite) {
         logger.debug("Obteniendo {} reservas más recientes", limite);
 
-        String query = universalQuery +
+        String query = BASE_QUERY +
                 "WHERE r.activo = TRUE " +
                 "ORDER BY r.id_reserva DESC LIMIT ?";
 
         LinkedList<Reserva> reservas = new LinkedList<>();
 
-        try (
-                Connection conn = ConnectionDB.getInstancia().getConn();
-                PreparedStatement stmt = conn.prepareStatement(query)
-        ) {
+        try (Connection conn = ConnectionDB.getInstancia().getConn();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
             stmt.setInt(1, limite);
 
             try (ResultSet rs = stmt.executeQuery()) {
@@ -247,10 +240,9 @@ public class ReservaDAO {
                 "id_viaje, id_pasajero_reserva, codigo_reserva, estado) " +
                 "VALUES(?,?,?,?,?,?)";
 
-        try (
-                Connection conn = ConnectionDB.getInstancia().getConn();
-                PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)
-        ) {
+        try (Connection conn = ConnectionDB.getInstancia().getConn();
+             PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+
             stmt.setString(1, reserva.getFecha_reserva());
             stmt.setInt(2, reserva.getCantidad_pasajeros_reservada());
             stmt.setInt(3, reserva.getViaje().getIdViaje());
@@ -284,10 +276,9 @@ public class ReservaDAO {
 
         String query = "UPDATE reservas SET estado = ? WHERE id_reserva = ? AND activo = TRUE";
 
-        try (
-                Connection conn = ConnectionDB.getInstancia().getConn();
-                PreparedStatement stmt = conn.prepareStatement(query)
-        ) {
+        try (Connection conn = ConnectionDB.getInstancia().getConn();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
             stmt.setString(1, nuevoEstado);
             stmt.setInt(2, idReserva);
 
@@ -308,10 +299,9 @@ public class ReservaDAO {
         String query = "UPDATE reservas SET cantidad_pasajeros_reservada = ?, " +
                 "id_viaje = ?, id_pasajero_reserva = ? WHERE id_reserva = ? AND activo = TRUE";
 
-        try (
-                Connection conn = ConnectionDB.getInstancia().getConn();
-                PreparedStatement stmt = conn.prepareStatement(query)
-        ) {
+        try (Connection conn = ConnectionDB.getInstancia().getConn();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
             stmt.setInt(1, reserva.getCantidad_pasajeros_reservada());
             stmt.setInt(2, reserva.getViaje().getIdViaje());
             stmt.setInt(3, reserva.getPasajero().getIdUsuario());
@@ -333,10 +323,9 @@ public class ReservaDAO {
 
         String query = "UPDATE reservas SET feedback_token = ? WHERE id_reserva = ? AND activo = TRUE";
 
-        try (
-                Connection conn = ConnectionDB.getInstancia().getConn();
-                PreparedStatement stmt = conn.prepareStatement(query)
-        ) {
+        try (Connection conn = ConnectionDB.getInstancia().getConn();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
             stmt.setString(1, token);
             stmt.setInt(2, idReserva);
 
@@ -356,10 +345,9 @@ public class ReservaDAO {
 
         String query = "UPDATE reservas SET estado = 'CANCELADA' WHERE id_reserva = ? AND activo = TRUE";
 
-        try (
-                Connection conn = ConnectionDB.getInstancia().getConn();
-                PreparedStatement stmt = conn.prepareStatement(query)
-        ) {
+        try (Connection conn = ConnectionDB.getInstancia().getConn();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
             stmt.setInt(1, idReserva);
 
             int affected = stmt.executeUpdate();
@@ -383,10 +371,9 @@ public class ReservaDAO {
 
         String query = "UPDATE reservas SET activo = FALSE WHERE id_reserva = ?";
 
-        try (
-                Connection conn = ConnectionDB.getInstancia().getConn();
-                PreparedStatement stmt = conn.prepareStatement(query)
-        ) {
+        try (Connection conn = ConnectionDB.getInstancia().getConn();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
             stmt.setInt(1, idReserva);
 
             int affected = stmt.executeUpdate();
@@ -412,22 +399,20 @@ public class ReservaDAO {
                 "FROM reservas r " +
                 "INNER JOIN viajes v ON r.id_viaje = v.id_viaje " +
                 "WHERE r.estado = 'CONFIRMADA' " +
-                "AND r.activo = true " +
-                "AND v.activo = true";
+                "AND r.activo = TRUE " +
+                "AND v.activo = TRUE";
 
-        try (
-                Connection conn = ConnectionDB.getInstancia().getConn();
-                PreparedStatement stmt = conn.prepareStatement(query);
-                ResultSet rs = stmt.executeQuery()
-        ) {
+        try (Connection conn = ConnectionDB.getInstancia().getConn();
+             PreparedStatement stmt = conn.prepareStatement(query);
+             ResultSet rs = stmt.executeQuery()) {
+
             if (rs.next()) {
                 double ingresos = rs.getDouble("ingresos_totales");
                 logger.info("Ingresos totales calculados: {}", ingresos);
                 return ingresos;
-            } else {
-                logger.info("No se encontraron reservas confirmadas para calcular ingresos totales");
-                return 0.0;
             }
+            logger.info("No se encontraron reservas confirmadas para calcular ingresos totales");
+            return 0.0;
 
         } catch (SQLException e) {
             logger.error("Error al calcular ingresos totales - Estado: {} - Código: {}",
@@ -443,24 +428,22 @@ public class ReservaDAO {
                 "FROM reservas r " +
                 "INNER JOIN viajes v ON r.id_viaje = v.id_viaje " +
                 "WHERE r.estado = 'CONFIRMADA' " +
-                "AND r.activo = true " +
-                "AND v.cancelado = false " +
+                "AND r.activo = TRUE " +
+                "AND v.cancelado = FALSE " +
                 "AND MONTH(r.fecha_reserva) = MONTH(CURRENT_DATE()) " +
                 "AND YEAR(r.fecha_reserva) = YEAR(CURRENT_DATE())";
 
-        try (
-                Connection conn = ConnectionDB.getInstancia().getConn();
-                PreparedStatement stmt = conn.prepareStatement(query);
-                ResultSet rs = stmt.executeQuery()
-        ) {
+        try (Connection conn = ConnectionDB.getInstancia().getConn();
+             PreparedStatement stmt = conn.prepareStatement(query);
+             ResultSet rs = stmt.executeQuery()) {
+
             if (rs.next()) {
                 double ingresos = rs.getDouble("ingresos_mes");
                 logger.info("Ingresos del mes actual calculados: {}", ingresos);
                 return ingresos;
-            } else {
-                logger.info("No se encontraron reservas confirmadas para el mes actual");
-                return 0.0;
             }
+            logger.info("No se encontraron reservas confirmadas para el mes actual");
+            return 0.0;
 
         } catch (SQLException e) {
             logger.error("Error al calcular ingresos del mes actual - Estado: {} - Código: {}",
@@ -476,22 +459,20 @@ public class ReservaDAO {
                 "FROM reservas r " +
                 "INNER JOIN viajes v ON r.id_viaje = v.id_viaje " +
                 "WHERE r.estado = 'CONFIRMADA' " +
-                "AND r.activo = true " +
-                "AND v.cancelado = false";
+                "AND r.activo = TRUE " +
+                "AND v.cancelado = FALSE";
 
-        try (
-                Connection conn = ConnectionDB.getInstancia().getConn();
-                PreparedStatement stmt = conn.prepareStatement(query);
-                ResultSet rs = stmt.executeQuery()
-        ) {
+        try (Connection conn = ConnectionDB.getInstancia().getConn();
+             PreparedStatement stmt = conn.prepareStatement(query);
+             ResultSet rs = stmt.executeQuery()) {
+
             if (rs.next()) {
                 double promedio = rs.getDouble("promedio_reserva");
                 logger.info("Promedio por reserva calculado: {}", promedio);
                 return promedio;
-            } else {
-                logger.info("No se pudo calcular el promedio por reserva");
-                return 0.0;
             }
+            logger.info("No se pudo calcular el promedio por reserva");
+            return 0.0;
 
         } catch (SQLException e) {
             logger.error("Error al calcular promedio por reserva - Estado: {} - Código: {}",
@@ -548,7 +529,6 @@ public class ReservaDAO {
 
         return reserva;
     }
-
 
     private void checkAffectedRows(int affected, String operation) {
         if (affected == 0) {

@@ -18,7 +18,7 @@ import java.util.Map;
 public class ViajeDAO {
     private final FeedbackDAO fDAO = new FeedbackDAO();
     private static final Logger logger = LoggerFactory.getLogger(ViajeDAO.class);
-    private static final String BASE_VIAJE_QUERY = "SELECT v.id_viaje, v.fecha, v.lugares_disponibles, " +
+    private static final String BASE_QUERY = "SELECT v.id_viaje, v.fecha, v.lugares_disponibles, " +
             "v.origen, v.destino, v.precio_unitario, v.cancelado, v.lugar_salida, " +
             "u.id_usuario as conductor_id, u.nombre as conductor_nombre, " +
             "u.apellido as conductor_apellido, u.correo as conductor_correo, " +
@@ -32,7 +32,7 @@ public class ViajeDAO {
         logger.debug("Obteniendo todos los viajes - todos: {}", all);
         LinkedList<Viaje> viajes = new LinkedList<>();
 
-        String query = BASE_VIAJE_QUERY + "WHERE u.fecha_baja IS NULL AND v.activo = TRUE";
+        String query = BASE_QUERY + "WHERE u.fecha_baja IS NULL AND v.activo = TRUE";
 
         if (!all) {
             query += " AND v.fecha >= CURRENT_DATE AND v.cancelado = 0";
@@ -77,7 +77,7 @@ public class ViajeDAO {
             }
         }
 
-        String query = BASE_VIAJE_QUERY +
+        String query = BASE_QUERY +
                 "WHERE v.origen COLLATE utf8mb4_general_ci LIKE ? " +
                 "AND v.destino COLLATE utf8mb4_general_ci LIKE ? " +
                 "AND v.cancelado = 0 " +
@@ -122,7 +122,7 @@ public class ViajeDAO {
     public Viaje getByViaje(int id_viaje) {
         logger.debug("Buscando viaje con ID: {}", id_viaje);
 
-        String query = BASE_VIAJE_QUERY + "WHERE v.id_viaje = ? AND v.activo = TRUE";
+        String query = BASE_QUERY + "WHERE v.id_viaje = ? AND v.activo = TRUE";
 
         try (Connection conn = ConnectionDB.getInstancia().getConn();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -150,7 +150,7 @@ public class ViajeDAO {
         logger.debug("Obteniendo viajes del usuario ID: {}", u.getIdUsuario());
         LinkedList<Viaje> viajes = new LinkedList<>();
 
-        String query = BASE_VIAJE_QUERY +
+        String query = BASE_QUERY +
                 "WHERE veh.usuario_duenio_id = ? AND v.activo = TRUE " +
                 "ORDER BY v.fecha DESC";
 
@@ -326,7 +326,7 @@ public class ViajeDAO {
     public LinkedList<Viaje> obtenerViajesProximos(int limite) {
         logger.debug("Obteniendo {} viajes próximos", limite);
 
-        String query = BASE_VIAJE_QUERY +
+        String query = BASE_QUERY +
                 "WHERE v.fecha >= CURRENT_DATE " +
                 "AND v.cancelado = 0 " +
                 "AND u.fecha_baja IS NULL " +
