@@ -139,7 +139,7 @@
                                         <i class="bi bi-x-circle-fill"></i>
                                     </button>
                                     <% }
-                                        if ("CONFIRMADA".equals(reserva.getEstado()) || "CANCELADA".equals(reserva.getEstado())) { %>
+                                        if ("CONFIRMADA".equals(reserva.getEstado()) || "CANCELADA".equals(reserva.getEstado()) || "VENCIDA".equals(reserva.getEstado())) { %>
                                     <button type="button" class="btn btn-sm btn-danger btn-eliminar"
                                             data-id="<%=reserva.getIdReserva()%>">
                                         <i class="bi bi-trash"></i>

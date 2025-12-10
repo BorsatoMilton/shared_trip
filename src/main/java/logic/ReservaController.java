@@ -51,6 +51,10 @@ public class ReservaController {
             throw new Exception("No se puede cancelar esta reserva, ya esta CONFIRMADA");
         }
 
+        if ("VENCIDA".equals(reserva.getEstado())) {
+            throw new Exception("No se puede cancelar esta reserva, ya esta VENCIDA");
+        }
+
         Viaje viaje = reserva.getViaje();
         LocalDate fechaViaje = viaje.getFecha().toLocalDate();
 

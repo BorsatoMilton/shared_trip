@@ -157,11 +157,13 @@ function obtenerBadgeEstado(estado) {
     const estados = {
         'EN PROCESO': '<span class="badge bg-warning text-dark"><i class="bi bi-clock me-1"></i>Pendiente</span>',
         'CONFIRMADA': '<span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>Confirmada</span>',
-        'CANCELADA': '<span class="badge bg-danger"><i class="bi bi-x-circle me-1"></i>Cancelada</span>'
+        'CANCELADA': '<span class="badge bg-danger"><i class="bi bi-x-circle me-1"></i>Cancelada</span>',
+        'VENCIDA': '<span class="badge bg-secondary"><i class="bi bi-exclamation-octagon me-1"></i>Vencida</span>'
     };
 
     return estados[estado.toUpperCase()] || '<span class="badge bg-secondary">Desconocido</span>';
 }
+
 
 
 function mostrarError(mensaje) {

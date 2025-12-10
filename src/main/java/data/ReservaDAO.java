@@ -147,7 +147,7 @@ public class ReservaDAO {
         String query = BASE_QUERY + "WHERE r.id_viaje = ?";
 
         if (!all) {
-            query += " AND r.estado <> 'CANCELADA'";
+            query += " AND r.estado NOT IN ('CANCELADA', 'VENCIDA')";
         }
 
         try (Connection conn = ConnectionDB.getInstancia().getConn();
@@ -270,6 +270,27 @@ public class ReservaDAO {
             throw new DataAccessException("Error al agregar reserva", e);
         }
     }
+
+    public int marcarReservasVencidas() {
+        String query = "UPDATE reservas r " +
+                "INNER JOIN viajes v ON v.id_viaje = r.id_viaje " +
+                "SET r.estado = 'VENCIDA' " +
+                "WHERE v.fecha < CURRENT_DATE " +
+                "AND r.estado = 'EN PROCESO'";
+
+        try (Connection conn = ConnectionDB.getInstancia().getConn();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            int filasAfectadas = stmt.executeUpdate();
+            return filasAfectadas;
+
+        } catch (SQLException e) {
+            logger.error("Error al marcar reservas vencidas - SQLState={} Code={}",
+                    e.getSQLState(), e.getErrorCode());
+            throw new DataAccessException("Error al marcar reservas vencidas", e);
+        }
+    }
+
 
     public void actualizarEstado(int idReserva, String nuevoEstado) {
         logger.info("Actualizando estado de reserva ID: {} a {}", idReserva, nuevoEstado);

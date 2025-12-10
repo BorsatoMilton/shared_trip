@@ -227,6 +227,8 @@ public class CRUDreservas extends HttpServlet {
                     throw new Exception("Esta reserva ya esta confirmada");
                 } else if ("CANCELADA".equalsIgnoreCase(reserva.getEstado())) {
                     throw new Exception("Esta reserva esta cancelada");
+                } else if ("VENCIDA".equalsIgnoreCase(reserva.getEstado())) {
+                    throw new Exception("Esta reserva esta vencida");
                 }
                 reservaEncontrada = true;
                 reserva.setEstado("CONFIRMADA");

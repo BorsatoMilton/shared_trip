@@ -348,7 +348,7 @@ public class UserDAO {
         logger.debug("Verificando si usuario ID {} tiene reservas activas", idUsuario);
 
         String query = "SELECT COUNT(*) as total FROM reservas WHERE id_pasajero_reserva = ? " +
-                "AND estado NOT IN ('CANCELADA','CONFIRMADA') AND activo = TRUE";
+                "AND estado NOT IN ('CANCELADA','CONFIRMADA','VENCIDA') AND activo = TRUE";
 
         try (Connection conn = ConnectionDB.getInstancia().getConn();
              PreparedStatement stmt = conn.prepareStatement(query)) {

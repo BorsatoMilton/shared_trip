@@ -255,8 +255,11 @@
                             </small></td>
                             <td>
                                 <%
-                                    String badgeClass = "CONFIRMADA".equals(reserva.getEstado()) ? "bg-success" :
-                                            "CANCELADA".equals(reserva.getEstado()) ? "bg-danger" : "bg-warning";
+                                    String badgeClass =
+                                            "CONFIRMADA".equals(reserva.getEstado()) ? "bg-success" :
+                                                    "CANCELADA".equals(reserva.getEstado()) ? "bg-danger" :
+                                                            "VENCIDA".equals(reserva.getEstado()) ? "bg-secondary" :
+                                                                    "bg-warning";
                                 %>
                                 <span class="badge badge-kpi <%= badgeClass %>"><%= reserva.getEstado() %></span>
                             </td>
