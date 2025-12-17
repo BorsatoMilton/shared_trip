@@ -85,7 +85,7 @@ public class UserDAO {
     public Usuario getById(int id_usuario) {
         logger.debug("Buscando usuario con ID: {}", id_usuario);
 
-        String query = BASE_QUERY + " AND id_usuario = ?";
+        String query = BASE_QUERY_WITH_ROL + " AND id_usuario = ?";
 
         try (Connection conn = ConnectionDB.getInstancia().getConn();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -95,7 +95,7 @@ public class UserDAO {
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     logger.debug("Usuario encontrado: ID {}", id_usuario);
-                    return mapUsuario(rs);
+                    return mapUsuarioWithRol(rs);
                 } else {
                     logger.warn("Usuario no encontrado: ID {}", id_usuario);
                     return null;

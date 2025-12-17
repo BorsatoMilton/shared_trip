@@ -44,16 +44,6 @@ public class UpdatePerfil extends HttpServlet {
 
             Usuario usuarioNuevo = usuarioCtrl.getOneById(idUsuario);
 
-            if (usuarioNuevo != null && usuarioNuevo.getRol().getNombreRol() == null) {
-                LinkedList<Rol> roles = rolCtrl.getAll();
-                for (Rol r : roles) {
-                    if (usuarioNuevo.getRol().getIdRol() == r.getIdRol()) {
-                        usuarioNuevo.getRol().setNombreRol(r.getNombreRol());
-                        break;
-                    }
-                }
-            }
-
             session.setAttribute("usuario", usuarioNuevo);
             request.getRequestDispatcher("WEB-INF/perfil.jsp").forward(request, response);
 
@@ -81,26 +71,11 @@ public class UpdatePerfil extends HttpServlet {
                 throw new Exception("No se especifico la acción");
             }
 
-            if (logueado != null) {
-                Usuario usuarioActualizado = usuarioCtrl.getOneById(logueado.getIdUsuario());
-
-                if (usuarioActualizado != null && usuarioActualizado.getRol().getNombreRol() == null) {
-                    LinkedList<Rol> roles = rolCtrl.getAll();
-                    for (Rol r : roles) {
-                        if (usuarioActualizado.getRol().getIdRol() == r.getIdRol()) {
-                            usuarioActualizado.getRol().setNombreRol(r.getNombreRol());
-                            break;
-                        }
-                    }
-                }
-                session.setAttribute("usuario", usuarioActualizado);
-            }
-
         } catch (Exception e) {
             session.setAttribute("error", "Error: " + e.getMessage());
         }
 
-        request.getRequestDispatcher("WEB-INF/perfil.jsp").forward(request, response);
+        response.sendRedirect(request.getContextPath() + "/perfil");
     }
 
 

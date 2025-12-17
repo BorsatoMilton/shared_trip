@@ -32,7 +32,7 @@ public class CRUDusuarioAdmin extends HttpServlet {
     }
 
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+   protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         HttpSession session = request.getSession(false);
@@ -42,24 +42,35 @@ public class CRUDusuarioAdmin extends HttpServlet {
             return;
         }
 
-        Usuario usuario = (Usuario) session.getAttribute("usuario");
-
-        if (usuario.getRol().getIdRol() != 1) {
-            response.sendRedirect(request.getContextPath() + "/");
-            return;
-        }
-
         try {
+            Usuario usuarioSesion = (Usuario) session.getAttribute("usuario");
+
+            Usuario usuarioActualizado = usuarioCtrl.getOneById(usuarioSesion.getIdUsuario());
+
+            if (usuarioActualizado == null) {
+                session.invalidate();
+                response.sendRedirect(request.getContextPath() + "/login.jsp");
+                return;
+            }
+
+            session.setAttribute("usuario", usuarioActualizado);
+
+            if (usuarioActualizado.getRol().getIdRol() != 1) {
+                response.sendRedirect(request.getContextPath() + "/");
+                return;
+            }
 
             LinkedList<Usuario> usuarios = usuarioCtrl.getAll();
             LinkedList<Rol> roles = rolCtrl.getAll();
 
             request.setAttribute("usuarios", usuarios);
             request.setAttribute("roles", roles);
-            request.getRequestDispatcher("WEB-INF/usuarios.jsp").forward(request, response);
+
+            request.getRequestDispatcher("WEB-INF/usuarios.jsp")
+                    .forward(request, response);
 
         } catch (Exception e) {
-            logger.error("Error al obtener los usuarios: {}", e.getMessage());
+            logger.error("Error al obtener los usuarios", e);
             session.setAttribute("error", "Error cargando usuarios.");
             response.sendRedirect(request.getContextPath() + "/");
         }
