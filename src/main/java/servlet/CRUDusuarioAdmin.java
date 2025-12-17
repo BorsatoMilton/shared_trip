@@ -51,33 +51,8 @@ public class CRUDusuarioAdmin extends HttpServlet {
 
         try {
 
-            Usuario usuarioActualizado = usuarioCtrl.getOneById(usuario.getIdUsuario());
-
-            if (usuarioActualizado != null) {
-
-                if (usuarioActualizado.getRol().getNombreRol() == null) {
-                    LinkedList<Rol> roles = rolCtrl.getAll();
-                    for (Rol r : roles) {
-                        if (usuarioActualizado.getRol().getIdRol() == r.getIdRol()) {
-                            usuarioActualizado.getRol().setNombreRol(r.getNombreRol());
-                            break;
-                        }
-                    }
-                }
-
-                session.setAttribute("usuario", usuarioActualizado);
-            }
-
             LinkedList<Usuario> usuarios = usuarioCtrl.getAll();
             LinkedList<Rol> roles = rolCtrl.getAll();
-
-            for (Usuario u : usuarios) {
-                for (Rol r : roles) {
-                    if (u.getRol().getIdRol() == r.getIdRol()) {
-                        u.getRol().setNombreRol(r.getNombreRol());
-                    }
-                }
-            }
 
             request.setAttribute("usuarios", usuarios);
             request.setAttribute("roles", roles);

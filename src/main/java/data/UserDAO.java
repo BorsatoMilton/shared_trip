@@ -30,10 +30,10 @@ public class UserDAO {
 
         try (Connection conn = ConnectionDB.getInstancia().getConn();
              Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(BASE_QUERY)) {
+             ResultSet rs = stmt.executeQuery(BASE_QUERY_WITH_ROL)) {
 
             while (rs.next()) {
-                users.add(mapUsuario(rs));
+                users.add(mapUsuarioWithRol(rs));
             }
             logger.info("Obtenidos {} usuarios", users.size());
             return users;
