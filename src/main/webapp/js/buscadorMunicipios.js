@@ -1,54 +1,51 @@
-"use strict";
-
 document.addEventListener('DOMContentLoaded', async () => {
-    await iniciador();
-    inicializarBuscadores();
+    await loadMunicipios();
+    initSearchers();
 });
-const justSelected = {};
+
 let municipios = [];
 const debounceTimers = {};
 const stateFocus = {};
+const justSelected = {};
 
-async function iniciador() {
+async function loadMunicipios() {
     try {
         const response = await fetch("resources/municipios.json");
-        if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
+        if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
         const data = await response.json();
         municipios = Array.isArray(data.municipios) ? data.municipios : [];
 
-        const hoy = new Date().toISOString().split("T")[0];
-        document.querySelectorAll('input[type="date"][id="fecha"]').forEach(i => {
-            i.min = hoy;
-        });
+        const minDate = new Date().toISOString().split("T")[0];
+        document.getElementById("fecha").min = minDate;
     } catch (error) {
-        console.error("Error cargando municipios:", error);
-        municipios = [];
+        console.error("Error loading municipios:", error);
     }
 }
 
-function inicializarBuscadores() {
-    const buscadores = document.querySelectorAll('.dropdown-container input');
-    buscadores.forEach((input, index) => {
-        const tipo = input.id && input.id.includes("origen") ? "origen" : "destino";
-        const key = tipo + "_" + index;
+function initSearchers() {
+    const inputs = document.querySelectorAll('.dropdown-container input');
+
+    inputs.forEach((input, index) => {
+        const key = (input.id.includes("origen") ? "origen" : "destino") + "_" + index;
+        const resultsContainer = input.parentElement.querySelector('.resultadoCiudades');
+
+        if (!resultsContainer) return;
+
         input.dataset.key = key;
-
-        const contenedor = input.parentElement.querySelector('.resultadoCiudades');
-        if (!contenedor) return;
-        contenedor.dataset.key = key;
-
+        resultsContainer.dataset.key = key;
         stateFocus[key] = -1;
-        input.setAttribute('autocomplete', 'off');
+        input.autocomplete = "off";
 
         input.addEventListener("input", () => {
             input.removeAttribute('data-selected');
-            debouncedCargar(input.value, key);
+            debounce(key, () => loadOptions(input.value, key), 200);
         });
 
-        input.addEventListener("keydown", (e) => manejarTeclas(e, key));
-        input.addEventListener("blur", () => setTimeout(() => validarSeleccion(input, key), 150));
+        input.addEventListener("keydown", (e) => handleKeys(e, key));
+        input.addEventListener("blur", () =>
+            setTimeout(() => validateSelection(input, key), 150)
+        );
     });
-
 
     document.addEventListener('click', (e) => {
         if (!e.target.closest('.dropdown-container')) {
@@ -60,154 +57,153 @@ function inicializarBuscadores() {
         }
     });
 
-
     document.querySelectorAll('form').forEach(form => {
-        form.addEventListener('submit', function (e) {
+        form.addEventListener('submit', (e) => {
             const inputs = form.querySelectorAll('.dropdown-container input[data-key]');
-            const invalid = Array.from(inputs).filter(inp => {
+            const invalid = Array.from(inputs).some(inp => {
                 const val = inp.value.trim();
-                return !val || !municipios.some(m => normalizar(m.nombre) === normalizar(val));
+                return !val || !municipios.some(m => normalize(m.nombre) === normalize(val));
             });
 
-            if (invalid.length > 0) {
+            if (invalid) {
                 e.preventDefault();
-                invalid[0].value = "";
-                invalid[0].focus();
+                Array.from(inputs).forEach(inp => {
+                    if (!inp.value.trim() || !municipios.some(m => normalize(m.nombre) === normalize(inp.value))) {
+                        inp.value = "";
+                        inp.focus();
+                    }
+                });
                 alert('Debe seleccionar un origen y destino válidos.');
-                return false;
             }
         });
     });
 }
 
-function debouncedCargar(valor, key) {
-    if (debounceTimers[key]) clearTimeout(debounceTimers[key]);
-    debounceTimers[key] = setTimeout(() => cargarOpciones(valor, key), 200);
+function debounce(key, callback, delay) {
+    clearTimeout(debounceTimers[key]);
+    debounceTimers[key] = setTimeout(callback, delay);
 }
 
-function cargarOpciones(busqueda, key) {
-    const contenedor = document.querySelector(`.resultadoCiudades[data-key="${key}"]`);
+function loadOptions(search, key) {
+    const container = document.querySelector(`.resultadoCiudades[data-key="${key}"]`);
     const input = document.querySelector(`input[data-key="${key}"]`);
-    if (!contenedor || !input) return;
+    if (!container || !input) return;
 
-    contenedor.innerHTML = "";
+    container.innerHTML = "";
     stateFocus[key] = -1;
 
-    const query = normalizar(busqueda);
+    const query = normalize(search);
     if (!query) {
-        ocultarResultados(key);
+        hideResults(key);
         return;
     }
 
-    const resultados = municipios.filter(m => normalizar(m.nombre).includes(query));
+    const results = municipios.filter(m => normalize(m.nombre).includes(query)).slice(0, 50);
 
-    if (resultados.length === 0) {
+    if (results.length === 0) {
         const noRes = document.createElement('div');
         noRes.className = 'opcion no-results';
         noRes.textContent = 'No se encontraron resultados';
-        contenedor.appendChild(noRes);
-        contenedor.style.display = 'block';
+        container.appendChild(noRes);
+        container.style.display = 'block';
         return;
     }
 
-
-    resultados.slice(0, 50).forEach((muni) => {
+    results.forEach((muni) => {
         const div = document.createElement('div');
         div.className = 'opcion';
-
-
         div.textContent = `${muni.nombre}, ${muni.provincia?.nombre ?? ""}`.trim();
-
         div.dataset.value = muni.nombre;
 
         div.addEventListener('click', () => {
             input.value = muni.nombre;
             input.setAttribute('data-selected', 'true');
-            ocultarResultados(key);
+            hideResults(key);
         });
 
         div.addEventListener('mouseenter', () => {
-            limpiarClaseActiva(contenedor);
+            clearActiveClass(container);
             div.classList.add('active');
-            const items = Array.from(contenedor.querySelectorAll('.opcion'));
-            const idx = items.indexOf(div);
-            if (idx >= 0) stateFocus[key] = idx;
+            stateFocus[key] = Array.from(container.querySelectorAll('.opcion')).indexOf(div);
         });
 
-        contenedor.appendChild(div);
+        container.appendChild(div);
     });
 
-    contenedor.style.display = 'block';
-    contenedor.scrollTop = 0;
+    container.style.display = 'block';
+    container.scrollTop = 0;
 }
 
-function manejarTeclas(e, key) {
-    const contenedor = document.querySelector(`.resultadoCiudades[data-key="${key}"]`);
-    if (!contenedor) return;
-    const items = Array.from(contenedor.querySelectorAll('.opcion'));
+function handleKeys(e, key) {
+    const container = document.querySelector(`.resultadoCiudades[data-key="${key}"]`);
+    if (!container) return;
+
+    const items = Array.from(container.querySelectorAll('.opcion'));
     const max = items.length - 1;
 
-    if (e.key === 'ArrowDown') {
-        e.preventDefault();
-        if (max < 0) return;
-        stateFocus[key] = Math.min(stateFocus[key] + 1, max);
-        actualizarFocoVisual(items, stateFocus[key]);
-    } else if (e.key === 'ArrowUp') {
-        e.preventDefault();
-        if (max < 0) return;
-        stateFocus[key] = Math.max(stateFocus[key] - 1, 0);
-        actualizarFocoVisual(items, stateFocus[key]);
-    } else if (e.key === 'Enter') {
-        if (stateFocus[key] >= 0 && items[stateFocus[key]]) {
+    switch (e.key) {
+        case 'ArrowDown':
             e.preventDefault();
-            const input = document.querySelector(`input[data-key="${key}"]`);
-            const seleccionado = items[stateFocus[key]];
-
-            input.value = seleccionado.dataset.value;
-            input.setAttribute('data-selected', 'true');
-
-            justSelected[key] = true;
-
-            ocultarResultados(key);
-        }
-    } else if (e.key === 'Escape') {
-        ocultarResultados(key);
-        stateFocus[key] = -1;
+            if (max >= 0) {
+                stateFocus[key] = Math.min(stateFocus[key] + 1, max);
+                updateFocus(items, stateFocus[key]);
+            }
+            break;
+        case 'ArrowUp':
+            e.preventDefault();
+            if (max >= 0) {
+                stateFocus[key] = Math.max(stateFocus[key] - 1, 0);
+                updateFocus(items, stateFocus[key]);
+            }
+            break;
+        case 'Enter':
+            if (stateFocus[key] >= 0 && items[stateFocus[key]]) {
+                e.preventDefault();
+                const input = document.querySelector(`input[data-key="${key}"]`);
+                input.value = items[stateFocus[key]].dataset.value;
+                input.setAttribute('data-selected', 'true');
+                justSelected[key] = true;
+                hideResults(key);
+            }
+            break;
+        case 'Escape':
+            hideResults(key);
+            stateFocus[key] = -1;
     }
 }
 
-function actualizarFocoVisual(items, index) {
-    if (!items || items.length === 0) return;
-    limpiarClaseActiva(items[0].parentElement);
-    const el = items[index];
-    if (el) {
-        el.classList.add('active');
-        el.scrollIntoView({block: 'nearest'});
+function updateFocus(items, index) {
+    if (!items.length) return;
+    clearActiveClass(items[0].parentElement);
+    if (items[index]) {
+        items[index].classList.add('active');
+        items[index].scrollIntoView({ block: 'nearest' });
     }
 }
 
-function limpiarClaseActiva(contenedor) {
-    if (!contenedor) return;
-    contenedor.querySelectorAll('.opcion.active').forEach(el => el.classList.remove('active'));
-}
-
-function ocultarResultados(key) {
-    const contenedor = document.querySelector(`.resultadoCiudades[data-key="${key}"]`);
-    if (contenedor) {
-        contenedor.style.display = 'none';
-        contenedor.innerHTML = "";
+function clearActiveClass(container) {
+    if (container) {
+        container.querySelectorAll('.opcion.active').forEach(el => el.classList.remove('active'));
     }
 }
 
-function normalizar(texto) {
-    return String(texto || '')
+function hideResults(key) {
+    const container = document.querySelector(`.resultadoCiudades[data-key="${key}"]`);
+    if (container) {
+        container.style.display = 'none';
+        container.innerHTML = "";
+    }
+}
+
+function normalize(text) {
+    return String(text || '')
         .toLowerCase()
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "")
         .replace(/ñ/g, "n");
 }
 
-function validarSeleccion(input, key) {
+function validateSelection(input, key) {
     if (justSelected[key]) {
         justSelected[key] = false;
         return;
@@ -216,17 +212,14 @@ function validarSeleccion(input, key) {
     const valor = input.value.trim();
     if (!valor) return;
 
-    const existe = municipios.some(
-        m => normalizar(m.nombre) === normalizar(valor)
-    );
+    const exists = municipios.some(m => normalize(m.nombre) === normalize(valor));
 
-    if (!existe) {
+    if (!exists) {
         input.value = "";
         input.removeAttribute('data-selected');
     } else {
         input.setAttribute('data-selected', 'true');
     }
 
-    ocultarResultados(key);
+    hideResults(key);
 }
-
